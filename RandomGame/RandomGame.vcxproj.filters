@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Callback Functions">
+      <UniqueIdentifier>{cb7d480b-a824-4709-a5f8-bb62fdf45b63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cMeshObject">
+      <UniqueIdentifier>{6a538991-bcf4-4152-93b0-813be27189eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Global Stuff">
+      <UniqueIdentifier>{07c4d1de-e64a-4721-8232-77279e662e67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lights">
+      <UniqueIdentifier>{8964241c-f14c-473c-a47f-f36164c61325}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VAOManager_FileLoading">
+      <UniqueIdentifier>{98715f2a-845e-492a-82e3-db3bc1e381b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RobotFight">
+      <UniqueIdentifier>{ba2d50a2-cbda-44ea-b0c2-72d6e8c2ad17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{756c2898-79cb-4b16-8fc0-2f424077ffce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderManager">
+      <UniqueIdentifier>{f54636df-4ef6-4c46-9a1d-890d440ab76a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\KeyboardCallbackFunctions.cpp">
+      <Filter>Callback Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cMeshObject.cpp">
+      <Filter>cMeshObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\globalThings.cpp">
+      <Filter>Global Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLight.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLightHelper.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLightManager.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\FunWithMaps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\funWithVectors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\theMainFunction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cVAOManager\cVAOManager.cpp">
+      <Filter>VAOManager_FileLoading</Filter>
+    </ClCompile>
+    <ClCompile Include="cVAOManager\c3DModelFileLoader.cpp">
+      <Filter>VAOManager_FileLoading</Filter>
+    </ClCompile>
+    <ClCompile Include="cRobotShepherd.cpp">
+      <Filter>RobotFight</Filter>
+    </ClCompile>
+    <ClCompile Include="cRobot.cpp">
+      <Filter>RobotFight</Filter>
+    </ClCompile>
+    <ClCompile Include="cShader.cpp">
+      <Filter>ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="cShaderManager.cpp">
+      <Filter>ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cMeshObject.h">
+      <Filter>cMeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\globalOpenGL.h">
+      <Filter>Global Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\globalThings.h">
+      <Filter>Global Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLight.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLightHelper.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLightManager.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="cVAOManager\sModelDrawInfo.h">
+      <Filter>VAOManager_FileLoading</Filter>
+    </ClInclude>
+    <ClInclude Include="cVAOManager\cVAOManager.h">
+      <Filter>VAOManager_FileLoading</Filter>
+    </ClInclude>
+    <ClInclude Include="cVAOManager\c3DModelFileLoader.h">
+      <Filter>VAOManager_FileLoading</Filter>
+    </ClInclude>
+    <ClInclude Include="cRobot.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
+    <ClInclude Include="cRobotShepherd.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
+    <ClInclude Include="iDamage.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
+    <ClInclude Include="iRobot.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
+    <ClInclude Include="iRobotInformant.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
+    <ClInclude Include="cShaderManager.h">
+      <Filter>ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicScene.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\fragmentShader01.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="assets\shaders\vertexShader01.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
