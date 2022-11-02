@@ -10,11 +10,11 @@ void GraphicScene::Initialize() {
 
 }
 
-void GraphicScene::CreateGameObjectByType(const std::string& type) {
+void GraphicScene::CreateGameObjectByType(const std::string& type, glm::vec3 position) {
 	if (type.compare("Bunny") == 0) {
 		cMeshObject* go = new cMeshObject();
 		go->meshName = type;
-		go->position = glm::vec3(2.0f, -6.0f, 0.0f);
+		go->position = position;
 		go->scale = 20.0f;
 		vec_pMeshObjects.push_back(go);
 	}
@@ -22,7 +22,8 @@ void GraphicScene::CreateGameObjectByType(const std::string& type) {
 		cMeshObject* go = new cMeshObject();
 		go->meshName = type;
 		go->friendlyName = type;
-		go->bUse_RGBA_colour = true;
+		go->position = position;
+		go->bUse_RGBA_colour = false;
 		go->isWireframe = false;
 		vec_pMeshObjects.push_back(go);
 	}

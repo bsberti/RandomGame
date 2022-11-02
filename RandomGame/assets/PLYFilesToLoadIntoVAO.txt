@@ -12,4 +12,6 @@ assets/models/ISO_Shphere_flat_4div_xyz_n_rgba_uv.ply
 ISO_Sphere_2
 assets/models/1129701_Terrain_xyz_n_rgba_uv.ply
 Terrain_midterm
+assets/models/Fractal_Terrain_Florest_xyz_n_rgba_uv.ply
+Terrain_Florest
 EOF

@@ -11,8 +11,9 @@ public:
 
 	void Initialize();
 
-	void CreateGameObjectByType(const std::string& type);
+	void CreateGameObjectByType(const std::string& type, glm::vec3 position);
 
+	cMeshObject selectedObject;
 	std::vector< cMeshObject* > vec_pMeshObjects;
 
 private:
