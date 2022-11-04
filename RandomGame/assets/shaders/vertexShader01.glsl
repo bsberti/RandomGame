@@ -32,8 +32,7 @@ uniform mat4 mProjection;
 void main()
 {
 	vec3 vertPosition = vPosition.xyz;
-	
-	
+
 	// Output is in screen space 
 	// x & y are in (normalized) screen space, z is the depth from the camera
 	mat4 mMVP = mProjection * mView * mModel;
@@ -56,7 +55,6 @@ void main()
 	fTangent = vTangent;
 	fBinormal = vBiNormal;
 }
-
 
 // You can also set the layout with the location keyword
 //	layout(location=0) in vec3 vCol;
