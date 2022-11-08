@@ -1,6 +1,8 @@
 #include "GraphicScene.h"
+#include "cRobot.h"
 
 GraphicScene::GraphicScene() {
+
 }
 
 GraphicScene::~GraphicScene() {
@@ -10,13 +12,16 @@ void GraphicScene::Initialize() {
 
 }
 
-void GraphicScene::CreateGameObjectByType(const std::string& type, glm::vec3 position) {
+void GraphicScene::CreateGameObjectByType(const std::string& type, glm::vec3 position, sModelDrawInfo& drawInfo) {
 	if (type.compare("Bunny") == 0) {
-		cMeshObject* go = new cMeshObject();
+		cRobot* go = (cRobot*)robotShepard.makeRobot();;
 		go->meshName = type;
 		go->position = position;
-		go->scale = 20.0f;
+		go->scale = 40.0f;
+		go->numberOfTriangles = drawInfo.numberOfTriangles;
+		go->meshTriangles = drawInfo.modelTriangles;
 		vec_pMeshObjects.push_back(go);
+		
 	}
 	else if (type.compare("Cabin") == 0) {
 		cMeshObject* go = new cMeshObject();
@@ -26,6 +31,8 @@ void GraphicScene::CreateGameObjectByType(const std::string& type, glm::vec3 pos
 		go->bUse_RGBA_colour = false;
 		go->scale = 0.05f;
 		go->isWireframe = false;
+		go->numberOfTriangles = drawInfo.numberOfTriangles;
+		go->meshTriangles = drawInfo.modelTriangles;
 		vec_pMeshObjects.push_back(go);
 	}	
 	else {
@@ -35,6 +42,8 @@ void GraphicScene::CreateGameObjectByType(const std::string& type, glm::vec3 pos
 		go->position = position;
 		go->bUse_RGBA_colour = false;
 		go->isWireframe = false;
+		go->numberOfTriangles = drawInfo.numberOfTriangles;
+		go->meshTriangles = drawInfo.modelTriangles;
 		vec_pMeshObjects.push_back(go);
 	}
 }

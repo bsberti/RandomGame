@@ -6,11 +6,12 @@
 #include "iDamage.h"
 //#include "cRobotShepherd.h"
 #include "iRobotInformant.h"
-
+#include "cMeshObject.h"
 
 class cRobot :
 	public iRobot,		// This is "multiple inheritance"
-	public iDamage
+	public iDamage,
+	public cMeshObject
 {
 public:
 

@@ -24,8 +24,15 @@
 #include "cLightHelper.h"
 #include "cVAOManager/c3DModelFileLoader.h"
 
-glm::vec3 g_cameraEye = glm::vec3(0.0, 100.0, -300.0f);
+#include "GraphicScene.h"
+#include "cRobot.h"
+
+glm::vec3 g_cameraEye = glm::vec3(-75.0, 75.0, -500.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+cVAOManager* pVAOManager;
+GraphicScene g_GraphicScene;
+
+int const NUMBER_ROBOTS = 10;
 
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -42,12 +49,12 @@ float RandomFloat(float a, float b) {
     return a + r;
 }
 
-bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName, 
-                           cVAOManager* pVAOManager, 
-                           GLuint shaderID)
+bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName,
+    cVAOManager* pVAOManager,
+    GLuint shaderID)
 {
-    std::ifstream modelTypeFile( fileTypesToLoadName.c_str() );
-    if ( ! modelTypeFile.is_open() ) {
+    std::ifstream modelTypeFile(fileTypesToLoadName.c_str());
+    if (!modelTypeFile.is_open()) {
         // Can't find that file
         return false;
     }
@@ -66,7 +73,7 @@ bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName,
     // Or if it's integers, you can can do this short cut:
     // char textBuffer[BUFFER_SIZE] = { 0 };       // Allocate AND clear (that's the {0} part)
 
-    while ( bKeepReadingFile ) {
+    while (bKeepReadingFile) {
         // Reads the entire line into the buffer (including any white space)
         modelTypeFile.getline(textBuffer, BUFFER_SIZE);
 
@@ -74,7 +81,7 @@ bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName,
         PLYFileNameToLoad.append(textBuffer);
 
         // Is this the end of the file (have I read "EOF" yet?)?
-        if ( PLYFileNameToLoad == "EOF" )
+        if (PLYFileNameToLoad == "EOF")
         {
             // All done
             bKeepReadingFile = false;
@@ -109,10 +116,9 @@ bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName,
 }
 
 bool SaveTheVAOModelTypesToFile(std::string fileTypesToLoadName,
-                                cVAOManager* pVAOManager);
+    cVAOManager* pVAOManager);
 
-
-void DrawConcentricDebugLightObjects(void);
+void DrawConcentricDebugLightObjects(int currentLight);
 
 // HACK: These are the light spheres we will use for debug lighting
 cMeshObject* pDebugSphere_1 = NULL;// = new cMeshObject();
@@ -121,7 +127,141 @@ cMeshObject* pDebugSphere_3 = NULL;// = new cMeshObject();
 cMeshObject* pDebugSphere_4 = NULL;// = new cMeshObject();
 cMeshObject* pDebugSphere_5 = NULL;// = new cMeshObject();
 
-int main( int argc, char* argv[] ) {
+void lightning(GLuint shaderID) {
+    ::g_pTheLightManager = new cLightManager();
+    cLightHelper* pLightHelper = new cLightHelper();
+
+    ::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(-75.0f, 400.0f, -75.0f, 0.0f));
+    ::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(-75.0f, 400.0f, 75.0f, 0.0f));
+    ::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(75.0f, 400.0f, -75.0f, 0.0f));
+    ::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(75.0f, 400.0f, 75.0f, 0.0f));
+    //::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.5f));
+
+}
+
+void creatingModelsProject() {
+
+    //g_GraphicScene.CreateGameObjectByType("Bunny", glm::vec3(2.0f, -46.5f, -30.0f));
+    //g_GraphicScene.CreateGameObjectByType("Cabin", glm::vec3(-41.0f, -41.0f, -17.0f));
+
+    //for (int i = 0; i < 10; i++) {
+    //    g_GraphicScene.CreateGameObjectByType("Tree1", glm::vec3(RandomFloat(-100, 100), RandomFloat(-35, -37), RandomFloat(-100, 100)));
+    //    g_GraphicScene.CreateGameObjectByType("Tree2", glm::vec3(RandomFloat(-100, 100), RandomFloat(-35, -37), RandomFloat(-100, 100)));
+    //    g_GraphicScene.CreateGameObjectByType("Rock4", glm::vec3(RandomFloat(-100, 100), RandomFloat(-40, -42), RandomFloat(-100, 100)));
+    //}
+
+    //g_GraphicScene.CreateGameObjectByType("Terrain_Florest", glm::vec3(0.0f, -50.0f, 0.0f));
+}
+
+void creatingModelsMidterm() {
+
+    sModelDrawInfo drawingInformation;
+
+    for (int i = 0; i < NUMBER_ROBOTS; i++) {
+        pVAOManager->FindDrawInfoByModelName("Bunny", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Bunny", glm::vec3(RandomFloat(-128, 128), -46.5f, RandomFloat(-128, 128)), drawingInformation);
+    }
+
+    std::cout << "robotShepard created: " << g_GraphicScene.robotShepard.getRobotNumber() << "Bunny Robots" << std::endl;
+    
+    pVAOManager->FindDrawInfoByModelName("Terrain_midterm", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Terrain_midterm", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
+}
+
+void debugLightSpheres() {
+    pDebugSphere_1 = new cMeshObject();
+    pDebugSphere_1->meshName = "ISO_Sphere_1";
+    pDebugSphere_1->friendlyName = "Debug Sphere 1";
+    pDebugSphere_1->bUse_RGBA_colour = true;
+    pDebugSphere_1->RGBA_colour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    pDebugSphere_1->isWireframe = true;
+    pDebugSphere_1->scale = 1.0f;
+    pDebugSphere_1->bDoNotLight = true;
+    g_GraphicScene.vec_pMeshObjects.push_back(pDebugSphere_1);
+
+    pDebugSphere_2 = new cMeshObject();
+    pDebugSphere_2->meshName = "ISO_Sphere_1";
+    pDebugSphere_2->friendlyName = "Debug Sphere 2";
+    pDebugSphere_2->bUse_RGBA_colour = true;
+    pDebugSphere_2->RGBA_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    pDebugSphere_2->isWireframe = true;
+    pDebugSphere_2->scale = 1.0f;
+    pDebugSphere_2->bDoNotLight = true;
+    g_GraphicScene.vec_pMeshObjects.push_back(pDebugSphere_2);
+
+    pDebugSphere_3 = new cMeshObject();
+    pDebugSphere_3->meshName = "ISO_Sphere_1";
+    pDebugSphere_3->friendlyName = "Debug Sphere 3";
+    pDebugSphere_3->bUse_RGBA_colour = true;
+    pDebugSphere_3->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+    pDebugSphere_3->isWireframe = true;
+    pDebugSphere_3->scale = 1.0f;
+    pDebugSphere_3->bDoNotLight = true;
+    g_GraphicScene.vec_pMeshObjects.push_back(pDebugSphere_3);
+
+    pDebugSphere_4 = new cMeshObject();
+    pDebugSphere_4->meshName = "ISO_Sphere_1";
+    pDebugSphere_4->friendlyName = "Debug Sphere 4";
+    pDebugSphere_4->bUse_RGBA_colour = true;
+    pDebugSphere_4->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
+    pDebugSphere_4->isWireframe = true;
+    pDebugSphere_4->scale = 1.0f;
+    pDebugSphere_4->bDoNotLight = true;
+    g_GraphicScene.vec_pMeshObjects.push_back(pDebugSphere_4);
+
+    pDebugSphere_5 = new cMeshObject();
+    pDebugSphere_5->meshName = "ISO_Sphere_1";
+    pDebugSphere_5->friendlyName = "Debug Sphere 5";
+    pDebugSphere_5->bUse_RGBA_colour = true;
+    pDebugSphere_5->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
+    pDebugSphere_5->isWireframe = true;
+    pDebugSphere_5->scale = 1.0f;
+    pDebugSphere_5->bDoNotLight = true;
+    g_GraphicScene.vec_pMeshObjects.push_back(pDebugSphere_5);
+}
+
+void positioningRobots() {
+
+    for (int i = 0; i < g_GraphicScene.robotShepard.getRobotNumber(); i++) {
+        cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(i);
+        
+        float minDistance = 1000.f;
+        int triangleMinDistance = 0;
+        for (int j = 0; j < g_GraphicScene.trianglesCenter.size(); j++) {
+            float currentDistance = glm::distance(g_GraphicScene.trianglesCenter[j], currentRobot->position);
+            if (minDistance > currentDistance) {
+                minDistance = currentDistance;
+                triangleMinDistance = j;
+            }
+        }
+
+        currentRobot->position = g_GraphicScene.trianglesCenter[triangleMinDistance];
+    }
+}
+
+void calculateTrianglesCenter(cMeshObject* obj) {
+    g_GraphicScene.trianglesCenter.reserve(obj->numberOfTriangles);
+    sModelDrawInfo drawingInformation;
+    pVAOManager->FindDrawInfoByModelName(obj->meshName, drawingInformation);
+
+    for (int i = 0; i < obj->numberOfTriangles; i++) {        
+
+        glm::vec3 triangleCenter;
+        triangleCenter.x = (drawingInformation.pVertices[(int)obj->meshTriangles[i].x].x +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].y].x +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].z].x) / 3;
+
+        triangleCenter.y = drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y;
+
+        triangleCenter.z = (drawingInformation.pVertices[(int)obj->meshTriangles[i].x].z +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].y].z +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].z].z) / 3;
+
+        g_GraphicScene.trianglesCenter.push_back(triangleCenter);
+    }
+}
+
+int main(int argc, char* argv[]) {
     std::cout << "starting up..." << std::endl;
 
     GLFWwindow* window;
@@ -129,6 +269,8 @@ int main( int argc, char* argv[] ) {
     GLuint shaderID = 0;
     GLint vpos_location = 0;
     GLint vcol_location = 0;
+
+    pVAOManager = new cVAOManager();
 
     glfwSetErrorCallback(error_callback);
 
@@ -138,7 +280,7 @@ int main( int argc, char* argv[] ) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    window = glfwCreateWindow(640, 480, "Hello Kitty", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Random Game", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -159,7 +301,7 @@ int main( int argc, char* argv[] ) {
     //int* pX1 = &x;          // px1 = 7363
     //void* pZ = &x;         
     //pZ = RandomFloat;
-    
+
     // Create a shader thingy
     cShaderManager* pTheShaderManager = new cShaderManager();
 
@@ -169,7 +311,7 @@ int main( int argc, char* argv[] ) {
     vertexShader01.fileName = "assets/shaders/vertexShader01.glsl";
     fragmentShader01.fileName = "assets/shaders/fragmentShader01.glsl";
 
-    if ( ! pTheShaderManager->createProgramFromFile("Shader_1", vertexShader01, fragmentShader01) ) {
+    if (!pTheShaderManager->createProgramFromFile("Shader_1", vertexShader01, fragmentShader01)) {
         std::cout << "Didn't compile shaders" << std::endl;
         std::string theLastError = pTheShaderManager->getLastError();
         std::cout << "Because: " << theLastError << std::endl;
@@ -183,146 +325,40 @@ int main( int argc, char* argv[] ) {
     shaderID = pTheShaderManager->getIDFromFriendlyName("Shader_1");
     glUseProgram(shaderID);
 
-    ::g_pTheLightManager = new cLightManager();
-    cLightHelper* pLightHelper = new cLightHelper();
-
-    // Set up the uniform variable (from the shader
-    ::g_pTheLightManager->LoadLightUniformLocations(shaderID);
-    ::g_pTheLightManager->vecTheLights[0].position = glm::vec4(10.0f, 10.0f, 0.0f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[0].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[0].atten = glm::vec4(0.1f, 0.01f, 0.0000001f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[0].TurnOn();
-
-    // Make this a spot light
-    //    vec4 param1;	   x = lightType, y = inner angle, z = outer angle, w = TBD
-    //                     0 = pointlight
-    //                     1 = spot light
-    //                     2 = directional light
-    ::g_pTheLightManager->vecTheLights[0].param1.x = 1.0f;  // 1 means spot light
+    // Setting the lights
+    lightning(shaderID);
     
-    // In the shader Feeney gave you, the direciton is relative
-    ::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
-    // inner and outer angles
-    ::g_pTheLightManager->vecTheLights[0].param1.y = 10.0f;     // Degrees
-    ::g_pTheLightManager->vecTheLights[0].param1.z = 20.0f;     // Degrees
-
-
-    // Make light #2 a directional light
-    // BE CAREFUL about the direction and colour, since "colour" is really brightness.
-    // (i.e. there NO attenuation)
-    ::g_pTheLightManager->vecTheLights[1].param1.x = 2.0f;  // 2 means directional
-    // No position or attenuation
-    ::g_pTheLightManager->vecTheLights[1].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[1].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[1].TurnOn();
-
-    // BE CAREFUL about the direction and colour, since "colour" is really brightness.
-    // (i.e. there NO attenuation)
-    ::g_pTheLightManager->vecTheLights[1].param1.x = 0.0f;  // 2 means directional
-    // No position or attenuation
-    ::g_pTheLightManager->vecTheLights[1].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[1].position = glm::vec4(0.0f, 500.0f, 500.0f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[1].atten = glm::vec4(0.1f, 0.001f, 0.0000001f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[1].TurnOn();
-
-    // Load the models
-    cVAOManager* pVAOManager = new cVAOManager();
-
-    if ( ! LoadModelTypesIntoVAO("assets/PLYFilesToLoadIntoVAO.txt", pVAOManager, shaderID) ) {
+    if (!LoadModelTypesIntoVAO("assets/PLYFilesToLoadIntoVAO.txt", pVAOManager, shaderID)) {
         std::cout << "Error: Unable to load list of models to load into VAO file" << std::endl;
         // Do we exit here? 
         // (How do we clean up stuff we've made, etc.)
     }
 
-    cMeshObject* pBunnyObjectToDraw2 = new cMeshObject();
-    pBunnyObjectToDraw2->meshName = "Bunny";
-    pBunnyObjectToDraw2->position = glm::vec3(2.0f, -6.0f, 0.0f);
-    pBunnyObjectToDraw2->scale = 20.0f;
+    // Load the models
+    //creatingModelsProject();
+    creatingModelsMidterm();
 
-    cMeshObject* pTerrain = new cMeshObject();
-    pTerrain->meshName = "Terrain_midterm";     //  "Terrain";
-    pTerrain->friendlyName = "Terrain";
-    pTerrain->bUse_RGBA_colour = true;      // Use file colours
-    pTerrain->position = glm::vec3(0.0f, -25.0f, -50.0f);
-    pTerrain->isWireframe = false;
-       
-    std::vector< cMeshObject* > vec_pMeshObjects;
+    cMeshObject* terrain = g_GraphicScene.vec_pMeshObjects[g_GraphicScene.vec_pMeshObjects.size() - 1];
+    calculateTrianglesCenter(terrain);
 
-    vec_pMeshObjects.push_back(pBunnyObjectToDraw2);    // "Bunny"
-    vec_pMeshObjects.push_back(pTerrain);               // "MidTerm Terrain"
+    // Positioning Bunnies
+    positioningRobots();
 
-    pDebugSphere_1 = new cMeshObject();
-    pDebugSphere_1->meshName = "ISO_Sphere_1";
-    pDebugSphere_1->friendlyName = "Debug Sphere 1";
-    pDebugSphere_1->bUse_RGBA_colour = true;
-    pDebugSphere_1->RGBA_colour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    pDebugSphere_1->isWireframe = true;
-    pDebugSphere_1->scale = 1.0f;
-    pDebugSphere_1->bDoNotLight = true;
-    vec_pMeshObjects.push_back(pDebugSphere_1);
-
-    pDebugSphere_2 = new cMeshObject();
-    pDebugSphere_2->meshName = "ISO_Sphere_1";
-    pDebugSphere_2->friendlyName = "Debug Sphere 2";
-    pDebugSphere_2->bUse_RGBA_colour = true;
-    pDebugSphere_2->RGBA_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-    pDebugSphere_2->isWireframe = true;
-    pDebugSphere_2->scale = 1.0f;
-    pDebugSphere_2->bDoNotLight = true;
-    vec_pMeshObjects.push_back(pDebugSphere_2);
-
-    pDebugSphere_3 = new cMeshObject();
-    pDebugSphere_3->meshName = "ISO_Sphere_1";
-    pDebugSphere_3->friendlyName = "Debug Sphere 3";
-    pDebugSphere_3->bUse_RGBA_colour = true;
-    pDebugSphere_3->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-    pDebugSphere_3->isWireframe = true;
-    pDebugSphere_3->scale = 1.0f;
-    pDebugSphere_3->bDoNotLight = true;
-    vec_pMeshObjects.push_back(pDebugSphere_3);
-
-    pDebugSphere_4 = new cMeshObject();
-    pDebugSphere_4->meshName = "ISO_Sphere_1";
-    pDebugSphere_4->friendlyName = "Debug Sphere 4";
-    pDebugSphere_4->bUse_RGBA_colour = true;
-    pDebugSphere_4->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
-    pDebugSphere_4->isWireframe = true;
-    pDebugSphere_4->scale = 1.0f;
-    pDebugSphere_4->bDoNotLight = true;
-    vec_pMeshObjects.push_back(pDebugSphere_4);
-
-    pDebugSphere_5 = new cMeshObject();
-    pDebugSphere_5->meshName = "ISO_Sphere_1";
-    pDebugSphere_5->friendlyName = "Debug Sphere 5";
-    pDebugSphere_5->bUse_RGBA_colour = true;
-    pDebugSphere_5->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
-    pDebugSphere_5->isWireframe = true;
-    pDebugSphere_5->scale = 1.0f;
-    pDebugSphere_5->bDoNotLight = true;
-    vec_pMeshObjects.push_back(pDebugSphere_5);
+    debugLightSpheres();
 
     GLint mvp_location = glGetUniformLocation(shaderID, "MVP");       // program
-    GLint mModel_location = glGetUniformLocation(shaderID, "mModel");      
-    GLint mView_location = glGetUniformLocation(shaderID, "mView");      
-    GLint mProjection_location = glGetUniformLocation(shaderID, "mProjection");       
+    GLint mModel_location = glGetUniformLocation(shaderID, "mModel");
+    GLint mView_location = glGetUniformLocation(shaderID, "mView");
+    GLint mProjection_location = glGetUniformLocation(shaderID, "mProjection");
     // Need this for lighting
-    GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");      
+    GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");
 
-    while ( ! glfwWindowShouldClose(window) ) {
-        // HACK
-        // ::g_pTheLightManager->vecTheLights[0].position.x += 0.05f;
-
+    while (!glfwWindowShouldClose(window)) {
         ::g_pTheLightManager->CopyLightInformationToShader(shaderID);
 
-        //        glUniform4f(light_0_position_UL,
-        //                    lightPosition.x,
-        //                    lightPosition.y,
-        //                    lightPosition.z,
-        //                    1.0f);
-
-        // Point the spotlight at the Bunny 2
-        glm::vec3 LightToSubRay =
-            pBunnyObjectToDraw2->position - glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+        // Point the spotlight at the first Object Drawed
+        cMeshObject pFirstObject = *g_GraphicScene.vec_pMeshObjects[0];
+        glm::vec3 LightToSubRay = pFirstObject.position - glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
 
         // Normalizing is also just divide by the length of the ray
         // LightToSubRay /= glm::length(LightToSubRay);
@@ -330,14 +366,14 @@ int main( int argc, char* argv[] ) {
 
         //::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(LightToSubRay, 1.0f);
 
-        DrawConcentricDebugLightObjects();
+        DrawConcentricDebugLightObjects(0);
 
         float ratio;
         int width, height;
         //mat4x4 m, p, mvp;
         glm::mat4x4 matModel;
         glm::mat4x4 matProjection;
-        glm::mat4x4 matView; 
+        glm::mat4x4 matView;
 
         //glm::mat4x4 mvp;            // Model-View-Projection
 
@@ -354,22 +390,22 @@ int main( int argc, char* argv[] ) {
         glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
         matView = glm::lookAt(::g_cameraEye,
-                              ::g_cameraTarget,
-                              upVector);
+            ::g_cameraTarget,
+            upVector);
 
         // Pass eye location to the shader
         // uniform vec4 eyeLocation;
         GLint eyeLocation_UniLoc = glGetUniformLocation(shaderID, "eyeLocation");
 
         glUniform4f(eyeLocation_UniLoc,
-                    ::g_cameraEye.x, ::g_cameraEye.y, ::g_cameraEye.z, 1.0f);
-        
+            ::g_cameraEye.x, ::g_cameraEye.y, ::g_cameraEye.z, 1.0f);
+
         matProjection = glm::perspective(
             0.6f,       // Field of view (in degress, more or less 180)
             ratio,
             0.1f,       // Near plane (make this as LARGE as possible)
             10000.0f);   // Far plane (make this as SMALL as possible)
-                        // 6-8 digits of precision
+        // 6-8 digits of precision
 
         //    ____  _             _            __                           
         //   / ___|| |_ __ _ _ __| |_    ___  / _|  ___  ___ ___ _ __   ___ 
@@ -380,13 +416,13 @@ int main( int argc, char* argv[] ) {
         // We draw everything in our "scene"
         // In other words, go throug the vec_pMeshObjects container
         //  and draw each one of the objects 
-        for ( std::vector< cMeshObject* >::iterator itCurrentMesh = vec_pMeshObjects.begin(); 
-              itCurrentMesh != vec_pMeshObjects.end();
-              itCurrentMesh++ )
+        for (std::vector< cMeshObject* >::iterator itCurrentMesh = g_GraphicScene.vec_pMeshObjects.begin();
+            itCurrentMesh != g_GraphicScene.vec_pMeshObjects.end();
+            itCurrentMesh++)
         {
             cMeshObject* pCurrentMeshObject = *itCurrentMesh;        // * is the iterator access thing
 
-            if ( ! pCurrentMeshObject->bIsVisible )
+            if (!pCurrentMeshObject->bIsVisible)
             {
                 // Skip the rest of the loop
                 continue;
@@ -403,25 +439,25 @@ int main( int argc, char* argv[] ) {
 
             // Move the object 
             glm::mat4 matTranslation = glm::translate(glm::mat4(1.0f),
-                                                      pCurrentMeshObject->position);
+                pCurrentMeshObject->position);
 
             // Rotate the object
-            glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f), 
-                                                pCurrentMeshObject->rotation.z,                // Angle to rotate
-                                                glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
+            glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f),
+                pCurrentMeshObject->rotation.z,                // Angle to rotate
+                glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
 
-            glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f), 
-                                                pCurrentMeshObject->rotation.y,                // Angle to rotate
-                                                glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
+            glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f),
+                pCurrentMeshObject->rotation.y,                // Angle to rotate
+                glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
 
-            glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f), 
-                                                pCurrentMeshObject->rotation.x,                // Angle to rotate
-                                                glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
+            glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f),
+                pCurrentMeshObject->rotation.x,                // Angle to rotate
+                glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
 
             // Scale the object
             float uniformScale = pCurrentMeshObject->scale;
             glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-                                            glm::vec3(uniformScale, uniformScale, uniformScale));
+                glm::vec3(uniformScale, uniformScale, uniformScale));
 
             // Applying all these transformations to the MODEL 
             // (or "world" matrix)
@@ -436,18 +472,18 @@ int main( int argc, char* argv[] ) {
             glUniformMatrix4fv(mModel_location, 1, GL_FALSE, glm::value_ptr(matModel));
             glUniformMatrix4fv(mView_location, 1, GL_FALSE, glm::value_ptr(matView));
             glUniformMatrix4fv(mProjection_location, 1, GL_FALSE, glm::value_ptr(matProjection));
-            
+
             // Inverse transpose of a 4x4 matrix removes the right column and lower row
             // Leaving only the rotation (the upper left 3x3 matrix values)
             glm::mat4 mModelInverseTransform = glm::inverse(glm::transpose(matModel));
             glUniformMatrix4fv(mModelInverseTransform_location, 1, GL_FALSE, glm::value_ptr(mModelInverseTransform));
 
             // Wireframe
-            if ( pCurrentMeshObject->isWireframe ) {
+            if (pCurrentMeshObject->isWireframe) {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // GL_POINT, GL_LINE, GL_FILL
             }
             else {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
 
             // Setting the colour in the shader
@@ -456,16 +492,16 @@ int main( int argc, char* argv[] ) {
             GLint RGBA_Colour_ULocID = glGetUniformLocation(shaderID, "RGBA_Colour");
 
             glUniform4f(RGBA_Colour_ULocID,
-                        pCurrentMeshObject->RGBA_colour.r,
-                        pCurrentMeshObject->RGBA_colour.g,
-                        pCurrentMeshObject->RGBA_colour.b,
-                        pCurrentMeshObject->RGBA_colour.w);
+                pCurrentMeshObject->RGBA_colour.r,
+                pCurrentMeshObject->RGBA_colour.g,
+                pCurrentMeshObject->RGBA_colour.b,
+                pCurrentMeshObject->RGBA_colour.w);
 
 
             GLint bUseRGBA_Colour_ULocID = glGetUniformLocation(shaderID, "bUseRGBA_Colour");
 
-            if ( pCurrentMeshObject->bUse_RGBA_colour ) {
-                glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_TRUE );
+            if (pCurrentMeshObject->bUse_RGBA_colour) {
+                glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_TRUE);
             }
             else {
                 glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_FALSE);
@@ -474,8 +510,8 @@ int main( int argc, char* argv[] ) {
             //uniform bool bDoNotLight;	
             GLint bDoNotLight_Colour_ULocID = glGetUniformLocation(shaderID, "bDoNotLight");
 
-            if ( pCurrentMeshObject->bDoNotLight ) {
-                glUniform1f(bDoNotLight_Colour_ULocID, (GLfloat)GL_TRUE );
+            if (pCurrentMeshObject->bDoNotLight) {
+                glUniform1f(bDoNotLight_Colour_ULocID, (GLfloat)GL_TRUE);
             }
             else {
                 glUniform1f(bDoNotLight_Colour_ULocID, (GLfloat)GL_FALSE);
@@ -483,16 +519,15 @@ int main( int argc, char* argv[] ) {
 
             // Choose the VAO that has the model we want to draw...
             sModelDrawInfo drawingInformation;
-            if ( pVAOManager->FindDrawInfoByModelName(pCurrentMeshObject->meshName, drawingInformation) ) {
+            if (pVAOManager->FindDrawInfoByModelName(pCurrentMeshObject->meshName, drawingInformation)) {
                 glBindVertexArray(drawingInformation.VAO_ID);
 
-                glDrawElements(GL_TRIANGLES, 
-                               drawingInformation.numberOfIndices, 
-                               GL_UNSIGNED_INT,
-                               (void*) 0 );
+                glDrawElements(GL_TRIANGLES,
+                    drawingInformation.numberOfIndices,
+                    GL_UNSIGNED_INT,
+                    (void*)0);
 
                 glBindVertexArray(0);
-
             }
             else {
                 // Didn't find that model
@@ -507,7 +542,7 @@ int main( int argc, char* argv[] ) {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-        
+
         // Set the window title
         std::stringstream ssTitle;
         ssTitle << "Camera (x,y,z): "
@@ -523,7 +558,7 @@ int main( int argc, char* argv[] ) {
 
         std::string theText = ssTitle.str();
 
-        glfwSetWindowTitle(window, ssTitle.str().c_str() );
+        glfwSetWindowTitle(window, ssTitle.str().c_str());
     }
 
     // Get rid of stuff
@@ -536,18 +571,17 @@ int main( int argc, char* argv[] ) {
     exit(EXIT_SUCCESS);
 }
 
-void DrawConcentricDebugLightObjects(void)
-{
+void DrawConcentricDebugLightObjects(int currentLight) {
     extern bool bEnableDebugLightingObjects;
 
-    if ( ! bEnableDebugLightingObjects )
+    if (!bEnableDebugLightingObjects)
     {
         pDebugSphere_1->bIsVisible = false;
         pDebugSphere_2->bIsVisible = false;
         pDebugSphere_3->bIsVisible = false;
         pDebugSphere_4->bIsVisible = false;
         pDebugSphere_5->bIsVisible = false;
-       return;
+        return;
     }
 
     pDebugSphere_1->bIsVisible = true;
@@ -558,12 +592,12 @@ void DrawConcentricDebugLightObjects(void)
 
     cLightHelper theLightHelper;
 
-            // Move the debug sphere to where the light #0 is
-    pDebugSphere_1->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
-    pDebugSphere_2->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
-    pDebugSphere_3->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
-    pDebugSphere_4->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
-    pDebugSphere_5->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+    // Move the debug sphere to where the light #0 is
+    pDebugSphere_1->position = glm::vec3(::g_pTheLightManager->vecTheLights[currentLight].position);
+    pDebugSphere_2->position = glm::vec3(::g_pTheLightManager->vecTheLights[currentLight].position);
+    pDebugSphere_3->position = glm::vec3(::g_pTheLightManager->vecTheLights[currentLight].position);
+    pDebugSphere_4->position = glm::vec3(::g_pTheLightManager->vecTheLights[currentLight].position);
+    pDebugSphere_5->position = glm::vec3(::g_pTheLightManager->vecTheLights[currentLight].position);
 
     {
         // Draw a bunch of concentric spheres at various "brightnesses" 
@@ -571,12 +605,12 @@ void DrawConcentricDebugLightObjects(void)
             0.75f,  // 75%
             0.001f,
             100000.0f,
-            ::g_pTheLightManager->vecTheLights[0].atten.x,
-            ::g_pTheLightManager->vecTheLights[0].atten.y,
-            ::g_pTheLightManager->vecTheLights[0].atten.z);
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.x,
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.y,
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.z);
 
         pDebugSphere_2->scale = distance75percent;
-        pDebugSphere_2->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+        pDebugSphere_2->position = glm::vec3(::g_pTheLightManager->vecTheLights[currentLight].position);
     }
 
     {
@@ -585,12 +619,12 @@ void DrawConcentricDebugLightObjects(void)
             0.50f,  // 75%
             0.001f,
             100000.0f,
-            ::g_pTheLightManager->vecTheLights[0].atten.x,
-            ::g_pTheLightManager->vecTheLights[0].atten.y,
-            ::g_pTheLightManager->vecTheLights[0].atten.z);
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.x,
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.y,
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.z);
 
         pDebugSphere_3->scale = distance50percent;
-        pDebugSphere_3->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+        pDebugSphere_3->position = glm::vec3(::g_pTheLightManager->vecTheLights[currentLight].position);
     }
 
     {
@@ -599,12 +633,12 @@ void DrawConcentricDebugLightObjects(void)
             0.25f,  // 75%
             0.001f,
             100000.0f,
-            ::g_pTheLightManager->vecTheLights[0].atten.x,
-            ::g_pTheLightManager->vecTheLights[0].atten.y,
-            ::g_pTheLightManager->vecTheLights[0].atten.z);
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.x,
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.y,
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.z);
 
         pDebugSphere_4->scale = distance25percent;
-        pDebugSphere_4->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+        pDebugSphere_4->position = glm::vec3(::g_pTheLightManager->vecTheLights[currentLight].position);
     }
 
     {
@@ -613,12 +647,12 @@ void DrawConcentricDebugLightObjects(void)
             0.05f,  // 75%
             0.001f,
             100000.0f,
-            ::g_pTheLightManager->vecTheLights[0].atten.x,
-            ::g_pTheLightManager->vecTheLights[0].atten.y,
-            ::g_pTheLightManager->vecTheLights[0].atten.z);
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.x,
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.y,
+            ::g_pTheLightManager->vecTheLights[currentLight].atten.z);
 
         pDebugSphere_5->scale = distance5percent;
-        pDebugSphere_5->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+        pDebugSphere_5->position = glm::vec3(::g_pTheLightManager->vecTheLights[currentLight].position);
     }
     return;
 }

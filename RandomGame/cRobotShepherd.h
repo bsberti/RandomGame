@@ -28,9 +28,10 @@ public:
 
 	// Factory method
 	iRobot* makeRobot(void);
+	iRobot* getRobotFromIndex(int index);
 	//iRobot* makeRobot(std::string robotType);
 
-
+	int getRobotNumber();
 
 	// Commands that the robots can call to ask about things, 
 	//  like where my robots at? 

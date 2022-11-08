@@ -18,12 +18,19 @@ iRobot* cRobotShepherd::makeRobot(void) {
 	return pNewRobot;
 }
 
+iRobot* cRobotShepherd::getRobotFromIndex(int index) {
+	return (cRobot*)m_vecTheRobots[index];
+}
+
+int cRobotShepherd::getRobotNumber() {
+	return this->m_vecTheRobots.size();
+}
+
 iDamage* cRobotShepherd::findClosestRobot(iRobot* pMeWhosAsking) {
 	iDamage* pClosestRobot = NULL;
 	// Code to find closest robot
 	// I'm lazy so I'm going to just pick a random robot
 	pClosestRobot = (cRobot*)this->m_vecTheRobots[rand() % 8];
-
 
 	return pClosestRobot;
 }

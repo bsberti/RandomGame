@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <glm/glm.hpp>
 
 // Here's our new structure for the vertices (from October 24th and onward)
 // This is the layout that the vertex shaders are expecting
@@ -31,6 +33,7 @@ struct sModelDrawInfo {
 	unsigned int IndexBuffer_Start_Index;
 	unsigned int numberOfIndices;
 	unsigned int numberOfTriangles;
+	std::vector<glm::vec3> modelTriangles;
 
 	void CalculateExtents(void);
 

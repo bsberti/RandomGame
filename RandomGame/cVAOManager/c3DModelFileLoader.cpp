@@ -1,5 +1,5 @@
 #include "c3DModelFileLoader.h"
-
+#include <glm/glm.hpp>
 #include <fstream>
 
 bool c3DModelFileLoader::LoadPLYFile_Format_XYZ_N_RGBA_UV(std::string filename, 
@@ -107,10 +107,6 @@ bool c3DModelFileLoader::LoadPLYFile_Format_XYZ_N_RGBA_UV(std::string filename,
     }
 //    std::cout << "done" << std::endl;
 
-
-
-
-
     // Load the faces (or triangles)
     pTheModelTriangleArray = new sTrianglePLY[modelDrawInfo.numberOfTriangles];
 
@@ -123,6 +119,11 @@ bool c3DModelFileLoader::LoadPLYFile_Format_XYZ_N_RGBA_UV(std::string filename,
         theFile >> pTheModelTriangleArray[count].vertexIndices[0];
         theFile >> pTheModelTriangleArray[count].vertexIndices[1];
         theFile >> pTheModelTriangleArray[count].vertexIndices[2];
+
+        modelDrawInfo.modelTriangles.push_back(
+            glm::vec3(pTheModelTriangleArray[count].vertexIndices[0],
+                      pTheModelTriangleArray[count].vertexIndices[1],
+                      pTheModelTriangleArray[count].vertexIndices[2]));
     }
 
     theFile.close();

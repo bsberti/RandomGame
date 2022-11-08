@@ -33,38 +33,11 @@
     <Filter Include="ShaderManager">
       <UniqueIdentifier>{f54636df-4ef6-4c46-9a1d-890d440ab76a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{16f26662-29c8-4b28-a790-8e8ba61891d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\KeyboardCallbackFunctions.cpp">
-      <Filter>Callback Functions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cMeshObject.cpp">
-      <Filter>cMeshObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\globalThings.cpp">
-      <Filter>Global Stuff</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLight.cpp">
-      <Filter>Lights</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLightHelper.cpp">
-      <Filter>Lights</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLightManager.cpp">
-      <Filter>Lights</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\FunWithMaps.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\funWithVectors.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\theMainFunction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cVAOManager\cVAOManager.cpp">
       <Filter>VAOManager_FileLoading</Filter>
     </ClCompile>
@@ -86,26 +59,47 @@
     <ClCompile Include="GraphicScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="theMainFunction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FunWithMaps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="funWithVectors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cLight.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="cLightHelper.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="cLightManager.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardCallbackFunctions.cpp">
+      <Filter>Callback Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="cMeshObject.cpp">
+      <Filter>cMeshObject</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Global Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="globalThings.cpp">
+      <Filter>Global Stuff</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cMeshObject.h">
-      <Filter>cMeshObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\globalOpenGL.h">
-      <Filter>Global Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\globalThings.h">
-      <Filter>Global Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLight.h">
-      <Filter>Lights</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLightHelper.h">
-      <Filter>Lights</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Midterms\Engine Framework\ILoveOpenGL\ILoveOpenGL\cLightManager.h">
-      <Filter>Lights</Filter>
-    </ClInclude>
     <ClInclude Include="cVAOManager\sModelDrawInfo.h">
       <Filter>VAOManager_FileLoading</Filter>
     </ClInclude>
@@ -135,6 +129,33 @@
     </ClInclude>
     <ClInclude Include="GraphicScene.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="cMeshObject.h">
+      <Filter>cMeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="cLight.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="cLightHelper.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="cLightManager.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="globalThings.h">
+      <Filter>Global Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="globalOpenGL.h">
+      <Filter>Global Stuff</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
