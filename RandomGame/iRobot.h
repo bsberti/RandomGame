@@ -19,14 +19,10 @@ public:
 	// Called every frame
 	virtual void Update(double deltaTime) = 0;
 
-	// 
-	// FindTarget();
-	// ShootTarget();
-
 	virtual unsigned int getID(void) = 0;
+	virtual unsigned int getClosestRobotID(void) = 0;
+	virtual void setClosestRobotID(unsigned int id) = 0;
 
 };
-
-
 
 #endif 

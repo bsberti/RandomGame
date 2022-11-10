@@ -7,6 +7,7 @@
 //#include "cRobotShepherd.h"
 #include "iRobotInformant.h"
 #include "cMeshObject.h"
+#include "cWeapon.h"
 
 class cRobot :
 	public iRobot,		// This is "multiple inheritance"
@@ -14,6 +15,10 @@ class cRobot :
 	public cMeshObject
 {
 public:
+
+	
+
+
 
 	//	friend cRobotShepherd;
 	cRobot();
@@ -25,20 +30,29 @@ public:
 	// from the iDamage interface
 	virtual void TakeDamage(float amount);
 
-
+	bool haveLOS;
+	unsigned int pClosestRobotId;
 
 	// The Shepherd calls this
 	void SetRobotShepherd(iRobotInformant* pTheShepherd);
+	void ShootRobot(cRobot* robotToShoot);
+	void SetRobotWeapon(cWeapon* currWeapon);
 
-	void ShootRobot(void);
-
+	cWeapon* currentWeapon;
 
 	// From the iRobot interface
 	virtual void Update(double deltaTime);
-	virtual unsigned int getID(void)
-	{
+
+	virtual unsigned int getID(void) {
 		return this->m_ID;
 	}
+
+	virtual unsigned int getClosestRobotID(void) {
+		return pClosestRobotId;
+	}
+
+	virtual void setClosestRobotID(unsigned int id);
+
 private:
 	unsigned int m_ID;
 

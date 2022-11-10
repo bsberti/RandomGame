@@ -13,10 +13,12 @@ public:
 	// Commands that the robots can call to ask about things, 
 //  like where my robots at? 
 // Returns NULL (or 0 or nullptr) if there isn't any
-	virtual iDamage* findClosestRobot(iRobot* pMeWhosAsking) = 0;
+	//virtual iDamage* findClosestRobot(iRobot* pMeWhosAsking) = 0;
 
 	// Return true if I actually hit something... maybe
 	virtual bool ShootTheClosestRobot(iRobot* pMeWhosAsking, float amount) = 0;
 
+	virtual bool checkLOS(cRobot* robotA, cRobot* robotB);
 
+	virtual iRobot* getRobotFromIndex(int index);
 };

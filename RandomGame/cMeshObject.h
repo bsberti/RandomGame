@@ -24,6 +24,7 @@ public:
 	float scale;
 	bool isWireframe;		// false
 	unsigned int numberOfTriangles;
+	std::vector<glm::vec3> trianglesCenter;
 	std::vector<glm::vec3> meshTriangles;
 
 	glm::vec4 RGBA_colour;		// RGA & Alpha, 0,0,0,1 (black, with transparency of 1.0)

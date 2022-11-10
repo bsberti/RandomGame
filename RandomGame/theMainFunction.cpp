@@ -23,14 +23,24 @@
 #include "cVAOManager/cVAOManager.h"
 #include "cLightHelper.h"
 #include "cVAOManager/c3DModelFileLoader.h"
-
+#include "cWeapon.h"
 #include "GraphicScene.h"
 #include "cRobot.h"
 
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
+#include "ParticleSystem.h"
+#include "Particle.h"
+
 glm::vec3 g_cameraEye = glm::vec3(-75.0, 75.0, -500.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+
 cVAOManager* pVAOManager;
 GraphicScene g_GraphicScene;
+ParticleSystem g_ParticleSystem;
+
+GLFWwindow* window;
 
 int const NUMBER_ROBOTS = 10;
 
@@ -164,8 +174,8 @@ void creatingModelsMidterm() {
 
     std::cout << "robotShepard created: " << g_GraphicScene.robotShepard.getRobotNumber() << "Bunny Robots" << std::endl;
     
-    pVAOManager->FindDrawInfoByModelName("Terrain_midterm", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Terrain_midterm", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
+    pVAOManager->FindDrawInfoByModelName("Terrain_midterm2", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Terrain_midterm2", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
 }
 
 void debugLightSpheres() {
@@ -225,6 +235,9 @@ void positioningRobots() {
     for (int i = 0; i < g_GraphicScene.robotShepard.getRobotNumber(); i++) {
         cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(i);
         
+        // Set a new X and Z
+        currentRobot->position = glm::vec3(RandomFloat(-128, 128), -46.5f, RandomFloat(-128, 128));
+
         float minDistance = 1000.f;
         int triangleMinDistance = 0;
         for (int j = 0; j < g_GraphicScene.trianglesCenter.size(); j++) {
@@ -236,7 +249,56 @@ void positioningRobots() {
         }
 
         currentRobot->position = g_GraphicScene.trianglesCenter[triangleMinDistance];
+
+        currentRobot->currentWeapon->position = currentRobot->position;
+        currentRobot->currentWeapon->position.y += 10;
+
+        // Particle position = Object Position
+        currentRobot->currentWeapon->pPosition.x = currentRobot->currentWeapon->position.x;
+        currentRobot->currentWeapon->pPosition.y = currentRobot->currentWeapon->position.y;
+        currentRobot->currentWeapon->pPosition.z = currentRobot->currentWeapon->position.z;
+        
+        std::vector<int> testedIndexes;
+        testedIndexes.resize(0);
+        g_GraphicScene.robotShepard.SetClosestRobot(currentRobot, testedIndexes);
+        testedIndexes.push_back(currentRobot->getClosestRobotID());
     }
+
+    //for (int i = 0; i < g_GraphicScene.robotShepard.getRobotNumber(); i++) 
+    // {
+    //    cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(i);
+    //    do {
+    //        std::vector<int> testedIndexes;
+    //        testedIndexes.resize(0);
+    //        bool getOut = true;
+    //        do {
+    //            g_GraphicScene.robotShepard.SetClosestRobot(currentRobot, testedIndexes);
+    //            testedIndexes.push_back(currentRobot->getClosestRobotID());
+    //            currentRobot->haveLOS = g_GraphicScene.checkLOS(currentRobot);
+    //            getOut = (testedIndexes.size() < NUMBER_ROBOTS);
+    //            //std::cout << currentRobot. << std::endl;
+    //            std::cout << "Robot: " << currentRobot->getID() << " - " << (getOut ? (currentRobot->haveLOS ? "LOS TRUE!" : "LOS FALSE for ") : "LOS FALSE for ALL") << std::endl;
+    //        } while (!currentRobot->haveLOS && getOut);
+    //        // Set a new X and Z
+    //        currentRobot->position = glm::vec3(RandomFloat(-128, 128), -46.5f, RandomFloat(-128, 128));
+    //        float minDistance = 1000.f;
+    //        int triangleMinDistance = 0;
+    //        for (int j = 0; j < g_GraphicScene.trianglesCenter.size(); j++) {
+    //            float currentDistance = glm::distance(g_GraphicScene.trianglesCenter[j], currentRobot->position);
+    //            if (minDistance > currentDistance) {
+    //                minDistance = currentDistance;
+    //                triangleMinDistance = j;
+    //            }
+    //        }
+    //        currentRobot->position = g_GraphicScene.trianglesCenter[triangleMinDistance];
+    //        currentRobot->currentWeapon->position = currentRobot->position;
+    //        currentRobot->currentWeapon->position.y += 10;
+    //        // Particle position = Object Position
+    //        currentRobot->currentWeapon->pPosition.x = currentRobot->currentWeapon->position.x;
+    //        currentRobot->currentWeapon->pPosition.y = currentRobot->currentWeapon->position.y;
+    //        currentRobot->currentWeapon->pPosition.z = currentRobot->currentWeapon->position.z;
+    //    } while (!currentRobot->haveLOS);
+    // }
 }
 
 void calculateTrianglesCenter(cMeshObject* obj) {
@@ -245,26 +307,107 @@ void calculateTrianglesCenter(cMeshObject* obj) {
     pVAOManager->FindDrawInfoByModelName(obj->meshName, drawingInformation);
 
     for (int i = 0; i < obj->numberOfTriangles; i++) {        
+        glm::vec3 triangleCenter1;
+        glm::vec3 triangleCenter2;
+        /*if ((drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y ==
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].y].y) &&
+            (drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y ==
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].z].y)) {*/
+            
+            triangleCenter1.x = (
+                drawingInformation.pVertices[(int)obj->meshTriangles[i].x].x +
+                drawingInformation.pVertices[(int)obj->meshTriangles[i].y].x +
+                drawingInformation.pVertices[(int)obj->meshTriangles[i].z].x) / 3;
 
-        glm::vec3 triangleCenter;
-        triangleCenter.x = (drawingInformation.pVertices[(int)obj->meshTriangles[i].x].x +
-            drawingInformation.pVertices[(int)obj->meshTriangles[i].y].x +
-            drawingInformation.pVertices[(int)obj->meshTriangles[i].z].x) / 3;
+            //triangleCenter1.y = drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y;
 
-        triangleCenter.y = drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y;
+            triangleCenter1.y = (
+                drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y +
+                drawingInformation.pVertices[(int)obj->meshTriangles[i].y].y +
+                drawingInformation.pVertices[(int)obj->meshTriangles[i].z].y) / 3;
 
-        triangleCenter.z = (drawingInformation.pVertices[(int)obj->meshTriangles[i].x].z +
-            drawingInformation.pVertices[(int)obj->meshTriangles[i].y].z +
-            drawingInformation.pVertices[(int)obj->meshTriangles[i].z].z) / 3;
+            triangleCenter1.z = (
+                drawingInformation.pVertices[(int)obj->meshTriangles[i].x].z +
+                drawingInformation.pVertices[(int)obj->meshTriangles[i].y].z +
+                drawingInformation.pVertices[(int)obj->meshTriangles[i].z].z) / 3;
+        /*}*/
 
-        g_GraphicScene.trianglesCenter.push_back(triangleCenter);
+        g_GraphicScene.trianglesCenter.push_back(triangleCenter1);
+        obj->trianglesCenter.push_back(triangleCenter1);
     }
+}
+
+void creatingWeapons() {
+    for (int i = 0; i < g_GraphicScene.robotShepard.getRobotNumber(); i++) {
+        cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(i);
+        int randomWeaponIndex = (rand() % 3) + 1;
+        //std::string weaponName = "Weapon " + std::to_string(i + 1);
+
+        cWeapon* currentWeapon = new cWeapon();
+        g_ParticleSystem.AddParticle(currentWeapon);
+        currentWeapon->meshName = "ISO_Sphere_1";
+        
+        currentWeapon->bUse_RGBA_colour = true;
+        currentWeapon->isWireframe = false;
+        currentWeapon->scale = 1.0f;
+        currentWeapon->bDoNotLight = true;
+
+        switch (randomWeaponIndex) {
+        case 1:
+            //RED WEAPON = LOS WEAPON - LASER
+            currentWeapon->friendlyName = "Weapon 1";
+            currentWeapon->damage = 0.04f;
+            currentWeapon->SetWaponCD(1);
+            currentWeapon->RGBA_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+            break;
+        case 2:
+            //BLUE WEAPON = BALLISTIC WEAPON - BOMB
+            currentWeapon->friendlyName = "Weapon 2";
+            currentWeapon->damage = 0.25f;
+            currentWeapon->SetWaponCD(5);
+            currentWeapon->RGBA_colour = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+            break;
+        case 3:
+            //GREEN WEAPON = LOS WEAPON - BULLET
+            currentWeapon->friendlyName = "Weapon 3";
+            currentWeapon->damage = 0.02f;
+            currentWeapon->SetWaponCD(0);
+            currentWeapon->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+            break;
+        case 4:
+            //GREEN WEAPON = ROCKET!
+            currentWeapon->friendlyName = "Weapon 4";
+            currentWeapon->damage = 1.0f;
+            currentWeapon->SetWaponCD(10);
+            currentWeapon->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+            break;
+        }
+
+        currentRobot->SetRobotWeapon(currentWeapon);
+        g_GraphicScene.vec_pMeshObjects.push_back(currentWeapon);
+        
+    }
+}
+
+int iniciatingUI() {
+    //initialize imgui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+
+    //platform / render bindings
+    if (!ImGui_ImplGlfw_InitForOpenGL(window, true) || !ImGui_ImplOpenGL3_Init("#version 460"))
+        return 3;
+
+    //imgui style (dark mode for the win)
+    ImGui::StyleColorsDark();
+
+    return 0;
 }
 
 int main(int argc, char* argv[]) {
     std::cout << "starting up..." << std::endl;
 
-    GLFWwindow* window;
     GLuint vertex_buffer = 0;
     GLuint shaderID = 0;
     GLint vpos_location = 0;
@@ -288,6 +431,10 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << "Window created." << std::endl;
+
+    if (iniciatingUI() != 0) {
+        // error
+    }
 
     glfwSetKeyCallback(window, key_callback);
 
@@ -341,6 +488,8 @@ int main(int argc, char* argv[]) {
     cMeshObject* terrain = g_GraphicScene.vec_pMeshObjects[g_GraphicScene.vec_pMeshObjects.size() - 1];
     calculateTrianglesCenter(terrain);
 
+    creatingWeapons();
+
     // Positioning Bunnies
     positioningRobots();
 
@@ -386,7 +535,6 @@ int main(int argc, char* argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //glClear(GL_COLOR_BUFFER_BIT);
 
-
         glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
         matView = glm::lookAt(::g_cameraEye,
@@ -405,7 +553,7 @@ int main(int argc, char* argv[]) {
             ratio,
             0.1f,       // Near plane (make this as LARGE as possible)
             10000.0f);   // Far plane (make this as SMALL as possible)
-        // 6-8 digits of precision
+        // 6-8 digits of precision        
 
         //    ____  _             _            __                           
         //   / ___|| |_ __ _ _ __| |_    ___  / _|  ___  ___ ___ _ __   ___ 
@@ -557,6 +705,18 @@ int main(int argc, char* argv[]) {
             << " quad: " << ::g_pTheLightManager->vecTheLights[0].atten.z;
 
         std::string theText = ssTitle.str();
+
+        // Physics Update
+        g_ParticleSystem.Integrate(1.f);
+
+        for (int i = 0; i < g_GraphicScene.robotShepard.getRobotNumber(); i++) {
+            cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(i);
+            
+            // Object position = Particle Position
+            currentRobot->currentWeapon->position.x = currentRobot->currentWeapon->pPosition.x;
+            currentRobot->currentWeapon->position.y = currentRobot->currentWeapon->pPosition.y;
+            currentRobot->currentWeapon->position.z = currentRobot->currentWeapon->pPosition.z;
+        }
 
         glfwSetWindowTitle(window, ssTitle.str().c_str());
     }

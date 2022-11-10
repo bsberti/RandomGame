@@ -1,6 +1,7 @@
 #pragma once
 
 #include "iRobot.h"
+#include "cRobot.h"
 #include "iRobotInformant.h"
 #include <vector>
 
@@ -29,31 +30,27 @@ public:
 	// Factory method
 	iRobot* makeRobot(void);
 	iRobot* getRobotFromIndex(int index);
-	//iRobot* makeRobot(std::string robotType);
 
 	int getRobotNumber();
 
+	void setTerrain(cMeshObject* terrain) {
+		this->terrain = terrain;
+	};
+
 	// Commands that the robots can call to ask about things, 
 	//  like where my robots at? 
-	// Returns NULL (or 0 or nullptr) if there isn't any
-	//iRobot* findClosestRobot(iRobot* pMeWhosAsking);
-	iDamage* findClosestRobot(iRobot* pMeWhosAsking);
+	void SetClosestRobot(cRobot* pMeWhosAsking, std::vector<int> outIndexes);
 
 	// Return true if I actually hit something... maybe
 	bool ShootTheClosestRobot(iRobot* pMeWhosAsking, float amount);
 
-	// Type of mediator method
-	sMessage DoSomething(iRobot* pWhosCalling, sMessage theMessage);
-
-
-
-	// or you could do this, where returning false means there isn't one
-//	bool findClosestRobot(iRobot* pMeWhosAsking, iRobot* &pClosestRobot);
+	// Return true if A can shot laser or bullets at B
+	bool checkLOS(cRobot* robotA, cRobot* robotB);
 
 	// Calls update on all the robots
 	void Update(double deltaTime);
 
 private:
-	std::vector<iRobot*> m_vecTheRobots;
-
+	std::vector<cRobot*> m_vecTheRobots;
+	cMeshObject* terrain;
 };

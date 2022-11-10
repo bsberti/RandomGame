@@ -4,7 +4,7 @@
 //#define PRINT_DEBUG_INFO
 
 Particle::Particle()
-	: position(0.0f)
+	: pPosition(0.0f)
 	, velocity(0.0f)
 	, acceleration(0.0f)
 	, damping(1.0f)
@@ -48,8 +48,8 @@ void Particle::PrintInfo() {
 }
 
 void Particle::Integrate(float dt) {
-	if (age <= 0.f)
-		return;
+	/*if (age <= 0.f)
+		return;*/
 
 	if (invMass <= 0)
 		return;
@@ -58,17 +58,24 @@ void Particle::Integrate(float dt) {
 
 	velocity.addScaledVector(acceleration, dt);
 	velocity *= damping;
-	position.addScaledVector(velocity, dt);
-	if (position.y < 0) {
-		position.y = 0;
+	pPosition.addScaledVector(velocity, dt);
+	/*if (pPosition.y < 0) {
+		pPosition.y = 0;
 		velocity *= 0;
-	}
+	}*/
 
 	age -= dt;
 	PrintInfo();
+	/*std::cout << "-----------------\n";
+	std::cout << "Velocity(" << velocity.x << ", " << velocity.y << ", " << velocity.z << ")\n";
+	std::cout << "Position(" << pPosition.x << ", " << pPosition.y << ", " << pPosition.z << ")\n";*/
+
 }
 
 void Particle::ApplyForce(const Vector3& direction) {
+	std::cout << "force applied (x: " << direction.x <<
+		", y: " << direction.y <<
+		", z: " << direction.z << ")" << std::endl;
 	force += direction;
 }
 

@@ -22,6 +22,11 @@ void ParticleSystem::GenerateParticles(unsigned int count) {
 	m_Particles.resize(count);
 }
 
+void ParticleSystem::AddParticle(Particle* newParticle) {
+	newParticle->age = 100;
+	this->m_Particles.push_back(newParticle);
+}
+
 Particle* ParticleSystem::CreateParticle(float age) {
 	Particle* newParticle = new Particle();
 	newParticle->age = age;
@@ -78,9 +83,7 @@ void ParticleSystem::Integrate(float duration) {
 
 	for (int i = 0; i < m_Particles.size(); i++) {
 		Particle* p = m_Particles[i];
-		if (p->age > 0.f) {
-			p->Integrate(duration);
-		}
+		p->Integrate(duration);
 	}
 
 	for (int i = 0; i < m_Particles.size(); i++) {

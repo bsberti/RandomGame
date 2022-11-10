@@ -10,7 +10,7 @@ public:
 	Particle(const Particle& particle);
 	Particle operator=(const Particle& particle);
 
-	Vector3 position;
+	Vector3 pPosition;
 	Vector3 velocity;
 	Vector3 acceleration;
 	Vector3 force;

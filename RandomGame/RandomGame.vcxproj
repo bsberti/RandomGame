@@ -112,6 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +146,13 @@
     <ClCompile Include="funWithVectors.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="globalThings.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="imgui\imgui_tables.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="KeyboardCallbackFunctions.cpp" />
     <ClCompile Include="cRobot.cpp" />
     <ClCompile Include="cRobotShepherd.cpp" />
@@ -162,6 +170,8 @@
     <ClInclude Include="cLight.h" />
     <ClInclude Include="cLightHelper.h" />
     <ClInclude Include="cLightManager.h" />
+    <ClInclude Include="cRandomUI.h" />
+    <ClInclude Include="cWeapon.h" />
     <ClInclude Include="globalOpenGL.h" />
     <ClInclude Include="globalThings.h" />
     <ClInclude Include="cMeshObject.h" />
@@ -173,6 +183,16 @@
     <ClInclude Include="cVAOManager\sModelDrawInfo.h" />
     <ClInclude Include="GraphicScene.h" />
     <ClInclude Include="iDamage.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imstb_textedit.h" />
+    <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="iObject.h" />
     <ClInclude Include="iRobot.h" />
     <ClInclude Include="iRobotInformant.h" />
     <ClInclude Include="Particle.h" />
