@@ -3,11 +3,13 @@
 
 #include <glm/glm.hpp>
 #include <glm/vec4.hpp>
+#include <string>
 
 class cLight
 {
 public:
 	cLight();
+	std::string name;
 	glm::vec4 position;
 	glm::vec4 diffuse;
 	glm::vec4 specular;	// rgb = highlight colour, w = power

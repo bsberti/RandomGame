@@ -23,26 +23,29 @@
 #include "cVAOManager/cVAOManager.h"
 #include "cLightHelper.h"
 #include "cVAOManager/c3DModelFileLoader.h"
-#include "cWeapon.h"
 #include "GraphicScene.h"
-#include "cRobot.h"
-
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
-
 #include "ParticleSystem.h"
 #include "Particle.h"
 
-glm::vec3 g_cameraEye = glm::vec3(-75.0, 75.0, -500.0f);
+#include "cRandomUI.h"
+
+glm::vec3 g_cameraEye = glm::vec3(-185.0f, 315.0, 360.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
 cVAOManager* pVAOManager;
 GraphicScene g_GraphicScene;
-ParticleSystem g_ParticleSystem;
-
 GLFWwindow* window;
+cRandomUI gameUi;
 
-int const NUMBER_ROBOTS = 10;
+glm::vec3 DirectionToGoal;
+glm::vec3 pirateCurrPosition;
+glm::vec3 pirateStartPosition;
+glm::vec3 pirateFinalPosition;
+
+glm::vec3 pirateLight1FinalPosition;
+glm::vec3 pirateLight2FinalPosition;
+glm::vec3 light1OffsetPosition;
+glm::vec3 light2OffsetPosition;
 
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -141,41 +144,139 @@ void lightning(GLuint shaderID) {
     ::g_pTheLightManager = new cLightManager();
     cLightHelper* pLightHelper = new cLightHelper();
 
-    ::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(-75.0f, 400.0f, -75.0f, 0.0f));
-    ::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(-75.0f, 400.0f, 75.0f, 0.0f));
-    ::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(75.0f, 400.0f, -75.0f, 0.0f));
-    ::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(75.0f, 400.0f, 75.0f, 0.0f));
-    //::g_pTheLightManager->CreateBasicLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.5f));
+    ::g_pTheLightManager->CreateBasicDirecLight(shaderID, glm::vec4(-75.0f, 400.0f, -75.0f, 0.0f));
+    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(-75.0f, 400.0f, 75.0f, 0.0f));
+    
+    //Structures
+    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.0f));
+    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.0f));
+    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.0f));
+    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.0f));
+    
+    //Pirates
+    glm::vec4 light1StartPosition;
+    light1StartPosition.x = pirateStartPosition.x + light1OffsetPosition.x;
+    light1StartPosition.y = pirateStartPosition.y + light1OffsetPosition.y;
+    light1StartPosition.z = pirateStartPosition.z + light1OffsetPosition.z;
+    light1StartPosition.w = 0.0f;
 
-}
+    glm::vec4 light2StartPosition;
+    light2StartPosition.x = pirateStartPosition.x + light2OffsetPosition.x;
+    light2StartPosition.y = pirateStartPosition.y + light2OffsetPosition.y;
+    light2StartPosition.z = pirateStartPosition.z + light2OffsetPosition.z;
+    light2StartPosition.w = 1.0f;
+    std::cout << "light1StartPosition(x: " << light1StartPosition.x <<
+        ", y: " << light1StartPosition.y <<
+        ", z: " << light1StartPosition.z << ")" << std::endl;
+    std::cout << "light2StartPosition(x: " << light2StartPosition.x <<
+        ", y: " << light2StartPosition.y <<
+        ", z: " << light2StartPosition.z << ")" << std::endl;
+    ::g_pTheLightManager->CreateBasicPointLight(shaderID, light1StartPosition);
+    ::g_pTheLightManager->CreateBasicPointLight(shaderID, light2StartPosition);
 
-void creatingModelsProject() {
-
-    //g_GraphicScene.CreateGameObjectByType("Bunny", glm::vec3(2.0f, -46.5f, -30.0f));
-    //g_GraphicScene.CreateGameObjectByType("Cabin", glm::vec3(-41.0f, -41.0f, -17.0f));
-
-    //for (int i = 0; i < 10; i++) {
-    //    g_GraphicScene.CreateGameObjectByType("Tree1", glm::vec3(RandomFloat(-100, 100), RandomFloat(-35, -37), RandomFloat(-100, 100)));
-    //    g_GraphicScene.CreateGameObjectByType("Tree2", glm::vec3(RandomFloat(-100, 100), RandomFloat(-35, -37), RandomFloat(-100, 100)));
-    //    g_GraphicScene.CreateGameObjectByType("Rock4", glm::vec3(RandomFloat(-100, 100), RandomFloat(-40, -42), RandomFloat(-100, 100)));
-    //}
-
-    //g_GraphicScene.CreateGameObjectByType("Terrain_Florest", glm::vec3(0.0f, -50.0f, 0.0f));
 }
 
 void creatingModelsMidterm() {
 
     sModelDrawInfo drawingInformation;
 
-    for (int i = 0; i < NUMBER_ROBOTS; i++) {
-        pVAOManager->FindDrawInfoByModelName("Bunny", drawingInformation);
-        g_GraphicScene.CreateGameObjectByType("Bunny", glm::vec3(RandomFloat(-128, 128), -46.5f, RandomFloat(-128, 128)), drawingInformation);
+    pVAOManager->FindDrawInfoByModelName("Island", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Island", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
+
+    pVAOManager->FindDrawInfoByModelName("Lighthouse", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Lighthouse", glm::vec3(18.024f, 65.868f, 0.0f), drawingInformation);
+
+    pVAOManager->FindDrawInfoByModelName("Old_House", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Old_House", glm::vec3(-65.868f, 0.0f, 89.881f), drawingInformation);
+
+    {
+        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-112.212f, 23.102f, -33.003f), drawingInformation);
+    
+        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-112.200f, 23.102f, 15.885f), drawingInformation);
+
+        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-112.190f, 23.102f, 30.23f), drawingInformation);
+
+        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-100.212f, 23.102f, 45.003f), drawingInformation);
+
     }
 
-    std::cout << "robotShepard created: " << g_GraphicScene.robotShepard.getRobotNumber() << "Bunny Robots" << std::endl;
-    
-    pVAOManager->FindDrawInfoByModelName("Terrain_midterm2", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Terrain_midterm2", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
+    pVAOManager->FindDrawInfoByModelName("Sky_Pirate", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Sky_Pirate", pirateStartPosition, drawingInformation);
+
+    pVAOManager->FindDrawInfoByModelName("Factory", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Factory", glm::vec3(2.444f, 86.888f, -39.715f), drawingInformation);
+
+    pVAOManager->FindDrawInfoByModelName("Tree1", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Tree1", glm::vec3(-33.126f, 21.739f, 65.597f), drawingInformation);
+
+    pVAOManager->FindDrawInfoByModelName("Tree2", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Tree2", glm::vec3(7.246f, 44.513f, 45.929f), drawingInformation);
+
+    pVAOManager->FindDrawInfoByModelName("Trees", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Trees", glm::vec3(-4.141f, 38.303f, 39.718f), drawingInformation);
+
+    pVAOManager->FindDrawInfoByModelName("Wood_House", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Wood_House", glm::vec3(-19.668f, 45.550f, 8.662f), drawingInformation);
+
+}
+
+void pirateUpdate() {
+    //cMeshObject* pirates = g_GraphicScene.vec_pMeshObjects[7];
+    float distance = glm::distance(pirateCurrPosition, pirateFinalPosition);
+    if (distance > 5.0f) {
+        g_GraphicScene.vec_pMeshObjects[7]->position += DirectionToGoal;
+        pirateCurrPosition = g_GraphicScene.vec_pMeshObjects[7]->position;
+
+        /*std::cout << "Pirate pos (x: " << pirateCurrPosition.x << 
+           ", y: " << pirateCurrPosition.y <<  
+           ", z: " << pirateCurrPosition.z << std::endl;*/
+
+        glm::vec4 vec4Direction;
+        vec4Direction.x = DirectionToGoal.x;
+        vec4Direction.y = DirectionToGoal.y;
+        vec4Direction.z = DirectionToGoal.z;
+        vec4Direction.w = 0.0f;
+
+        ::g_pTheLightManager->vecTheLights[6].position += vec4Direction;
+        ::g_pTheLightManager->vecTheLights[7].position += vec4Direction;
+
+        /*std::cout << "Light7 pos (x: " << ::g_pTheLightManager->vecTheLights[6].position.x <<
+            ", y: " << ::g_pTheLightManager->vecTheLights[6].position.y <<
+            ", z: " << ::g_pTheLightManager->vecTheLights[6].position.z << std::endl;
+
+        std::cout << "Light8 pos (x: " << ::g_pTheLightManager->vecTheLights[7].position.x <<
+            ", y: " << ::g_pTheLightManager->vecTheLights[7].position.y <<
+            ", z: " << ::g_pTheLightManager->vecTheLights[7].position.z << std::endl;*/
+    }
+    else {
+        g_GraphicScene.pirateShow = false;
+    }
+}
+
+void pirateUpdate2() {
+    //cMeshObject* pirates = g_GraphicScene.vec_pMeshObjects[7];
+    float distance = glm::distance(pirateCurrPosition, pirateFinalPosition);
+    std::cout << "distance is " << distance << std::endl;
+    if (distance < 500.0f) {
+        g_GraphicScene.vec_pMeshObjects[7]->position += DirectionToGoal;
+        pirateCurrPosition = g_GraphicScene.vec_pMeshObjects[7]->position;
+
+        glm::vec4 vec4Direction;
+        vec4Direction.x = DirectionToGoal.x;
+        vec4Direction.y = DirectionToGoal.y;
+        vec4Direction.z = DirectionToGoal.z;
+        vec4Direction.w = 0.0f;
+
+        ::g_pTheLightManager->vecTheLights[6].position += vec4Direction;
+        ::g_pTheLightManager->vecTheLights[7].position += vec4Direction;
+    }
+    else {
+        g_GraphicScene.pirateShow = false;
+    }
 }
 
 void debugLightSpheres() {
@@ -230,77 +331,6 @@ void debugLightSpheres() {
     g_GraphicScene.vec_pMeshObjects.push_back(pDebugSphere_5);
 }
 
-void positioningRobots() {
-
-    for (int i = 0; i < g_GraphicScene.robotShepard.getRobotNumber(); i++) {
-        cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(i);
-        
-        // Set a new X and Z
-        currentRobot->position = glm::vec3(RandomFloat(-128, 128), -46.5f, RandomFloat(-128, 128));
-
-        float minDistance = 1000.f;
-        int triangleMinDistance = 0;
-        for (int j = 0; j < g_GraphicScene.trianglesCenter.size(); j++) {
-            float currentDistance = glm::distance(g_GraphicScene.trianglesCenter[j], currentRobot->position);
-            if (minDistance > currentDistance) {
-                minDistance = currentDistance;
-                triangleMinDistance = j;
-            }
-        }
-
-        currentRobot->position = g_GraphicScene.trianglesCenter[triangleMinDistance];
-
-        currentRobot->currentWeapon->position = currentRobot->position;
-        currentRobot->currentWeapon->position.y += 10;
-
-        // Particle position = Object Position
-        currentRobot->currentWeapon->pPosition.x = currentRobot->currentWeapon->position.x;
-        currentRobot->currentWeapon->pPosition.y = currentRobot->currentWeapon->position.y;
-        currentRobot->currentWeapon->pPosition.z = currentRobot->currentWeapon->position.z;
-        
-        std::vector<int> testedIndexes;
-        testedIndexes.resize(0);
-        g_GraphicScene.robotShepard.SetClosestRobot(currentRobot, testedIndexes);
-        testedIndexes.push_back(currentRobot->getClosestRobotID());
-    }
-
-    //for (int i = 0; i < g_GraphicScene.robotShepard.getRobotNumber(); i++) 
-    // {
-    //    cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(i);
-    //    do {
-    //        std::vector<int> testedIndexes;
-    //        testedIndexes.resize(0);
-    //        bool getOut = true;
-    //        do {
-    //            g_GraphicScene.robotShepard.SetClosestRobot(currentRobot, testedIndexes);
-    //            testedIndexes.push_back(currentRobot->getClosestRobotID());
-    //            currentRobot->haveLOS = g_GraphicScene.checkLOS(currentRobot);
-    //            getOut = (testedIndexes.size() < NUMBER_ROBOTS);
-    //            //std::cout << currentRobot. << std::endl;
-    //            std::cout << "Robot: " << currentRobot->getID() << " - " << (getOut ? (currentRobot->haveLOS ? "LOS TRUE!" : "LOS FALSE for ") : "LOS FALSE for ALL") << std::endl;
-    //        } while (!currentRobot->haveLOS && getOut);
-    //        // Set a new X and Z
-    //        currentRobot->position = glm::vec3(RandomFloat(-128, 128), -46.5f, RandomFloat(-128, 128));
-    //        float minDistance = 1000.f;
-    //        int triangleMinDistance = 0;
-    //        for (int j = 0; j < g_GraphicScene.trianglesCenter.size(); j++) {
-    //            float currentDistance = glm::distance(g_GraphicScene.trianglesCenter[j], currentRobot->position);
-    //            if (minDistance > currentDistance) {
-    //                minDistance = currentDistance;
-    //                triangleMinDistance = j;
-    //            }
-    //        }
-    //        currentRobot->position = g_GraphicScene.trianglesCenter[triangleMinDistance];
-    //        currentRobot->currentWeapon->position = currentRobot->position;
-    //        currentRobot->currentWeapon->position.y += 10;
-    //        // Particle position = Object Position
-    //        currentRobot->currentWeapon->pPosition.x = currentRobot->currentWeapon->position.x;
-    //        currentRobot->currentWeapon->pPosition.y = currentRobot->currentWeapon->position.y;
-    //        currentRobot->currentWeapon->pPosition.z = currentRobot->currentWeapon->position.z;
-    //    } while (!currentRobot->haveLOS);
-    // }
-}
-
 void calculateTrianglesCenter(cMeshObject* obj) {
     g_GraphicScene.trianglesCenter.reserve(obj->numberOfTriangles);
     sModelDrawInfo drawingInformation;
@@ -337,74 +367,6 @@ void calculateTrianglesCenter(cMeshObject* obj) {
     }
 }
 
-void creatingWeapons() {
-    for (int i = 0; i < g_GraphicScene.robotShepard.getRobotNumber(); i++) {
-        cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(i);
-        int randomWeaponIndex = (rand() % 3) + 1;
-        //std::string weaponName = "Weapon " + std::to_string(i + 1);
-
-        cWeapon* currentWeapon = new cWeapon();
-        g_ParticleSystem.AddParticle(currentWeapon);
-        currentWeapon->meshName = "ISO_Sphere_1";
-        
-        currentWeapon->bUse_RGBA_colour = true;
-        currentWeapon->isWireframe = false;
-        currentWeapon->scale = 1.0f;
-        currentWeapon->bDoNotLight = true;
-
-        switch (randomWeaponIndex) {
-        case 1:
-            //RED WEAPON = LOS WEAPON - LASER
-            currentWeapon->friendlyName = "Weapon 1";
-            currentWeapon->damage = 0.04f;
-            currentWeapon->SetWaponCD(1);
-            currentWeapon->RGBA_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-            break;
-        case 2:
-            //BLUE WEAPON = BALLISTIC WEAPON - BOMB
-            currentWeapon->friendlyName = "Weapon 2";
-            currentWeapon->damage = 0.25f;
-            currentWeapon->SetWaponCD(5);
-            currentWeapon->RGBA_colour = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-            break;
-        case 3:
-            //GREEN WEAPON = LOS WEAPON - BULLET
-            currentWeapon->friendlyName = "Weapon 3";
-            currentWeapon->damage = 0.02f;
-            currentWeapon->SetWaponCD(0);
-            currentWeapon->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-            break;
-        case 4:
-            //GREEN WEAPON = ROCKET!
-            currentWeapon->friendlyName = "Weapon 4";
-            currentWeapon->damage = 1.0f;
-            currentWeapon->SetWaponCD(10);
-            currentWeapon->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-            break;
-        }
-
-        currentRobot->SetRobotWeapon(currentWeapon);
-        g_GraphicScene.vec_pMeshObjects.push_back(currentWeapon);
-        
-    }
-}
-
-int iniciatingUI() {
-    //initialize imgui
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-
-    //platform / render bindings
-    if (!ImGui_ImplGlfw_InitForOpenGL(window, true) || !ImGui_ImplOpenGL3_Init("#version 460"))
-        return 3;
-
-    //imgui style (dark mode for the win)
-    ImGui::StyleColorsDark();
-
-    return 0;
-}
-
 int main(int argc, char* argv[]) {
     std::cout << "starting up..." << std::endl;
 
@@ -412,6 +374,20 @@ int main(int argc, char* argv[]) {
     GLuint shaderID = 0;
     GLint vpos_location = 0;
     GLint vcol_location = 0;
+    
+    pirateStartPosition = glm::vec3(-96.350f, 113.343f, -246.278f);
+    pirateFinalPosition = glm::vec3(-6.350f, 113.343f, -46.278f);
+    pirateCurrPosition = pirateStartPosition;
+
+    pirateLight1FinalPosition = glm::vec3(-6.849f, 116.438f, -41.096f);
+    pirateLight2FinalPosition = glm::vec3(-13.698f, 118.949f, -56.963f);
+
+    light1OffsetPosition = pirateFinalPosition - pirateLight1FinalPosition;
+    light2OffsetPosition = pirateFinalPosition - pirateLight2FinalPosition;
+
+    glm::vec3 GoalVector = pirateFinalPosition - pirateStartPosition;
+    DirectionToGoal = glm::normalize(GoalVector);
+    DirectionToGoal /= 5;
 
     pVAOManager = new cVAOManager();
 
@@ -423,7 +399,7 @@ int main(int argc, char* argv[]) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    window = glfwCreateWindow(640, 480, "Random Game", NULL, NULL);
+    window = glfwCreateWindow(1024, 768, "Random Game", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -432,15 +408,13 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Window created." << std::endl;
 
-    if (iniciatingUI() != 0) {
-        // error
-    }
-
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
+
+    gameUi.iniciatingUI();
 
     // NOTE: OpenGL error checks have been omitted for brevity
     //int x = 9;              // Location 7363
@@ -474,6 +448,9 @@ int main(int argc, char* argv[]) {
 
     // Setting the lights
     lightning(shaderID);
+
+    //DaylightScene();
+    //NightlightScene();
     
     if (!LoadModelTypesIntoVAO("assets/PLYFilesToLoadIntoVAO.txt", pVAOManager, shaderID)) {
         std::cout << "Error: Unable to load list of models to load into VAO file" << std::endl;
@@ -487,11 +464,6 @@ int main(int argc, char* argv[]) {
 
     cMeshObject* terrain = g_GraphicScene.vec_pMeshObjects[g_GraphicScene.vec_pMeshObjects.size() - 1];
     calculateTrianglesCenter(terrain);
-
-    creatingWeapons();
-
-    // Positioning Bunnies
-    positioningRobots();
 
     debugLightSpheres();
 
@@ -507,7 +479,7 @@ int main(int argc, char* argv[]) {
 
         // Point the spotlight at the first Object Drawed
         cMeshObject pFirstObject = *g_GraphicScene.vec_pMeshObjects[0];
-        glm::vec3 LightToSubRay = pFirstObject.position - glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+        glm::vec3 LightToSubRay = pFirstObject.position - glm::vec3(::g_pTheLightManager->vecTheLights[1].position);
 
         // Normalizing is also just divide by the length of the ray
         // LightToSubRay /= glm::length(LightToSubRay);
@@ -515,7 +487,21 @@ int main(int argc, char* argv[]) {
 
         //::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(LightToSubRay, 1.0f);
 
-        DrawConcentricDebugLightObjects(0);
+        DrawConcentricDebugLightObjects(gameUi.listbox_lights_current);
+
+        if (g_GraphicScene.pirateShow && !g_GraphicScene.pirateShow2) {
+            pirateUpdate();
+            cMeshObject* piratas = g_GraphicScene.vec_pMeshObjects[7];
+            g_cameraTarget = glm::vec3(piratas->position.x, piratas->position.y, piratas->position.z);
+        }
+
+        if (g_GraphicScene.pirateShow2 && !g_GraphicScene.pirateShow) {
+            pirateUpdate2();
+            cMeshObject* factory = g_GraphicScene.vec_pMeshObjects[8];
+            cMeshObject* piratas = g_GraphicScene.vec_pMeshObjects[7];
+            g_cameraTarget = glm::vec3(factory->position.x, factory->position.y, factory->position.z);
+            g_cameraEye = glm::vec3(piratas->position.x + 8.0f, piratas->position.y + 10.0f, piratas->position.z);
+        }
 
         float ratio;
         int width, height;
@@ -688,8 +674,18 @@ int main(int argc, char* argv[]) {
         //   | |___| | | | (_| | | (_) |  _| \__ \ (_|  __/ | | |  __/
         //   |_____|_| |_|\__,_|  \___/|_|   |___/\___\___|_| |_|\___|
 
-        glfwSwapBuffers(window);
         glfwPollEvents();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        gameUi.render(g_GraphicScene, g_pTheLightManager->vecTheLights);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        glfwSwapBuffers(window);
 
         // Set the window title
         std::stringstream ssTitle;
@@ -706,24 +702,16 @@ int main(int argc, char* argv[]) {
 
         std::string theText = ssTitle.str();
 
-        // Physics Update
-        g_ParticleSystem.Integrate(1.f);
-
-        for (int i = 0; i < g_GraphicScene.robotShepard.getRobotNumber(); i++) {
-            cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(i);
-            
-            // Object position = Particle Position
-            currentRobot->currentWeapon->position.x = currentRobot->currentWeapon->pPosition.x;
-            currentRobot->currentWeapon->position.y = currentRobot->currentWeapon->pPosition.y;
-            currentRobot->currentWeapon->position.z = currentRobot->currentWeapon->pPosition.z;
-        }
-
         glfwSetWindowTitle(window, ssTitle.str().c_str());
     }
 
     // Get rid of stuff
     delete pTheShaderManager;
     delete ::g_pTheLightManager;
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     glfwDestroyWindow(window);
 

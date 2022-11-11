@@ -1,0 +1,46 @@
+﻿  cLight.cpp
+  cLightHelper.cpp
+  cLightManager.cpp
+  cMeshObject.cpp
+  cRandomUI.cpp
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\cRandomUI.cpp(41,63): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\cRandomUI.cpp(41,63): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\cRandomUI.cpp(53,52): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\cRandomUI.cpp(53,52): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
+  FunWithMaps.cpp
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\FunWithMaps.cpp(54,16): warning C4834: discarding return value of function with 'nodiscard' attribute
+  funWithVectors.cpp
+  globalThings.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_glfw.cpp
+  imgui_impl_opengl3.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  KeyboardCallbackFunctions.cpp
+  cShader.cpp
+  cShaderManager.cpp
+  c3DModelFileLoader.cpp
+  cVAOManager.cpp
+  Compiling...
+  GraphicScene.cpp
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\GraphicScene.cpp(44,26): warning C4305: '=': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+  Particle.cpp
+  ParticleSystem.cpp
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\ParticleSystem.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\ParticleSystem.cpp(41,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  theMainFunction.cpp
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\theMainFunction.cpp(339,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\theMainFunction.cpp(341,19): warning C4101: 'triangleCenter2': unreferenced local variable
+  Vector3.cpp
+  glad.c
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 2427 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  RandomGame.vcxproj -> C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\x64\Release\RandomGame.exe

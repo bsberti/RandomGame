@@ -25,7 +25,6 @@ unsigned int selectedObjectIndex = 0;
 
 bool bEnableDebugLightingObjects = true;
 
-
 //0000 0001   1	GLFW_MOD_SHIFT
 //0000 0010 	  2
 //0000 0100   4
@@ -59,22 +58,29 @@ void key_callback(GLFWwindow* window,
         theEditMode = MOVING_SELECTED_OBJECT;
     }
 
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
     {
-        //LOS TEST
-        int randomIndex = rand() % 3;
-        std::cout << "Chosen Robot: " << randomIndex << std::endl;
+        //Exercise 1
+        ::g_pTheLightManager->DaylightScene();
+    }
 
-        cRobot* currentRobot = (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(randomIndex);
-        std::cout << "Robot position (x: " << currentRobot->position.x <<
-            ", y: " << currentRobot->position.y <<
-            ", z: " << currentRobot->position.z << ")" << std::endl;
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+    {
+        //Exercise 2
+        ::g_pTheLightManager->NightlightScene();
+         g_GraphicScene.pirateShow = true;
+    }
 
-        std::cout << "LOS CHECK > " << (g_GraphicScene.checkLOS(currentRobot) ? "true" : "false") << std::endl;
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+    {
+        //Exercise 2
+        //::g_pTheLightManager->NightlightScene();
+        g_GraphicScene.pirateShow2 = true;
+    }
 
-        currentRobot->ShootRobot(
-            (cRobot*)g_GraphicScene.robotShepard.getRobotFromIndex(
-                currentRobot->getClosestRobotID()));
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+    {
+        //Exercise 2
     }
 
     if (key == GLFW_KEY_9 && action == GLFW_PRESS)
@@ -121,10 +127,6 @@ void key_callback(GLFWwindow* window,
             ::g_cameraEye.y += CAMERA_MOVE_SPEED;
         }
 
-        if (key == GLFW_KEY_1)
-        {
-            ::g_cameraEye = glm::vec3(-5.5f, -3.4f, 15.0f);
-        }
     }//case MOVING_CAMERA:
     break;
 
