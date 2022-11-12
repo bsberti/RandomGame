@@ -37,16 +37,6 @@ GraphicScene g_GraphicScene;
 GLFWwindow* window;
 cRandomUI gameUi;
 
-glm::vec3 DirectionToGoal;
-glm::vec3 pirateCurrPosition;
-glm::vec3 pirateStartPosition;
-glm::vec3 pirateFinalPosition;
-
-glm::vec3 pirateLight1FinalPosition;
-glm::vec3 pirateLight2FinalPosition;
-glm::vec3 light1OffsetPosition;
-glm::vec3 light2OffsetPosition;
-
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -145,139 +135,143 @@ void lightning(GLuint shaderID) {
     cLightHelper* pLightHelper = new cLightHelper();
 
     ::g_pTheLightManager->CreateBasicDirecLight(shaderID, glm::vec4(-75.0f, 400.0f, -75.0f, 0.0f));
-    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(-75.0f, 400.0f, 75.0f, 0.0f));
-    
-    //Structures
-    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.0f));
-    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.0f));
-    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.0f));
-    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(0.0f, 400.0f, 0.0f, 0.0f));
-    
-    //Pirates
-    glm::vec4 light1StartPosition;
-    light1StartPosition.x = pirateStartPosition.x + light1OffsetPosition.x;
-    light1StartPosition.y = pirateStartPosition.y + light1OffsetPosition.y;
-    light1StartPosition.z = pirateStartPosition.z + light1OffsetPosition.z;
-    light1StartPosition.w = 0.0f;
-
-    glm::vec4 light2StartPosition;
-    light2StartPosition.x = pirateStartPosition.x + light2OffsetPosition.x;
-    light2StartPosition.y = pirateStartPosition.y + light2OffsetPosition.y;
-    light2StartPosition.z = pirateStartPosition.z + light2OffsetPosition.z;
-    light2StartPosition.w = 1.0f;
-    std::cout << "light1StartPosition(x: " << light1StartPosition.x <<
-        ", y: " << light1StartPosition.y <<
-        ", z: " << light1StartPosition.z << ")" << std::endl;
-    std::cout << "light2StartPosition(x: " << light2StartPosition.x <<
-        ", y: " << light2StartPosition.y <<
-        ", z: " << light2StartPosition.z << ")" << std::endl;
-    ::g_pTheLightManager->CreateBasicPointLight(shaderID, light1StartPosition);
-    ::g_pTheLightManager->CreateBasicPointLight(shaderID, light2StartPosition);
-
+    ::g_pTheLightManager->CreateBasicSpotLight(shaderID, glm::vec4(103.0f, 7.0f, 67.0f, 0.0f));
 }
 
-void creatingModelsMidterm() {
-
+void creatingModelsProject() {
     sModelDrawInfo drawingInformation;
+    pVAOManager->FindDrawInfoByModelName("Terrain_Florest", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Terrain_Florest", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
 
-    pVAOManager->FindDrawInfoByModelName("Island", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Island", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
+    pVAOManager->FindDrawInfoByModelName("Bunny", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Bunny", glm::vec3(86.0f, 0.0f, 5.333f), drawingInformation);
 
-    pVAOManager->FindDrawInfoByModelName("Lighthouse", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Lighthouse", glm::vec3(18.024f, 65.868f, 0.0f), drawingInformation);
+    pVAOManager->FindDrawInfoByModelName("Cabin", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Cabin", glm::vec3(98.394, 0.0f, 63.33f), drawingInformation);
 
-    pVAOManager->FindDrawInfoByModelName("Old_House", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Old_House", glm::vec3(-65.868f, 0.0f, 89.881f), drawingInformation);
+    for (int i = 0; i < 10; i++) {
+        pVAOManager->FindDrawInfoByModelName("Tree1", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Tree1", glm::vec3(RandomFloat(-100, 100), RandomFloat(-35, -37), RandomFloat(-100, 100)), drawingInformation);
 
-    {
-        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
-        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-112.212f, 23.102f, -33.003f), drawingInformation);
-    
-        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
-        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-112.200f, 23.102f, 15.885f), drawingInformation);
+        pVAOManager->FindDrawInfoByModelName("Tree2", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Tree2", glm::vec3(RandomFloat(-100, 100), RandomFloat(-35, -37), RandomFloat(-100, 100)), drawingInformation);
 
-        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
-        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-112.190f, 23.102f, 30.23f), drawingInformation);
-
-        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
-        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-100.212f, 23.102f, 45.003f), drawingInformation);
-
-    }
-
-    pVAOManager->FindDrawInfoByModelName("Sky_Pirate", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Sky_Pirate", pirateStartPosition, drawingInformation);
-
-    pVAOManager->FindDrawInfoByModelName("Factory", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Factory", glm::vec3(2.444f, 86.888f, -39.715f), drawingInformation);
-
-    pVAOManager->FindDrawInfoByModelName("Tree1", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Tree1", glm::vec3(-33.126f, 21.739f, 65.597f), drawingInformation);
-
-    pVAOManager->FindDrawInfoByModelName("Tree2", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Tree2", glm::vec3(7.246f, 44.513f, 45.929f), drawingInformation);
-
-    pVAOManager->FindDrawInfoByModelName("Trees", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Trees", glm::vec3(-4.141f, 38.303f, 39.718f), drawingInformation);
-
-    pVAOManager->FindDrawInfoByModelName("Wood_House", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Wood_House", glm::vec3(-19.668f, 45.550f, 8.662f), drawingInformation);
-
-}
-
-void pirateUpdate() {
-    //cMeshObject* pirates = g_GraphicScene.vec_pMeshObjects[7];
-    float distance = glm::distance(pirateCurrPosition, pirateFinalPosition);
-    if (distance > 5.0f) {
-        g_GraphicScene.vec_pMeshObjects[7]->position += DirectionToGoal;
-        pirateCurrPosition = g_GraphicScene.vec_pMeshObjects[7]->position;
-
-        /*std::cout << "Pirate pos (x: " << pirateCurrPosition.x << 
-           ", y: " << pirateCurrPosition.y <<  
-           ", z: " << pirateCurrPosition.z << std::endl;*/
-
-        glm::vec4 vec4Direction;
-        vec4Direction.x = DirectionToGoal.x;
-        vec4Direction.y = DirectionToGoal.y;
-        vec4Direction.z = DirectionToGoal.z;
-        vec4Direction.w = 0.0f;
-
-        ::g_pTheLightManager->vecTheLights[6].position += vec4Direction;
-        ::g_pTheLightManager->vecTheLights[7].position += vec4Direction;
-
-        /*std::cout << "Light7 pos (x: " << ::g_pTheLightManager->vecTheLights[6].position.x <<
-            ", y: " << ::g_pTheLightManager->vecTheLights[6].position.y <<
-            ", z: " << ::g_pTheLightManager->vecTheLights[6].position.z << std::endl;
-
-        std::cout << "Light8 pos (x: " << ::g_pTheLightManager->vecTheLights[7].position.x <<
-            ", y: " << ::g_pTheLightManager->vecTheLights[7].position.y <<
-            ", z: " << ::g_pTheLightManager->vecTheLights[7].position.z << std::endl;*/
-    }
-    else {
-        g_GraphicScene.pirateShow = false;
+        pVAOManager->FindDrawInfoByModelName("Rock4", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Rock4", glm::vec3(RandomFloat(-100, 100), RandomFloat(-40, -42), RandomFloat(-100, 100)), drawingInformation);
     }
 }
 
-void pirateUpdate2() {
-    //cMeshObject* pirates = g_GraphicScene.vec_pMeshObjects[7];
-    float distance = glm::distance(pirateCurrPosition, pirateFinalPosition);
-    std::cout << "distance is " << distance << std::endl;
-    if (distance < 500.0f) {
-        g_GraphicScene.vec_pMeshObjects[7]->position += DirectionToGoal;
-        pirateCurrPosition = g_GraphicScene.vec_pMeshObjects[7]->position;
+//void creatingModelsMidterm() {
+//
+//    sModelDrawInfo drawingInformation;
+//
+//    pVAOManager->FindDrawInfoByModelName("Island", drawingInformation);
+//    g_GraphicScene.CreateGameObjectByType("Island", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
+//
+//    pVAOManager->FindDrawInfoByModelName("Lighthouse", drawingInformation);
+//    g_GraphicScene.CreateGameObjectByType("Lighthouse", glm::vec3(18.024f, 65.868f, 0.0f), drawingInformation);
+//
+//    pVAOManager->FindDrawInfoByModelName("Old_House", drawingInformation);
+//    g_GraphicScene.CreateGameObjectByType("Old_House", glm::vec3(-65.868f, 0.0f, 89.881f), drawingInformation);
+//
+//    {
+//        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
+//        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-112.212f, 23.102f, -33.003f), drawingInformation);
+//    
+//        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
+//        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-112.200f, 23.102f, 15.885f), drawingInformation);
+//
+//        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
+//        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-112.190f, 23.102f, 30.23f), drawingInformation);
+//
+//        pVAOManager->FindDrawInfoByModelName("Palm", drawingInformation);
+//        g_GraphicScene.CreateGameObjectByType("Palm", glm::vec3(-100.212f, 23.102f, 45.003f), drawingInformation);
+//
+//    }
+//
+//    pVAOManager->FindDrawInfoByModelName("Sky_Pirate", drawingInformation);
+//    g_GraphicScene.CreateGameObjectByType("Sky_Pirate", pirateStartPosition, drawingInformation);
+//
+//    pVAOManager->FindDrawInfoByModelName("Factory", drawingInformation);
+//    g_GraphicScene.CreateGameObjectByType("Factory", glm::vec3(2.444f, 86.888f, -39.715f), drawingInformation);
+//
+//    pVAOManager->FindDrawInfoByModelName("Tree1", drawingInformation);
+//    g_GraphicScene.CreateGameObjectByType("Tree1", glm::vec3(-33.126f, 21.739f, 65.597f), drawingInformation);
+//
+//    pVAOManager->FindDrawInfoByModelName("Tree2", drawingInformation);
+//    g_GraphicScene.CreateGameObjectByType("Tree2", glm::vec3(7.246f, 44.513f, 45.929f), drawingInformation);
+//
+//    pVAOManager->FindDrawInfoByModelName("Trees", drawingInformation);
+//    g_GraphicScene.CreateGameObjectByType("Trees", glm::vec3(-4.141f, 38.303f, 39.718f), drawingInformation);
+//
+//    pVAOManager->FindDrawInfoByModelName("Wood_House", drawingInformation);
+//    g_GraphicScene.CreateGameObjectByType("Wood_House", glm::vec3(-19.668f, 45.550f, 8.662f), drawingInformation);
+//
+//}
 
-        glm::vec4 vec4Direction;
-        vec4Direction.x = DirectionToGoal.x;
-        vec4Direction.y = DirectionToGoal.y;
-        vec4Direction.z = DirectionToGoal.z;
-        vec4Direction.w = 0.0f;
-
-        ::g_pTheLightManager->vecTheLights[6].position += vec4Direction;
-        ::g_pTheLightManager->vecTheLights[7].position += vec4Direction;
-    }
-    else {
-        g_GraphicScene.pirateShow = false;
+void positioningObjects() {
+    for (int i = 0; i < g_GraphicScene.vec_pMeshObjects.size(); i++) {
+        cMeshObject* currObj = g_GraphicScene.vec_pMeshObjects[i];
+        if (currObj->friendlyName != "Terrain_Florest") {
+            g_GraphicScene.PositioningMe(currObj);
+        }
     }
 }
+
+//void pirateUpdate() {
+//    //cMeshObject* pirates = g_GraphicScene.vec_pMeshObjects[7];
+//    float distance = glm::distance(pirateCurrPosition, pirateFinalPosition);
+//    if (distance > 5.0f) {
+//        g_GraphicScene.vec_pMeshObjects[7]->position += DirectionToGoal;
+//        pirateCurrPosition = g_GraphicScene.vec_pMeshObjects[7]->position;
+//
+//        /*std::cout << "Pirate pos (x: " << pirateCurrPosition.x << 
+//           ", y: " << pirateCurrPosition.y <<  
+//           ", z: " << pirateCurrPosition.z << std::endl;*/
+//
+//        glm::vec4 vec4Direction;
+//        vec4Direction.x = DirectionToGoal.x;
+//        vec4Direction.y = DirectionToGoal.y;
+//        vec4Direction.z = DirectionToGoal.z;
+//        vec4Direction.w = 0.0f;
+//
+//        ::g_pTheLightManager->vecTheLights[6].position += vec4Direction;
+//        ::g_pTheLightManager->vecTheLights[7].position += vec4Direction;
+//
+//        /*std::cout << "Light7 pos (x: " << ::g_pTheLightManager->vecTheLights[6].position.x <<
+//            ", y: " << ::g_pTheLightManager->vecTheLights[6].position.y <<
+//            ", z: " << ::g_pTheLightManager->vecTheLights[6].position.z << std::endl;
+//
+//        std::cout << "Light8 pos (x: " << ::g_pTheLightManager->vecTheLights[7].position.x <<
+//            ", y: " << ::g_pTheLightManager->vecTheLights[7].position.y <<
+//            ", z: " << ::g_pTheLightManager->vecTheLights[7].position.z << std::endl;*/
+//    }
+//    else {
+//        g_GraphicScene.pirateShow = false;
+//    }
+//}
+
+//void pirateUpdate2() {
+//    //cMeshObject* pirates = g_GraphicScene.vec_pMeshObjects[7];
+//    float distance = glm::distance(pirateCurrPosition, pirateFinalPosition);
+//    std::cout << "distance is " << distance << std::endl;
+//    if (distance < 500.0f) {
+//        g_GraphicScene.vec_pMeshObjects[7]->position += DirectionToGoal;
+//        pirateCurrPosition = g_GraphicScene.vec_pMeshObjects[7]->position;
+//
+//        glm::vec4 vec4Direction;
+//        vec4Direction.x = DirectionToGoal.x;
+//        vec4Direction.y = DirectionToGoal.y;
+//        vec4Direction.z = DirectionToGoal.z;
+//        vec4Direction.w = 0.0f;
+//
+//        ::g_pTheLightManager->vecTheLights[6].position += vec4Direction;
+//        ::g_pTheLightManager->vecTheLights[7].position += vec4Direction;
+//    }
+//    else {
+//        g_GraphicScene.pirateShow = false;
+//    }
+//}
 
 void debugLightSpheres() {
     pDebugSphere_1 = new cMeshObject();
@@ -339,28 +333,23 @@ void calculateTrianglesCenter(cMeshObject* obj) {
     for (int i = 0; i < obj->numberOfTriangles; i++) {        
         glm::vec3 triangleCenter1;
         glm::vec3 triangleCenter2;
-        /*if ((drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y ==
-            drawingInformation.pVertices[(int)obj->meshTriangles[i].y].y) &&
-            (drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y ==
-            drawingInformation.pVertices[(int)obj->meshTriangles[i].z].y)) {*/
             
-            triangleCenter1.x = (
-                drawingInformation.pVertices[(int)obj->meshTriangles[i].x].x +
-                drawingInformation.pVertices[(int)obj->meshTriangles[i].y].x +
-                drawingInformation.pVertices[(int)obj->meshTriangles[i].z].x) / 3;
+        triangleCenter1.x = (
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].x].x +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].y].x +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].z].x) / 3;
 
-            //triangleCenter1.y = drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y;
+        //triangleCenter1.y = drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y;
 
-            triangleCenter1.y = (
-                drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y +
-                drawingInformation.pVertices[(int)obj->meshTriangles[i].y].y +
-                drawingInformation.pVertices[(int)obj->meshTriangles[i].z].y) / 3;
+        triangleCenter1.y = (
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].x].y +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].y].y +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].z].y) / 3;
 
-            triangleCenter1.z = (
-                drawingInformation.pVertices[(int)obj->meshTriangles[i].x].z +
-                drawingInformation.pVertices[(int)obj->meshTriangles[i].y].z +
-                drawingInformation.pVertices[(int)obj->meshTriangles[i].z].z) / 3;
-        /*}*/
+        triangleCenter1.z = (
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].x].z +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].y].z +
+            drawingInformation.pVertices[(int)obj->meshTriangles[i].z].z) / 3;
 
         g_GraphicScene.trianglesCenter.push_back(triangleCenter1);
         obj->trianglesCenter.push_back(triangleCenter1);
@@ -374,20 +363,6 @@ int main(int argc, char* argv[]) {
     GLuint shaderID = 0;
     GLint vpos_location = 0;
     GLint vcol_location = 0;
-    
-    pirateStartPosition = glm::vec3(-96.350f, 113.343f, -246.278f);
-    pirateFinalPosition = glm::vec3(-6.350f, 113.343f, -46.278f);
-    pirateCurrPosition = pirateStartPosition;
-
-    pirateLight1FinalPosition = glm::vec3(-6.849f, 116.438f, -41.096f);
-    pirateLight2FinalPosition = glm::vec3(-13.698f, 118.949f, -56.963f);
-
-    light1OffsetPosition = pirateFinalPosition - pirateLight1FinalPosition;
-    light2OffsetPosition = pirateFinalPosition - pirateLight2FinalPosition;
-
-    glm::vec3 GoalVector = pirateFinalPosition - pirateStartPosition;
-    DirectionToGoal = glm::normalize(GoalVector);
-    DirectionToGoal /= 5;
 
     pVAOManager = new cVAOManager();
 
@@ -448,9 +423,6 @@ int main(int argc, char* argv[]) {
 
     // Setting the lights
     lightning(shaderID);
-
-    //DaylightScene();
-    //NightlightScene();
     
     if (!LoadModelTypesIntoVAO("assets/PLYFilesToLoadIntoVAO.txt", pVAOManager, shaderID)) {
         std::cout << "Error: Unable to load list of models to load into VAO file" << std::endl;
@@ -459,11 +431,13 @@ int main(int argc, char* argv[]) {
     }
 
     // Load the models
-    //creatingModelsProject();
-    creatingModelsMidterm();
+    creatingModelsProject();
+    //creatingModelsMidterm();
 
-    cMeshObject* terrain = g_GraphicScene.vec_pMeshObjects[g_GraphicScene.vec_pMeshObjects.size() - 1];
+    cMeshObject* terrain = g_GraphicScene.vec_pMeshObjects[0];
     calculateTrianglesCenter(terrain);
+
+    positioningObjects();
 
     debugLightSpheres();
 
@@ -474,6 +448,9 @@ int main(int argc, char* argv[]) {
     // Need this for lighting
     GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");
 
+    g_cameraEye = glm::vec3(-165.0f, 185.0f, -60.0f);
+    g_cameraTarget = g_GraphicScene.vec_pMeshObjects[2]->position;
+
     while (!glfwWindowShouldClose(window)) {
         ::g_pTheLightManager->CopyLightInformationToShader(shaderID);
 
@@ -482,26 +459,9 @@ int main(int argc, char* argv[]) {
         glm::vec3 LightToSubRay = pFirstObject.position - glm::vec3(::g_pTheLightManager->vecTheLights[1].position);
 
         // Normalizing is also just divide by the length of the ray
-        // LightToSubRay /= glm::length(LightToSubRay);
         LightToSubRay = glm::normalize(LightToSubRay);
 
-        //::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(LightToSubRay, 1.0f);
-
         DrawConcentricDebugLightObjects(gameUi.listbox_lights_current);
-
-        if (g_GraphicScene.pirateShow && !g_GraphicScene.pirateShow2) {
-            pirateUpdate();
-            cMeshObject* piratas = g_GraphicScene.vec_pMeshObjects[7];
-            g_cameraTarget = glm::vec3(piratas->position.x, piratas->position.y, piratas->position.z);
-        }
-
-        if (g_GraphicScene.pirateShow2 && !g_GraphicScene.pirateShow) {
-            pirateUpdate2();
-            cMeshObject* factory = g_GraphicScene.vec_pMeshObjects[8];
-            cMeshObject* piratas = g_GraphicScene.vec_pMeshObjects[7];
-            g_cameraTarget = glm::vec3(factory->position.x, factory->position.y, factory->position.z);
-            g_cameraEye = glm::vec3(piratas->position.x + 8.0f, piratas->position.y + 10.0f, piratas->position.z);
-        }
 
         float ratio;
         int width, height;

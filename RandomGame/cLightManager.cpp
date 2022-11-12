@@ -32,8 +32,8 @@ void cLightManager::DaylightScene() {
 	vecTheLights[0].atten = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	vecTheLights[1].direction = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	vecTheLights[1].position = glm::vec4(103.0f, 7.0f, 67.0f, 0.0f);
 	vecTheLights[1].atten = glm::vec4(1.0f, 0.121f, 0.0f, 0.0f);
-	vecTheLights[1].TurnOff();
 
 	vecTheLights[2].TurnOff();
 	vecTheLights[3].TurnOff();
@@ -148,7 +148,7 @@ void cLightManager::CreateBasicDirecLight(unsigned int shaderID, glm::vec4 posit
 	vecTheLights[lightsCreated].atten = glm::vec4(0.1f, 0.807497f, 0.0000001f, 1.0f);
 
 	// In the shader Feeney gave you, the direciton is relative
-	vecTheLights[lightsCreated].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
+	vecTheLights[lightsCreated].direction = glm::vec4(0.0f, -0.5f, 0.0f, 1.0f);
 
 	// Make this a spot light
 	//    vec4 param1;	   x = lightType, y = inner angle, z = outer angle, w = TBD

@@ -12,6 +12,8 @@ public:
 
 	void Initialize();
 
+	void PositioningMe(cMeshObject* pMeWhoIsAsking);
+
 	void CreateGameObjectByType(const std::string& type, glm::vec3 position, sModelDrawInfo& drawInfo);
 
 	cMeshObject selectedObject;
