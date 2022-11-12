@@ -24,6 +24,9 @@
     <Filter Include="VAOManager_FileLoading">
       <UniqueIdentifier>{98715f2a-845e-492a-82e3-db3bc1e381b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RobotFight">
+      <UniqueIdentifier>{ba2d50a2-cbda-44ea-b0c2-72d6e8c2ad17}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{756c2898-79cb-4b16-8fc0-2f424077ffce}</UniqueIdentifier>
     </Filter>
@@ -46,6 +49,12 @@
     </ClCompile>
     <ClCompile Include="cVAOManager\c3DModelFileLoader.cpp">
       <Filter>VAOManager_FileLoading</Filter>
+    </ClCompile>
+    <ClCompile Include="cRobotShepherd.cpp">
+      <Filter>RobotFight</Filter>
+    </ClCompile>
+    <ClCompile Include="cRobot.cpp">
+      <Filter>RobotFight</Filter>
     </ClCompile>
     <ClCompile Include="cShader.cpp">
       <Filter>ShaderManager</Filter>
@@ -130,6 +139,21 @@
     <ClInclude Include="cVAOManager\c3DModelFileLoader.h">
       <Filter>VAOManager_FileLoading</Filter>
     </ClInclude>
+    <ClInclude Include="cRobot.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
+    <ClInclude Include="cRobotShepherd.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
+    <ClInclude Include="iDamage.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
+    <ClInclude Include="iRobot.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
+    <ClInclude Include="iRobotInformant.h">
+      <Filter>RobotFight</Filter>
+    </ClInclude>
     <ClInclude Include="cShaderManager.h">
       <Filter>ShaderManager</Filter>
     </ClInclude>
@@ -195,6 +219,9 @@
     </ClInclude>
     <ClInclude Include="imgui\imgui.h">
       <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="cWeapon.h">
+      <Filter>RobotFight</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
