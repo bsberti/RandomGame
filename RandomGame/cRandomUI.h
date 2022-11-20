@@ -10,11 +10,11 @@
 class cRandomUI {
 public:
 	cRandomUI();
-	
+
 	int iniciatingUI();
 
 	//void render(GraphicScene &scene);
-	void render(GraphicScene&, std::vector<cLight> &vecTheLights);
+	void render(GraphicScene&, std::vector<cLight>& vecTheLights);
 
 	int listbox_lights_current;
 	int listbox_item_current;

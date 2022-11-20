@@ -56,22 +56,7 @@
     <ClCompile Include="GraphicScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector3.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Particle.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
     <ClCompile Include="theMainFunction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FunWithMaps.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="funWithVectors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cLight.cpp">
@@ -119,6 +104,42 @@
     <ClCompile Include="cRandomUI.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsDebugRenderer.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsMath.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsObject.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSystem.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsUtils.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Shapes.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationView.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Spring.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cVAOManager\sModelDrawInfo.h">
@@ -135,15 +156,6 @@
     </ClInclude>
     <ClInclude Include="GraphicScene.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Particle.h">
-      <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="cMeshObject.h">
       <Filter>cMeshObject</Filter>
@@ -195,6 +207,48 @@
     </ClInclude>
     <ClInclude Include="imgui\imgui.h">
       <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsDebugRenderer.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsMath.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsObject.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSystem.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsUtils.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Shapes.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationView.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Ball.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Spring.h">
+      <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

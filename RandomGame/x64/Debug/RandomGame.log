@@ -1,4 +1,5 @@
-﻿  theMainFunction.cpp
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Graphics Assignment 1\RandomGame\theMainFunction.cpp(333,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Graphics Assignment 1\RandomGame\theMainFunction.cpp(335,19): warning C4101: 'triangleCenter2': unreferenced local variable
-  RandomGame.vcxproj -> C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Graphics Assignment 1\x64\Debug\RandomGame.exe
+﻿  PhysicsSystem.cpp
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\RandomGame\PhysicsSystem.cpp(36,36): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\RandomGame\PhysicsSystem.cpp(37,36): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\RandomGame\PhysicsSystem.cpp(38,30): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+  RandomGame.vcxproj -> C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\x64\Debug\RandomGame.exe

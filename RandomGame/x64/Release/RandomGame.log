@@ -1,46 +1,12 @@
-﻿  cLight.cpp
-  cLightHelper.cpp
+﻿  GraphicScene.cpp
   cLightManager.cpp
-  cMeshObject.cpp
-  cRandomUI.cpp
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\cRandomUI.cpp(41,63): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\cRandomUI.cpp(41,63): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\cRandomUI.cpp(53,52): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\cRandomUI.cpp(53,52): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
-  FunWithMaps.cpp
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\FunWithMaps.cpp(54,16): warning C4834: discarding return value of function with 'nodiscard' attribute
-  funWithVectors.cpp
-  globalThings.cpp
-  imgui.cpp
-  imgui_demo.cpp
-  imgui_draw.cpp
-  imgui_impl_glfw.cpp
-  imgui_impl_opengl3.cpp
-  imgui_tables.cpp
-  imgui_widgets.cpp
-  KeyboardCallbackFunctions.cpp
-  cShader.cpp
-  cShaderManager.cpp
-  c3DModelFileLoader.cpp
-  cVAOManager.cpp
-  Compiling...
-  GraphicScene.cpp
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\GraphicScene.cpp(44,26): warning C4305: '=': truncation from 'double' to 'T'
-          with
-          [
-              T=float
-          ]
-  Particle.cpp
-  ParticleSystem.cpp
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\ParticleSystem.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\ParticleSystem.cpp(41,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
   theMainFunction.cpp
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\theMainFunction.cpp(339,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\RandomGame\theMainFunction.cpp(341,19): warning C4101: 'triangleCenter2': unreferenced local variable
-  Vector3.cpp
-  glad.c
-  Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 2427 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  RandomGame.vcxproj -> C:\Users\Bruno Berti\Documents\Fanshawe\Git\Midterms\Graphics\x64\Release\RandomGame.exe
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\GDP202223\RandomGame\RandomGame\theMainFunction.cpp(252,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\GDP202223\RandomGame\RandomGame\theMainFunction.cpp(256,71): warning C4805: '==': unsafe mix of type 'bool' and type 'float' in operation
+theMainFunction.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui_ImplGlfw_InitForOpenGL(struct GLFWwindow *,bool)" (?ImGui_ImplGlfw_InitForOpenGL@@YA_NPEAUGLFWwindow@@_N@Z)
+theMainFunction.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui_ImplOpenGL3_Init(char const *)" (?ImGui_ImplOpenGL3_Init@@YA_NPEBD@Z)
+theMainFunction.obj : error LNK2001: unresolved external symbol "struct ImGuiIO & __cdecl ImGui::GetIO(void)" (?GetIO@ImGui@@YAAEAUImGuiIO@@XZ)
+theMainFunction.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui::DebugCheckVersionAndDataLayout(char const *,unsigned __int64,unsigned __int64,unsigned __int64,unsigned __int64,unsigned __int64,unsigned __int64)" (?DebugCheckVersionAndDataLayout@ImGui@@YA_NPEBD_K11111@Z)
+theMainFunction.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::StyleColorsDark(struct ImGuiStyle *)" (?StyleColorsDark@ImGui@@YAXPEAUImGuiStyle@@@Z)
+theMainFunction.obj : error LNK2001: unresolved external symbol "struct ImGuiContext * __cdecl ImGui::CreateContext(struct ImFontAtlas *)" (?CreateContext@ImGui@@YAPEAUImGuiContext@@PEAUImFontAtlas@@@Z)
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\GDP202223\RandomGame\x64\Release\RandomGame.exe : fatal error LNK1120: 6 unresolved externals

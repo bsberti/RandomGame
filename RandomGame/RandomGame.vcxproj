@@ -128,7 +128,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,8 +143,6 @@
     <ClCompile Include="cLightManager.cpp" />
     <ClCompile Include="cMeshObject.cpp" />
     <ClCompile Include="cRandomUI.cpp" />
-    <ClCompile Include="FunWithMaps.cpp" />
-    <ClCompile Include="funWithVectors.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="globalThings.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -163,10 +160,21 @@
     <ClCompile Include="GraphicScene.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="PhysicsDebugRenderer.cpp" />
+    <ClCompile Include="PhysicsMath.cpp" />
+    <ClCompile Include="PhysicsObject.cpp" />
+    <ClCompile Include="PhysicsSystem.cpp" />
+    <ClCompile Include="PhysicsUtils.cpp" />
+    <ClCompile Include="Shapes.cpp" />
+    <ClCompile Include="SimulationView.cpp" />
+    <ClCompile Include="Spring.cpp" />
     <ClCompile Include="theMainFunction.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ball.h" />
+    <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="cLight.h" />
     <ClInclude Include="cLightHelper.h" />
     <ClInclude Include="cLightManager.h" />
@@ -191,6 +199,15 @@
     <ClInclude Include="iObject.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="PhysicsDebugRenderer.h" />
+    <ClInclude Include="PhysicsMath.h" />
+    <ClInclude Include="PhysicsObject.h" />
+    <ClInclude Include="PhysicsSystem.h" />
+    <ClInclude Include="PhysicsUtils.h" />
+    <ClInclude Include="Shapes.h" />
+    <ClInclude Include="SimulationView.h" />
+    <ClInclude Include="Spring.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>

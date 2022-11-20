@@ -4,6 +4,8 @@
 #include <glm/vec3.hpp>
 #include "GraphicScene.h"
 #include <iostream>
+#include "Ball.h"
+#include "SimulationView.h"
 
 // Extern is so the compiler knows what TYPE this thing is
 // The LINKER needs the ACTUAL declaration 
@@ -11,6 +13,7 @@
 extern glm::vec3 g_cameraEye;// = glm::vec3(0.0, 0.0, -25.0f);
 extern glm::vec3 g_cameraTarget;// = glm::vec3(0.0f, 0.0f, 0.0f);
 extern GraphicScene g_GraphicScene;
+extern SimulationView* simView;
 
 enum eEditMode
 {
@@ -24,6 +27,7 @@ unsigned int selectedLightIndex = 0;
 unsigned int selectedObjectIndex = 0;
 
 bool bEnableDebugLightingObjects = true;
+
 
 //0000 0001   1	GLFW_MOD_SHIFT
 //0000 0010 	  2
@@ -58,29 +62,9 @@ void key_callback(GLFWwindow* window,
         theEditMode = MOVING_SELECTED_OBJECT;
     }
 
-    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
-        //Exercise 1
-        ::g_pTheLightManager->DaylightScene();
-    }
-
-    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-    {
-        //Exercise 2
-        ::g_pTheLightManager->NightlightScene();
-         g_GraphicScene.pirateShow = true;
-    }
-
-    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
-    {
-        //Exercise 2
-        //::g_pTheLightManager->NightlightScene();
-        g_GraphicScene.pirateShow2 = true;
-    }
-
-    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
-    {
-        //Exercise 2
+        
     }
 
     if (key == GLFW_KEY_9 && action == GLFW_PRESS)
@@ -127,6 +111,10 @@ void key_callback(GLFWwindow* window,
             ::g_cameraEye.y += CAMERA_MOVE_SPEED;
         }
 
+        if (key == GLFW_KEY_1)
+        {
+            ::g_cameraEye = glm::vec3(-5.5f, -3.4f, 15.0f);
+        }
     }//case MOVING_CAMERA:
     break;
 
@@ -223,36 +211,46 @@ void key_callback(GLFWwindow* window,
         // Move the camera
             // AWSD   AD - left and right
             //        WS - forward and back
-        const float CAMERA_OBJECT_SPEED = 1.0f;
-        cMeshObject* go = g_GraphicScene.vec_pMeshObjects[selectedObjectIndex];
-        g_cameraTarget = glm::vec3(go->position.x, go->position.y, go->position.z);
 
-        std::cout << go->friendlyName << std::endl;
-        std::cout << "x: " << go->position.x << " y: " << go->position.y << " z: " << go->position.z << std::endl;
+        // For this Project I wanna moove the ball instead
+        const float CAMERA_OBJECT_SPEED = 1.0f;
+        
+        //Ball* mainChar = (Ball*)g_GraphicScene.vec_pMeshObjects[1];
+        PhysicsObject* mainChar = simView->m_PhysicsSystem.m_PhysicsObjects[1];
+        Vector3 mainCharPos = mainChar->GetPosition();
+        //g_cameraTarget = glm::vec3(mainCharPos.x, mainCharPos.y, mainCharPos.z);
+
+        //std::cout << mainChar->gameObject->friendlyName << std::endl;
+        std::cout << "Ball Position is x: " << mainCharPos.x << " y: " << mainCharPos.y << " z: " << mainCharPos.z << std::endl;
+
+        if (key == GLFW_KEY_SPACE)
+        {
+            mainChar->ApplyForce(Vector3(0.0f, 25.0f, 0.0f));
+        }
 
         if (key == GLFW_KEY_A)     // Left
         {
-            go->position.x -= CAMERA_OBJECT_SPEED;
+            mainChar->position.x += CAMERA_OBJECT_SPEED;
         }
-        if (key == GLFW_KEY_D)     // Right
+        if (key == GLFW_KEY_D)  // Right
         {
-            go->position.x += CAMERA_OBJECT_SPEED;
+            mainChar->position.x -= CAMERA_OBJECT_SPEED;
         }
         if (key == GLFW_KEY_W)     // Forward
         {
-            go->position.z += CAMERA_OBJECT_SPEED;
+            mainChar->position.z += CAMERA_OBJECT_SPEED;
         }
         if (key == GLFW_KEY_S)     // Backwards
         {
-            go->position.z -= CAMERA_OBJECT_SPEED;
+            mainChar->position.z -= CAMERA_OBJECT_SPEED;
         }
         if (key == GLFW_KEY_Q)     // Down
         {
-            go->position.y -= CAMERA_OBJECT_SPEED;
+            mainChar->position.y -= CAMERA_OBJECT_SPEED;
         }
         if (key == GLFW_KEY_E)     // Up
         {
-            go->position.y += CAMERA_OBJECT_SPEED;
+            mainChar->position.y += CAMERA_OBJECT_SPEED;
         }
 
         if (key == GLFW_KEY_PAGE_DOWN && action == GLFW_PRESS)
