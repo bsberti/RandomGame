@@ -5,6 +5,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
+#include <FMOD/fmod.hpp>
 
 // This represents the location and orientation, etc. of 
 //	a single mesh object (a bunch of triangles with colours
@@ -26,6 +27,8 @@ public:
 	unsigned int numberOfTriangles;
 	std::vector<glm::vec3> trianglesCenter;
 	std::vector<glm::vec3> meshTriangles;
+	bool soundPlayed;
+	FMOD::Channel* attached_sound;
 
 	glm::vec4 RGBA_colour;		// RGA & Alpha, 0,0,0,1 (black, with transparency of 1.0)
 	// When true, it will overwrite the vertex colours

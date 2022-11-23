@@ -32,6 +32,7 @@
 #include "Particle.h"
 #include "cRandomUI.h"
 #include "SimulationView.h"
+#include "FModManager.h"
 
 glm::vec3 g_cameraEye = glm::vec3(-75.0, 75.0, -500.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -42,8 +43,20 @@ ParticleSystem g_ParticleSystem;
 cRandomUI gameUi;
 SimulationView* simView = new SimulationView();
 GLFWwindow* window;
+//initialize our sound manager
+FModManager* fmod_manager;
+
+glm::vec3 DirectionToGoal;
+glm::vec3 planeCurrPosition;
+glm::vec3 planeStartPosition;
+glm::vec3 planeFinalPosition;
 
 int const NUMBER_ROBOTS = 10;
+constexpr int max_channels = 255;
+
+int flag = FMOD_LOOP_NORMAL | FMOD_3D | FMOD_DEFAULT;
+int flag2 = FMOD_DEFAULT | FMOD_3D;
+int flag3 = FMOD_LOOP_OFF | FMOD_3D;
 
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -143,7 +156,7 @@ void lightning(GLuint shaderID) {
     cLightHelper* pLightHelper = new cLightHelper();
 
     ::g_pTheLightManager->CreateBasicDirecLight(shaderID, glm::vec4(-75.0f, 400.0f, -75.0f, 0.0f));
-    //::g_pTheLightManager->CreateBasicSpotLight(shaderID, glm::vec4(103.0f, 7.0f, 67.0f, 0.0f));
+    ::g_pTheLightManager->CreateBasicSpotLight(shaderID, glm::vec4(103.0f, 7.0f, 67.0f, 0.0f));
 }
 
 void creatingModelsPhysicsMedia() {
@@ -151,6 +164,23 @@ void creatingModelsPhysicsMedia() {
     sModelDrawInfo drawingInformation;    
     pVAOManager->FindDrawInfoByModelName("Terrain_Florest", drawingInformation);
     g_GraphicScene.CreateGameObjectByType("Terrain_Florest", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
+
+    pVAOManager->FindDrawInfoByModelName("Plane", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Plane", planeStartPosition, drawingInformation);
+
+    pVAOManager->FindDrawInfoByModelName("Cabin", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Cabin", glm::vec3(98.394, 0.0f, 63.33f), drawingInformation);
+
+    for (int i = 0; i < 10; i++) {
+        pVAOManager->FindDrawInfoByModelName("Tree1", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Tree1", glm::vec3(RandomFloat(0, 240), RandomFloat(0, 2), RandomFloat(0, 240)), drawingInformation);
+
+        pVAOManager->FindDrawInfoByModelName("Tree2", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Tree2", glm::vec3(RandomFloat(0, 240), RandomFloat(0, 2), RandomFloat(0, 240)), drawingInformation);
+
+        pVAOManager->FindDrawInfoByModelName("Rock4", drawingInformation);
+        g_GraphicScene.CreateGameObjectByType("Rock4", glm::vec3(RandomFloat(0, 240), RandomFloat(0, 2), RandomFloat(0, 240)), drawingInformation);
+    }
 }
 
 void debugLightSpheres() {
@@ -241,6 +271,31 @@ void calculateTrianglesCenter(cMeshObject* obj) {
     }
 }
 
+void positioningObjects() {
+    for (int i = 0; i < g_GraphicScene.vec_pMeshObjects.size(); i++) {
+        cMeshObject* currObj = g_GraphicScene.vec_pMeshObjects[i];
+        if (currObj->friendlyName != "Terrain_Florest" && 
+            currObj->friendlyName != "Plane") {
+            g_GraphicScene.PositioningMe(currObj);
+        }
+    }
+}
+
+void planeUpdate() {
+    float distance = glm::distance(planeCurrPosition, planeFinalPosition);
+    if (distance > 5.0f) {
+        g_GraphicScene.vec_pMeshObjects[1]->position += DirectionToGoal;
+        planeCurrPosition = g_GraphicScene.vec_pMeshObjects[1]->position;
+
+        /*std::cout << "Plane pos (x: " << planeCurrPosition.x <<
+           ", y: " << planeCurrPosition.y <<
+           ", z: " << planeCurrPosition.z << std::endl;*/
+    }
+    else {
+
+    }
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "starting up..." << std::endl;
 
@@ -250,6 +305,46 @@ int main(int argc, char* argv[]) {
     GLint vcol_location = 0;
 
     int updateCount = 0;
+
+    planeStartPosition = glm::vec3(256.0f * 3, 100.0f, 256.0f * 3);
+    planeFinalPosition = glm::vec3(-256.0f * 3, 100.0f, -256.0f * 3);
+    planeCurrPosition = planeStartPosition;
+
+    glm::vec3 GoalVector = planeFinalPosition - planeStartPosition;
+    DirectionToGoal = glm::normalize(GoalVector);
+    //DirectionToGoal /= 5;
+
+    // ------------------ FMOD INITIALIZATION ------------------------------------
+    //initialize fmod with max channels
+    fmod_manager = new FModManager();
+    if (!fmod_manager->Initialize(max_channels, FMOD_INIT_NORMAL)) {
+        std::cout << "Failed to initialize FMod" << std::endl;
+        return -1;
+    }
+
+    // 1 - MP3 Format
+    // 2 - WAV Format
+    fmod_manager->choosenAudio = 1;
+    // Load XML soundList and create sounds
+    if (fmod_manager->LoadSounds() != 0) {
+        std::cout << "Failed to load sounds in sounds/sounds.xml" << std::endl;
+        return -5;
+    }
+
+    //create channel groups
+    if (
+        !fmod_manager->create_channel_group("master") ||
+        !fmod_manager->create_channel_group("music") ||
+        !fmod_manager->create_channel_group("fx")
+        )
+    {
+        return -2;
+    }
+
+    //set parents for channel groups
+    //if (!fmod_manager->set_channel_group_parent("music", "master") || !fmod_manager->set_channel_group_parent("fx", "master"))
+    //    return -4;
+    // ------------------ FMOD INICIALIZATION ------------------------------------
 
     pVAOManager = new cVAOManager();
 
@@ -276,6 +371,7 @@ int main(int argc, char* argv[]) {
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 
+    gameUi.fmod_manager_ = fmod_manager;
     gameUi.iniciatingUI();
 
     // NOTE: OpenGL error checks have been omitted for brevity
@@ -320,7 +416,10 @@ int main(int argc, char* argv[]) {
     // Load the models
     creatingModelsPhysicsMedia();
 
-    cMeshObject* terrain = g_GraphicScene.vec_pMeshObjects[g_GraphicScene.vec_pMeshObjects.size() - 1];
+    cMeshObject* terrain = g_GraphicScene.vec_pMeshObjects[0];
+    calculateTrianglesCenter(terrain);
+
+    positioningObjects();
 
     sModelDrawInfo drawingInformation;
     pVAOManager->FindDrawInfoByModelName("Terrain_Florest", drawingInformation);
@@ -330,15 +429,56 @@ int main(int argc, char* argv[]) {
     mainChar->gameObject->bDoNotLight = false;
     g_GraphicScene.vec_pMeshObjects.push_back(mainChar->gameObject);
 
+    // ------------- PLANE SOUND ATTACHMENT -------------------------------------------
+    cMeshObject* plane = g_GraphicScene.vec_pMeshObjects[1];
+    plane->rotation.y = 0.833f;
+    FMOD::Channel* channel;
+    fmod_manager->play_sound("plane", planeStartPosition, 110.0f, FLT_MAX, &channel);
+    plane->attached_sound = channel;
+    fmod_manager->update_sound_volume(channel, 0.5f);
+    // ------------- PLANE SOUND ATTACHMENT -------------------------------------------
+
+    // ------------- CABIN SOUND ATTACHMENT -------------------------------------------
+    cMeshObject* cabin = g_GraphicScene.vec_pMeshObjects[2];
+    fmod_manager->play_sound("people", cabin->position, 1.0f, 10000.0f, &channel);
+    cabin->attached_sound = channel;
+    //fmod_manager->update_sound_volume(channel, 0.1f);
+    // ------------- CABIN SOUND ATTACHMENT -------------------------------------------
+   
+    //for (int i = 0; i < g_GraphicScene.vec_pMeshObjects.size(); i++) {
+    //    cMeshObject* currObj = g_GraphicScene.vec_pMeshObjects[i];
+    //    // ------------- ALL TREE1 SOUND ATTACHMENT ---------------------------------------
+    //    if (currObj->friendlyName == "Tree1") {
+    //        fmod_manager->play_sound("bush", currObj->position, 0.01f, 100.0f, &channel);
+    //        currObj->attached_sound = channel;
+    //    }
+    //    // ------------- ALL TREE1 SOUND ATTACHMENT ---------------------------------------
+
+    //    // ------------- ALL TREE2 SOUND ATTACHMENT ---------------------------------------
+    //    if (currObj->friendlyName == "Tree2") {
+    //        fmod_manager->play_sound("bush2", currObj->position, 0.01f, 100.0f, &channel);
+    //        currObj->attached_sound = channel;
+    //    }
+    //    // ------------- ALL TREE2 SOUND ATTACHMENT ---------------------------------------
+
+    //    // ------------- ALL ROCK SOUND ATTACHMENT ---------------------------------------
+    //    if (currObj->friendlyName == "Rock4") {
+    //        fmod_manager->play_sound("rock", currObj->position, 0.01f, 100.0f, &channel);
+    //        currObj->attached_sound = channel;
+    //    }
+    //    // ------------- ALL ROCK SOUND ATTACHMENT ---------------------------------------
+    //}
+    
     debugLightSpheres();
 
-    GLint mvp_location = glGetUniformLocation(shaderID, "MVP");                 // program
+    GLint mvp_location = glGetUniformLocation(shaderID, "MVP"); 
     GLint mModel_location = glGetUniformLocation(shaderID, "mModel");
     GLint mView_location = glGetUniformLocation(shaderID, "mView");
     GLint mProjection_location = glGetUniformLocation(shaderID, "mProjection");
     // Need this for lighting
     GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");
 
+    // ---------------- GAME LOOP START -----------------------------------------------
     while (!glfwWindowShouldClose(window)) {
         ::g_pTheLightManager->CopyLightInformationToShader(shaderID);
 
@@ -557,14 +697,49 @@ int main(int argc, char* argv[]) {
         //g_ParticleSystem.Integrate(1.f);
         simView->m_PhysicsSystem.UpdateStep(0.1f);
 
+        // ------ Check colission ------
+        for (int i = 0; i < g_GraphicScene.vec_pMeshObjects.size(); i++) {
+            cMeshObject* currObj = g_GraphicScene.vec_pMeshObjects[i];
+            if (currObj->friendlyName != "Terrain_Florest" &&
+                currObj->friendlyName != "Plane" && 
+                currObj->friendlyName != "Cabin") {
+                if (glm::distance(mainChar->gameObject->position, currObj->position) <= 3.0f &&
+                    !currObj->soundPlayed) {
+                    // Colision!
+                    currObj->soundPlayed = true;
+                    if (currObj->friendlyName == "Tree1") {
+                        fmod_manager->play_sound("bush", currObj->position, 1.0f, 10000.0f, &channel);
+                    }
+
+                    if (currObj->friendlyName == "Tree2") {
+                        fmod_manager->play_sound("bush2", currObj->position, 1.0f, 10000.0f, &channel);
+                    }
+
+                    if (currObj->friendlyName == "Rock4") {
+                        fmod_manager->play_sound("rock", currObj->position, 1.0f, 10000.0f, &channel);
+                    }
+                }
+            }
+        }
+
+        planeUpdate();
+        //update the sound position
+        fmod_manager->update_3d_sound_position(plane->attached_sound, plane->position, DirectionToGoal);
+        
         mainChar->gameObject->position = mainChar->physicsObject->GetPosition().GetGLM();
         g_cameraTarget = glm::vec3(mainChar->gameObject->position.x, 
             mainChar->gameObject->position.y, 
             mainChar->gameObject->position.z);
+        
+        //g_cameraTarget = glm::vec3(plane->position.x, 
+        //    plane->position.y,
+        //    plane->position.z);
 
-        g_cameraEye = glm::vec3(mainChar->gameObject->position.x + 0.f,
+        /*g_cameraEye = glm::vec3(mainChar->gameObject->position.x + 0.f,
             mainChar->gameObject->position.y + 40.f,
-            mainChar->gameObject->position.z + -50.f);
+            mainChar->gameObject->position.z + -50.f);*/
+
+        fmod_manager->tick(mainChar->gameObject->position);
 
         glfwSetWindowTitle(window, ssTitle.str().c_str());
     }
@@ -574,6 +749,8 @@ int main(int argc, char* argv[]) {
     delete ::g_pTheLightManager;
 
     glfwDestroyWindow(window);
+    fmod_manager->Shutdown();
+    delete fmod_manager;
 
     glfwTerminate();
     exit(EXIT_SUCCESS);

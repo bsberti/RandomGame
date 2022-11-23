@@ -1,12 +1,9 @@
-﻿  GraphicScene.cpp
-  cLightManager.cpp
-  theMainFunction.cpp
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\GDP202223\RandomGame\RandomGame\theMainFunction.cpp(252,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\GDP202223\RandomGame\RandomGame\theMainFunction.cpp(256,71): warning C4805: '==': unsafe mix of type 'bool' and type 'float' in operation
-theMainFunction.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui_ImplGlfw_InitForOpenGL(struct GLFWwindow *,bool)" (?ImGui_ImplGlfw_InitForOpenGL@@YA_NPEAUGLFWwindow@@_N@Z)
-theMainFunction.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui_ImplOpenGL3_Init(char const *)" (?ImGui_ImplOpenGL3_Init@@YA_NPEBD@Z)
-theMainFunction.obj : error LNK2001: unresolved external symbol "struct ImGuiIO & __cdecl ImGui::GetIO(void)" (?GetIO@ImGui@@YAAEAUImGuiIO@@XZ)
-theMainFunction.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui::DebugCheckVersionAndDataLayout(char const *,unsigned __int64,unsigned __int64,unsigned __int64,unsigned __int64,unsigned __int64,unsigned __int64)" (?DebugCheckVersionAndDataLayout@ImGui@@YA_NPEBD_K11111@Z)
-theMainFunction.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::StyleColorsDark(struct ImGuiStyle *)" (?StyleColorsDark@ImGui@@YAXPEAUImGuiStyle@@@Z)
-theMainFunction.obj : error LNK2001: unresolved external symbol "struct ImGuiContext * __cdecl ImGui::CreateContext(struct ImFontAtlas *)" (?CreateContext@ImGui@@YAPEAUImGuiContext@@PEAUImFontAtlas@@@Z)
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\GDP202223\RandomGame\x64\Release\RandomGame.exe : fatal error LNK1120: 6 unresolved externals
+﻿  theMainFunction.cpp
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\RandomGame\theMainFunction.cpp(241,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\RandomGame\theMainFunction.cpp(243,19): warning C4101: 'triangleCenter2': unreferenced local variable
+  Generating code
+  0 of 2994 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  RandomGame.vcxproj -> C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\x64\Release\RandomGame.exe

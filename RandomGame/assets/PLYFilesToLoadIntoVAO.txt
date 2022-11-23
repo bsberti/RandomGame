@@ -1,5 +1,3 @@
-assets/models/bunny/reconstruction/bun_zipper_res2_xyz_n_rgba_uv.ply
-Bunny
 assets/models/Tree1_xyz_n_rgba_uv.ply
 Tree1
 assets/models/Tree2_xyz_n_rgba_uv.ply
@@ -14,4 +12,6 @@ assets/models/ISO_Shphere_flat_4div_xyz_n_rgba_uv.ply
 ISO_Sphere_2
 assets/models/1129701_Terrain_xyz_n_rgba_uv.ply
 Terrain_Florest
+assets/models/Plane_xyz_n_rgba_uv.ply
+Plane
 EOF
