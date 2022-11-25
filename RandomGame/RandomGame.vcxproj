@@ -18,6 +18,18 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'x64'">
+    <BuildDir>Final</BuildDir>
+    <ConfigDir>$(Configuration)</ConfigDir>
+    <PlatformDir>$(Platform)</PlatformDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(Platform)' == 'x86'">
+    <BuildDir>Final</BuildDir>
+    <ConfigDir>$(Configuration)</ConfigDir>
+    <PlatformDir>$(Platform)</PlatformDir>
+  </PropertyGroup>
+  
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -217,7 +229,65 @@
     <None Include="assets\shaders\fragmentShader01.glsl" />
     <None Include="assets\shaders\vertexShader01.glsl" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <AssetsShader Include="assets\shaders\fragmentShader01.glsl" />
+    <AssetsShader Include="assets\shaders\vertexShader01.glsl" />
+    <AssetsModels Include="assets\models\1129701_Terrain_xyz_n_rgba_uv.ply" />
+    <AssetsModels Include="assets\models\Cabin_xyz_n_rgba_uv.ply" />
+    <AssetsModels Include="assets\models\ISO_Shphere_flat_3div_xyz_n_rgba_uv.ply" />
+    <AssetsModels Include="assets\models\ISO_Shphere_flat_4div_xyz_n_rgba_uv.ply" />
+    <AssetsModels Include="assets\models\Plane_xyz_n_rgba_uv.ply" />
+    <AssetsModels Include="assets\models\Rock4_xyz_n_rgba_uv.ply" />
+    <AssetsModels Include="assets\models\Tree1_xyz_n_rgba_uv.ply" />
+    <AssetsModels Include="assets\models\Tree2_xyz_n_rgba_uv.ply" />
+    <Assets Include="assets\PLYFilesToLoadIntoVAO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <SoundsFx Include="sounds/fx/airplane_engine.mp3" />
+    <SoundsFx Include="sounds/fx/airplane_engine.wav" />
+    <SoundsFx Include="sounds/fx/bush.mp3" />
+    <SoundsFx Include="sounds/fx/bush.wav" />
+    <SoundsFx Include="sounds/fx/bush2.mp3" />
+    <SoundsFx Include="sounds/fx/bush2.wav" />
+    <SoundsFx Include="sounds/fx/card-shuffling.mp3" />
+    <SoundsFx Include="sounds/fx/card-shuffling.wav" />
+    <SoundsFx Include="sounds/fx/draw-card.mp3" />
+    <SoundsFx Include="sounds/fx/draw-card.wav" />
+    <SoundsFx Include="sounds/fx/game-over.mp3" />
+    <SoundsFx Include="sounds/fx/game-over.wav" />
+    <SoundsFx Include="sounds/fx/people.mp3" />
+    <SoundsFx Include="sounds/fx/people.wav" />
+    <SoundsFx Include="sounds/fx/rock-smash.mp3" />
+    <SoundsFx Include="sounds/fx/rock-smash.wav" />
+    <SoundsFx Include="sounds/fx/victory.mp3" />
+    <SoundsFx Include="sounds/fx/victory.wav" />
+    <SoundsFx Include="sounds/fx/whistle-down.mp3" />
+    <SoundsFx Include="sounds/fx/whistle-down.wav" />
+    <SoundsFx Include="sounds/fx/whistle-up.mp3" />
+    <SoundsFx Include="sounds/fx/whistle-up.wav" />
+    <SoundsFx Include="sounds/fx/wrong.mp3" />
+    <SoundsFx Include="sounds/fx/wrong.wav" />
+    <SoundsMusic Include="sounds/music/piano-background-1.mp3" />
+    <SoundsMusic Include="sounds/music/piano-background-1.wav" />
+    <Sounds Include="sounds/soundList.xml" />
+  </ItemGroup>
+  
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="project_03" DependsOnTargets="Clean;Build" Condition="'$(Configuration)'=='Debug'">
+    <MakeDir Directories="$(BuildDir)"/>
+    <MakeDir Directories="$(ConfigDir)"/>
+    <MakeDir Directories="$(PlatformDir)"/>
+    <Message Text="Starting copying files to Final directory."/>
+    <Copy SourceFiles="fmod.dll" DestinationFolder="$(BuildDir)/$(ConfigDir)/$(PlatformDir)"/>
+    <Copy SourceFiles="@(Assets)" DestinationFolder="$(BuildDir)/$(ConfigDir)/$(PlatformDir)/assets"/>
+    <Copy SourceFiles="@(AssetsShader)" DestinationFolder="$(BuildDir)/$(ConfigDir)/$(PlatformDir)/assets/shaders"/>
+    <Copy SourceFiles="@(AssetsModels)" DestinationFolder="$(BuildDir)/$(ConfigDir)/$(PlatformDir)/assets/models"/>
+    <Copy SourceFiles="@(SoundsFx)" DestinationFolder="$(BuildDir)/$(ConfigDir)/$(PlatformDir)/sounds/fx"/>
+    <Copy SourceFiles="@(SoundsMusic)" DestinationFolder="$(BuildDir)/$(ConfigDir)/$(PlatformDir)/sounds/music"/>
+    <Copy SourceFiles="@(Sounds)" DestinationFolder="$(BuildDir)/$(ConfigDir)/$(PlatformDir)/sounds"/>
+    <Copy SourceFiles="$(OutDir)RandomGame.exe" DestinationFolder="$(BuildDir)/$(ConfigDir)/$(PlatformDir)"/>
+  </Target>
 </Project>
