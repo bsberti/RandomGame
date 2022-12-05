@@ -51,12 +51,20 @@ glm::vec3 planeCurrPosition;
 glm::vec3 planeStartPosition;
 glm::vec3 planeFinalPosition;
 
-int const NUMBER_ROBOTS = 10;
+FMOD::Channel* _channel;
 constexpr int max_channels = 255;
 
 int flag = FMOD_LOOP_NORMAL | FMOD_3D | FMOD_DEFAULT;
 int flag2 = FMOD_DEFAULT | FMOD_3D;
 int flag3 = FMOD_LOOP_OFF | FMOD_3D;
+int flag4 = FMOD_CREATESTREAM | FMOD_NONBLOCKING;
+
+#define NUMBER_OF_TAGS 10
+
+// Create openstate and tags globals
+
+int _tag_index = 0;
+char _tag_string[NUMBER_OF_TAGS][128] = { 0 };
 
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -316,6 +324,7 @@ int main(int argc, char* argv[]) {
 
     // ------------------ FMOD INITIALIZATION ------------------------------------
     //initialize fmod with max channels
+    FMOD_TAG tag;
     fmod_manager = new FModManager();
     if (!fmod_manager->Initialize(max_channels, FMOD_INIT_NORMAL)) {
         std::cout << "Failed to initialize FMod" << std::endl;
@@ -335,15 +344,24 @@ int main(int argc, char* argv[]) {
     if (
         !fmod_manager->create_channel_group("master") ||
         !fmod_manager->create_channel_group("music") ||
-        !fmod_manager->create_channel_group("fx")
+        !fmod_manager->create_channel_group("fx") || 
+        !fmod_manager->create_channel_group("radio")
         )
     {
         return -2;
     }
 
     //set parents for channel groups
-    //if (!fmod_manager->set_channel_group_parent("music", "master") || !fmod_manager->set_channel_group_parent("fx", "master"))
-    //    return -4;
+    if (!fmod_manager->set_channel_group_parent("music", "master") || 
+        !fmod_manager->set_channel_group_parent("fx", "master") || 
+        !fmod_manager->set_channel_group_parent("radio", "master")
+        )
+        return -4;
+
+    FModManager::ChannelGroup* channel_group;
+    if (fmod_manager->find_channel_group("radio", &channel_group)) {
+        fmod_manager->set_channel_group_volume("radio", 0.1f);
+    }
     // ------------------ FMOD INICIALIZATION ------------------------------------
 
     pVAOManager = new cVAOManager();
@@ -435,7 +453,7 @@ int main(int argc, char* argv[]) {
     FMOD::Channel* channel;
     fmod_manager->play_sound("plane", planeStartPosition, 110.0f, FLT_MAX, &channel);
     plane->attached_sound = channel;
-    fmod_manager->update_sound_volume(channel, 0.5f);
+    fmod_manager->update_sound_volume(channel, 0.1f);
     // ------------- PLANE SOUND ATTACHMENT -------------------------------------------
 
     // ------------- CABIN SOUND ATTACHMENT -------------------------------------------
@@ -444,30 +462,6 @@ int main(int argc, char* argv[]) {
     cabin->attached_sound = channel;
     //fmod_manager->update_sound_volume(channel, 0.1f);
     // ------------- CABIN SOUND ATTACHMENT -------------------------------------------
-   
-    //for (int i = 0; i < g_GraphicScene.vec_pMeshObjects.size(); i++) {
-    //    cMeshObject* currObj = g_GraphicScene.vec_pMeshObjects[i];
-    //    // ------------- ALL TREE1 SOUND ATTACHMENT ---------------------------------------
-    //    if (currObj->friendlyName == "Tree1") {
-    //        fmod_manager->play_sound("bush", currObj->position, 0.01f, 100.0f, &channel);
-    //        currObj->attached_sound = channel;
-    //    }
-    //    // ------------- ALL TREE1 SOUND ATTACHMENT ---------------------------------------
-
-    //    // ------------- ALL TREE2 SOUND ATTACHMENT ---------------------------------------
-    //    if (currObj->friendlyName == "Tree2") {
-    //        fmod_manager->play_sound("bush2", currObj->position, 0.01f, 100.0f, &channel);
-    //        currObj->attached_sound = channel;
-    //    }
-    //    // ------------- ALL TREE2 SOUND ATTACHMENT ---------------------------------------
-
-    //    // ------------- ALL ROCK SOUND ATTACHMENT ---------------------------------------
-    //    if (currObj->friendlyName == "Rock4") {
-    //        fmod_manager->play_sound("rock", currObj->position, 0.01f, 100.0f, &channel);
-    //        currObj->attached_sound = channel;
-    //    }
-    //    // ------------- ALL ROCK SOUND ATTACHMENT ---------------------------------------
-    //}
     
     debugLightSpheres();
 
@@ -489,8 +483,6 @@ int main(int argc, char* argv[]) {
         // Normalizing is also just divide by the length of the ray
         // LightToSubRay /= glm::length(LightToSubRay);
         LightToSubRay = glm::normalize(LightToSubRay);
-
-        //::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(LightToSubRay, 1.0f);
 
         DrawConcentricDebugLightObjects(gameUi.listbox_lights_current);
 
@@ -671,7 +663,84 @@ int main(int argc, char* argv[]) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        gameUi.render(g_GraphicScene, g_pTheLightManager->vecTheLights);
+        //-------------------- RADIO STREAM --------------------
+        system("CLS");
+        fmod_manager->currentRadio = fmod_manager->mRadios[gameUi.radioChoice];
+        FMOD::Sound* _sound = fmod_manager->getSound(fmod_manager->currentRadio);
+        FMOD::ChannelGroup* _channelGroup = fmod_manager->getChannelGroup("radio");
+        FMOD::Channel* _channel;
+        _channelGroup->getChannel(0, &_channel);
+
+        fmod_manager->_result = _sound->getOpenState(&fmod_manager->_openstate, &fmod_manager->radioPercentage, &fmod_manager->radioStarving, nullptr);
+
+        if (fmod_manager->radioOn)
+        {
+            while (_sound->getTag(nullptr, -1, &tag) == FMOD_OK)
+            {
+                if (tag.datatype == FMOD_TAGDATATYPE_STRING)
+                {
+                    //sprintf_s(_tag_string[_tag_index], "%s = %s (%d bytes)",
+                    //    tag.name, static_cast<char*>(tag.data), tag.datalen);
+
+                    std::cout << tag.name << " = " << 
+                        static_cast<char*>(tag.data) << " (" <<
+                        tag.datalen << " bytes)" << std::endl;
+
+                    //_tag_string[_tag_index % NUMBER_OF_TAGS][_tag_index] = *tag.name;
+                    _tag_index = (_tag_index + 1) % NUMBER_OF_TAGS;
+                }
+                else
+                {
+                    float frequency = *static_cast<float*>(tag.data);
+                    fmod_manager->_result = _channel->setFrequency(frequency);
+                    assert(!fmod_manager->_result);
+                }
+            }
+
+            fmod_manager->_result = _channelGroup->getPaused(&fmod_manager->radioPaused);
+            fmod_manager->_result = _channelGroup->isPlaying(&fmod_manager->radioPlaying);
+            fmod_manager->_result = _channel->getPosition(&fmod_manager->radioPosition, FMOD_TIMEUNIT_MS);
+            fmod_manager->_result = _channelGroup->setMute(fmod_manager->radioStarving);
+        }
+        else {
+            fmod_manager->play_sound(fmod_manager->currentRadio, "radio");
+            fmod_manager->radioOn = true;
+        }
+
+        if (fmod_manager->_openstate == FMOD_OPENSTATE_CONNECTING) {
+            fmod_manager->currentState = "Connecting...";
+        }
+        else if (fmod_manager->_openstate == FMOD_OPENSTATE_BUFFERING) {
+            fmod_manager->currentState = "Buffering...";
+        }
+        else if (fmod_manager->radioPaused) {
+            fmod_manager->currentState = "Paused...";
+        }
+        else {
+            fmod_manager->currentState = "Playing";
+        }
+
+        std::cout << "Time: " << (fmod_manager->radioPosition / 1000 / 60) << ":" 
+            << (fmod_manager->radioPosition / 100 % 60) << ":" 
+            << (fmod_manager->radioPosition / 10 % 100) << std::endl;
+
+        std::cout << "Current state: " << fmod_manager->currentState 
+            << " " << (fmod_manager->radioStarving ? " (STARVING)" : "") << std::endl;
+        
+        std::cout << "Buffer percentage: " << fmod_manager->radioPercentage << std::endl;
+        
+        //Print tags
+        for (int i = _tag_index; i < (_tag_index + NUMBER_OF_TAGS); i++) {
+            std::cout << _tag_string[i % NUMBER_OF_TAGS] << std::endl;
+
+            //sprintf(text_buffer, "%s", _tag_string[i % NUMBER_OF_TAGS]);
+            //render_text(text_buffer, -1 + xoffset, 1 - yoffset * sy, sx * 0.5, sy * 0.5);
+            //yoffset += offset_step;
+        }
+
+        //-------------------- RADIO STREAM --------------------
+
+        gameUi.render(g_GraphicScene, fmod_manager, g_pTheLightManager->vecTheLights);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -721,6 +790,7 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
+        // ------ Check colission ------
 
         planeUpdate();
         //update the sound position

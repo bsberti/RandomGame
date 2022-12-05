@@ -9,6 +9,12 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 class FModManager
 {
 public:
@@ -61,6 +67,18 @@ protected:
 public:
 	int choosenAudio;
 
+	std::vector<std::string> mRadios;
+	std::string currentRadio;
+	bool radioOn;
+	unsigned int radioPercentage;
+	unsigned int radioPosition;
+	bool radioPaused;
+	bool radioPlaying;
+	bool radioStarving;
+	std::string currentState;
+	FMOD_OPENSTATE _openstate = FMOD_OPENSTATE_READY;
+	FMOD_RESULT _result = FMOD_OK;
+
 	//lifecycle
 	FModManager();
 	bool Initialize(const int number_of_channels, const int system_flags);
@@ -85,8 +103,12 @@ public:
 	//sounds
 	bool create_sound(const std::string& name, const std::string& path, FMOD_MODE mode);
 	bool play_sound(const std::string& sound_name, glm::vec3 position, float max_distance, float atten, FMOD::Channel** channel);
+	bool play_sound(const std::string& sound_name, const std::string& channel_group_name);
 	bool play_sound(const std::string& name);
+	bool pause_sound(const std::string& sound_name, const std::string& channel_group_name);
 	unsigned int getSoundPosition(const std::string& sound_name, const std::string& channel_group_name);
+	FMOD::Sound* getSound(const std::string& sound_name);
+	FMOD::ChannelGroup* getChannelGroup(const std::string& channel_name);
 
 	//dsp
 	bool create_dsp(const std::string& name, FMOD_DSP_TYPE dsp_type, const float value);
@@ -100,4 +122,6 @@ public:
 	bool update_sound_volume(FMOD::Channel* channel, const float new_volume);
 
 	bool tick(const glm::vec3& camera_position);
+
+	void stopRadio(int radioChoice);
 };

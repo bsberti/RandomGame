@@ -11,7 +11,7 @@ bool FModManager::is_okay(const bool show_error) const
 	return last_result_ == FMOD_OK;
 }
 
-FModManager::FModManager() : last_result_(FMOD_OK), system_(nullptr) {}
+FModManager::FModManager() : last_result_(FMOD_OK), system_(nullptr), radioOn(false) {}
 
 bool FModManager::Initialize(const int number_of_channels, const int system_flags)
 {
@@ -26,6 +26,29 @@ bool FModManager::Initialize(const int number_of_channels, const int system_flag
 	}
 
 	return true;
+}
+
+void FModManager::stopRadio(int radioChoice) {
+	radioOn = false;
+	radioPercentage = 0;
+	radioPaused = false;
+	radioPlaying = false;
+	radioStarving = false;
+
+	currentRadio = mRadios[radioChoice];
+	FMOD::Sound* _sound = getSound(currentRadio);
+	FMOD::ChannelGroup* _channelGroup = getChannelGroup("radio");
+	do
+	{
+		_result = system_->update();
+		assert(!_result);
+
+		_result = _sound->getOpenState(&_openstate, nullptr, nullptr, nullptr);
+		assert(!_result);
+
+		Sleep(50);
+
+	} while (_openstate != FMOD_OPENSTATE_READY);
 }
 
 void FModManager::Shutdown() {
@@ -70,7 +93,7 @@ int FModManager::LoadSounds() {
 		pugi::xml_node soundNode = *soundIt;
 		
 		MySound* currentSound = new MySound();
-		pugi::xml_attribute category = soundNode.attribute("caregory");
+		pugi::xml_attribute category = soundNode.attribute("category");
 		currentSound->category = category.value();
 
 		pugi::xml_node_iterator soundInfoIt;
@@ -96,8 +119,12 @@ int FModManager::LoadSounds() {
 			}
 		}
 
+		if (currentSound->category == "radio") {
+			mRadios.push_back(currentSound->name);
+		}
+
 		//create sounds object
-		if (!create_sound(currentSound->name, currentSound->path, FMOD_LOOP_NORMAL | FMOD_3D | FMOD_DEFAULT))
+		if (!create_sound(currentSound->name, currentSound->path, currentSound->mode))
 			return -5;
 
 	}
@@ -258,6 +285,26 @@ unsigned int FModManager::getSoundPosition(const std::string& sound_name, const 
 	return i;
 }
 
+FMOD::Sound* FModManager::getSound(const std::string& sound_name)
+{
+	const auto sound = mSounds.find(sound_name);
+	if (sound == mSounds.end()) {
+		return nullptr;
+	}
+	return sound->second;
+}
+
+FMOD::ChannelGroup* FModManager::getChannelGroup(const std::string& channel_name)
+{
+	const auto channelGroup = mChannelGroups.find(channel_name);
+	if (channelGroup == mChannelGroups.end()) {
+		return nullptr;
+	}
+	//FMOD::Channel** channel;
+	//channelGroup->second->group_ptr->getChannel(0, channel);
+	return channelGroup->second->group_ptr;
+}
+
 bool FModManager::play_sound(const std::string& sound_name, glm::vec3 position, float max_distance, float atten, FMOD::Channel** channel)
 {
 	const auto sound = mSounds.find(sound_name);
@@ -285,6 +332,51 @@ bool FModManager::play_sound(const std::string& sound_name, glm::vec3 position, 
 	}
 
 	if (!is_okay((*channel)->setPaused(false))) {
+		return false;
+	}
+
+	return true;
+}
+
+bool FModManager::play_sound(const std::string& sound_name, const std::string& channel_group_name) {
+	const auto sound_iterator = mSounds.find(sound_name);
+	const auto channel_group_iterator = mChannelGroups.find(channel_group_name);
+
+	if (sound_iterator == mSounds.end() || channel_group_iterator == mChannelGroups.end()) {
+		return false;
+	}
+
+	//channel_group_iterator->second->group_ptr->setPaused(false);
+	last_result_ = system_->playSound(sound_iterator->second, channel_group_iterator->second->group_ptr, true, &bgChannel);
+	if (!is_okay()) {
+		return false;
+	}
+
+	last_result_ = (*bgChannel).setPaused(false);
+	if (!is_okay()) {
+		return false;
+	}
+
+	return true;
+}
+
+bool FModManager::pause_sound(const std::string& sound_name, const std::string& channel_group_name)
+{
+	const auto sound_iterator = mSounds.find(sound_name);
+	const auto channel_group_iterator = mChannelGroups.find(channel_group_name);
+
+	if (sound_iterator == mSounds.end() || channel_group_iterator == mChannelGroups.end()) {
+		return false;
+	}
+
+	//channel_group_iterator->second->group_ptr->setPaused(true);
+	//last_result_ = system_->playSound(sound_iterator->second, channel_group_iterator->second->group_ptr, false, &bgChannel);
+	//if (!is_okay()) {
+	//	return false;
+	//}
+
+	last_result_ = (*bgChannel).setPaused(true);
+	if (!is_okay()) {
 		return false;
 	}
 
@@ -420,3 +512,21 @@ bool FModManager::tick(const glm::vec3& camera_position)
 
 	return is_okay(system_->update());
 }
+
+//std::string FModManager::getCurrentRadio()
+//{
+//	std::string current = "";
+//	for (std::map<std::string, bool>::iterator itCurrentRadio = mRadios.begin();
+//		itCurrentRadio != mRadios.end();
+//		itCurrentRadio++) {
+//		if (itCurrentRadio->second == true)
+//			current = itCurrentRadio->first.c_str();
+//	}
+//
+//	if (current == "") {
+//		mRadios["jazz"] = true;
+//		//mRadios.try_emplace("jazz", true);
+//		current = "jazz";
+//	}
+//	return current;
+//}

@@ -77,4 +77,22 @@
     <mp3>./sounds/fx/rock-smash.mp3</mp3>
     <mode>17</mode>
   </sound>
+  <sound category="radio">
+    <name>jazz</name>
+    <wav>http://us4.internet-radio.com:8193</wav>
+    <mp3>http://us4.internet-radio.com:8193</mp3>
+    <mode>65664</mode>
+  </sound>
+  <sound category="radio">
+    <name>pop</name>
+    <wav>http://uk7.internet-radio.com:8040</wav>
+    <mp3>http://uk7.internet-radio.com:8040</mp3>
+    <mode>65664</mode>
+  </sound>
+  <sound category="radio">
+    <name>rockRadio</name>
+    <wav>http://192.111.140.11:8532</wav>
+    <mp3>http://192.111.140.11:8532</mp3>
+    <mode>65664</mode>
+  </sound>
 </soundlist>

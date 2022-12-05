@@ -14,6 +14,7 @@ cRandomUI::cRandomUI() {
     musicVolume = 0;
     fxVolume = 0;
     fmod_manager_ = nullptr;
+    radioChoice = 0;
 }
 
 int cRandomUI::iniciatingUI()
@@ -180,7 +181,7 @@ bool cRandomUI::DisplayChannelFader(std::string channelName) {
     return true;
 }
 
-void cRandomUI::render(GraphicScene &scene, std::vector<cLight> &vecTheLights) {
+void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLight>& vecTheLights) {
     static float f = 0.0f;
     static int counter = 0;
     bool lightsEnabled;
@@ -195,7 +196,7 @@ void cRandomUI::render(GraphicScene &scene, std::vector<cLight> &vecTheLights) {
         else
             listbox_items[i] = "Empty";
     }
-    
+
     ImGui::ListBox("1", &listbox_item_current, listbox_items, IM_ARRAYSIZE(listbox_items), 10);
 
     ImGui::Text("Light Objets");
@@ -207,7 +208,7 @@ void cRandomUI::render(GraphicScene &scene, std::vector<cLight> &vecTheLights) {
         else
             listbox_lights[i] = "Empty";
     }
-    
+
     ImGui::ListBox("2", &listbox_lights_current, listbox_lights, IM_ARRAYSIZE(listbox_lights), 10);
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -428,6 +429,64 @@ void cRandomUI::render(GraphicScene &scene, std::vector<cLight> &vecTheLights) {
     }
 
     if (!DisplayChannelFader("fx")) {
+        // Something went wrong, what now?
+    }
+
+    ImGui::BulletText("Radio Channel");
+
+    for (int i = 0; i < fmod->mRadios.size(); i++) {
+        if (fmod->mRadios[i] == fmod->currentRadio)
+            radioChoice = i;
+    }
+
+    { // Jazz Radio Update
+        if (ImGui::RadioButton("Jazz", radioChoice == 0)) {
+            //fmod->stopRadio(radioChoice);
+            fmod->radioOn = false;
+            fmod->pause_sound(fmod->currentRadio, "radio");
+
+            radioChoice = 0;
+            fmod->currentRadio = "jazz";
+        }
+        ImGui::SameLine();
+    }
+
+    { // Pop Radio Update
+        if (ImGui::RadioButton("Pop", radioChoice == 1)) {
+            //fmod->stopRadio(radioChoice);
+            fmod->radioOn = false;
+            fmod->pause_sound(fmod->currentRadio, "radio");
+
+            radioChoice = 1;
+            fmod->currentRadio = "pop";
+        }
+        ImGui::SameLine();
+    }
+    
+    { //Rock Radio Update
+        if (ImGui::RadioButton("Rock", radioChoice == 2)) {
+            //fmod->stopRadio(radioChoice);
+            fmod->radioOn = false;
+            fmod->pause_sound(fmod->currentRadio, "radio");
+
+            radioChoice = 2;
+            fmod->currentRadio = "rockRadio";
+        }
+    }
+
+    if (!DisplayChannelVolume("radio")) {
+        // Something went wrong, what now?
+    }
+
+    if (!DisplayChannelPitch("radio")) {
+        // Something went wrong, what now?
+    }
+
+    if (!DisplayChannelEcho("radio")) {
+        // Something went wrong, what now?
+    }
+
+    if (!DisplayChannelFader("radio")) {
         // Something went wrong, what now?
     }
 
