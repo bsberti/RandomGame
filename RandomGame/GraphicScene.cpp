@@ -44,23 +44,13 @@ void GraphicScene::CreateGameObjectByType(const std::string& type, glm::vec3 pos
 	go->meshName = type;
 	go->friendlyName = type;
 	go->position = position;
-	go->bUse_RGBA_colour = false;
+	go->bUse_RGBA_colour = true;
+	go->RGBA_colour = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f); 
+	//go->specular_colour_and_power = glm::vec4(1.0f, 1.0f, 1.0f, 1000.0f);
 	go->isWireframe = false;
 	go->soundPlayed = false;
 	go->numberOfTriangles = drawInfo.numberOfTriangles;
 	go->meshTriangles = drawInfo.modelTriangles;
-
-	if (type == "Cabin") {
-		go->rotation.y = 2.197f;
-	}
-
-	if (type == "Tree1") {
-		go->scale = 2.0f;
-	}
-
-	if (type == "Tree2") {
-		go->scale = 2.0f;
-	}
 
 	vec_pMeshObjects.push_back(go);
 }

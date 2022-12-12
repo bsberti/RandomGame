@@ -139,11 +139,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BlocksLoader.cpp" />
+    <ClCompile Include="cBasicTextureManager\C24BitBMPpixel.cpp" />
+    <ClCompile Include="cBasicTextureManager\cBasicTextureManager.cpp" />
+    <ClCompile Include="cBasicTextureManager\CTextureFromBMP.cpp" />
     <ClCompile Include="cLight.cpp" />
     <ClCompile Include="cLightHelper.cpp" />
     <ClCompile Include="cLightManager.cpp" />
     <ClCompile Include="cMeshObject.cpp" />
     <ClCompile Include="cRandomUI.cpp" />
+    <ClCompile Include="DrawObject_function.cpp" />
     <ClCompile Include="FModManager.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="globalThings.cpp" />
@@ -176,7 +181,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="BlocksLoader.h" />
     <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="cBasicTextureManager\C24BitBMPpixel.h" />
+    <ClInclude Include="cBasicTextureManager\cBasicTextureManager.h" />
+    <ClInclude Include="cBasicTextureManager\CTextureFromBMP.h" />
     <ClInclude Include="cLight.h" />
     <ClInclude Include="cLightHelper.h" />
     <ClInclude Include="cLightManager.h" />

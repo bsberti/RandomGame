@@ -374,6 +374,7 @@ bool FModManager::pause_sound(const std::string& sound_name, const std::string& 
 	//if (!is_okay()) {
 	//	return false;
 	//}
+	
 
 	last_result_ = (*bgChannel).setPaused(true);
 	if (!is_okay()) {

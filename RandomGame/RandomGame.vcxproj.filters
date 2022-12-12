@@ -42,6 +42,9 @@
     <Filter Include="FMod">
       <UniqueIdentifier>{eed6302c-d91a-423c-bb58-fb91907a86ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Textures">
+      <UniqueIdentifier>{9e5b51c9-09e0-4e7b-ac1f-1be27a66526f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cVAOManager\cVAOManager.cpp">
@@ -145,6 +148,21 @@
     </ClCompile>
     <ClCompile Include="FModManager.cpp">
       <Filter>FMod</Filter>
+    </ClCompile>
+    <ClCompile Include="BlocksLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cBasicTextureManager\C24BitBMPpixel.cpp">
+      <Filter>Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="cBasicTextureManager\cBasicTextureManager.cpp">
+      <Filter>Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="cBasicTextureManager\CTextureFromBMP.cpp">
+      <Filter>Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawObject_function.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -258,6 +276,18 @@
     </ClInclude>
     <ClInclude Include="FModManager.h">
       <Filter>FMod</Filter>
+    </ClInclude>
+    <ClInclude Include="BlocksLoader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cBasicTextureManager\C24BitBMPpixel.h">
+      <Filter>Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="cBasicTextureManager\cBasicTextureManager.h">
+      <Filter>Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="cBasicTextureManager\CTextureFromBMP.h">
+      <Filter>Textures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

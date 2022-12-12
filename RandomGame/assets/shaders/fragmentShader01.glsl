@@ -17,17 +17,55 @@ in vec4 fBinormal;
 // This replaces gl_FragColor
 out vec4 pixelOutputColour;
 
-uniform vec4 RGBA_Colour;
+uniform vec4 RGBA_Colour;		// aka "diffuse" RGB + Alpha (w)
 uniform bool bUseRGBA_Colour;
 
+// This is for the flame alpha transparency object
+uniform bool bIsFlameObject;
 
-uniform vec4 diffuseColour;
-uniform vec4 specularColour;
+// This is for the discard transparency 'bullet holes' example on the ship
+// Assumes texture07 is the black and white discard texture
+uniform bool bUseDiscardTexture;
+
+
+
+
+//uniform vec4 diffuseColour;		// RGB + Alpha (w)
+uniform vec4 specularColour;			// RGB object hightlight COLOUR
+										// For most material, this is white (1,1,1)
+										// For metals google "metal specular hightlight colour"
+										// For plastic, it's the same colour as the diffuse
+										// W value is the "specular power" or "Shininess" 
+										// Starts at 1, and goes to 10,000s
+										//	1 = not shiny 
+										// 10 = "meh" shiny
+										// 1,000 and up gets shinier
 // Used to draw debug (or unlit) objects
 uniform vec4 debugColour;
 uniform bool bDoNotLight;		
 
 uniform vec4 eyeLocation;
+
+// Texture "samplers" 
+uniform sampler2D texture0;		// "Brick texture"
+uniform sampler2D texture1;		// "Lady Gaga"
+uniform sampler2D texture2;		// "Lady Gaga"
+uniform sampler2D texture3;		// "Lady Gaga"
+uniform sampler2D texture4;		// "Brick texture"
+uniform sampler2D texture5;		// "Lady Gaga"
+uniform sampler2D texture6;		// "Lady Gaga"
+uniform sampler2D texture7;		// "Lady Gaga"
+
+uniform vec4 texRatio_0_3;		// x = texture0, y = texture1, etc. 0 to 1
+uniform vec4 texRatio_4_7;		// 0 to 1
+
+uniform samplerCube skyboxTexture;
+// When true, applies the skybox texture
+uniform bool bIsSkyboxObject;
+
+// HACK: colour the island
+uniform bool bIsIlandModel;
+
 
 struct sLight
 {
@@ -47,7 +85,7 @@ const int POINT_LIGHT_TYPE = 0;
 const int SPOT_LIGHT_TYPE = 1;
 const int DIRECTIONAL_LIGHT_TYPE = 2;
 
-const int NUMBEROFLIGHTS = 20;
+const int NUMBEROFLIGHTS = 10;
 uniform sLight theLights[NUMBEROFLIGHTS];  	// 
 
 vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
@@ -55,32 +93,149 @@ vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal,
 
 void main()
 {
+	
+	if (bIsSkyboxObject)
+	{
+		vec3 cubeMapColour = texture( skyboxTexture, fNormal.xyz ).rgb;
+		pixelOutputColour.rgb = cubeMapColour.rgb;
+		pixelOutputColour.a = 1.0f;
+		return;
+	}
+
+
+	if ( bIsIlandModel )
+	{
+	
+		if ( fVertWorldLocation.y < -25.0f )
+		{	// Water
+			pixelOutputColour.rgb = vec3(0.0f, 0.0f, 1.0f);
+		}
+		else if ( fVertWorldLocation.y < -15.0f )
+		{	// Sand ( 89.8% red, 66.67% green and 43.92% )
+			pixelOutputColour.rgb = vec3(0.898f, 0.6667f, 0.4392f);
+		}
+		else if ( fVertWorldLocation.y < 30.0f )
+		{	// Grass
+			pixelOutputColour.rgb = vec3(0.0f, 1.0f, 0.0f);
+		}
+		else
+		{	// Snow
+			pixelOutputColour.rgb = vec3(1.0f, 1.0f, 1.0f);
+		}
+		pixelOutputColour.a = 1.0f;
+	
+	
+		return;
+	}
+
 	vec3 materialColour = fColour.rgb;
 //	finalColour.r = 1.0f;
+
+	float alphaTransparency = RGBA_Colour.w;
+
+	// For the exhaust of the drop ship
+	if (bIsFlameObject)
+	{
+		// DON'T light. Apply the texture. Use colour as alpha
+		vec3 flameColour = texture( texture0, fUVx2.st ).rgb;	
+		
+		pixelOutputColour.rgb = flameColour;
+		
+		// Set the alpha transparency based on the colour.
+		float RGBcolourSum = pixelOutputColour.r + pixelOutputColour.g + pixelOutputColour.b;
+		pixelOutputColour.a = max( ((RGBcolourSum - 0.1f) / 3.0f), 0.0f);
+	
+	
+		// Exit early so bypasses lighting
+		return;
+	}
+	
+	if ( bUseDiscardTexture )
+	{	
+		// Compare the colour in the texture07 black and white texture
+		// If it's 'black enough' then don't draw the pixel
+		// NOTE: I'm only sampling from the red 
+		// (since it's black and white, all channels would be the same)
+		float greyscalevalue = texture( texture7, fUVx2.st ).r;
+		
+		// Here, 0.5 is "black enough" 
+		if ( greyscalevalue < 0.5f )
+		{
+			discard;
+		}
+	}
+	
+	
+
+	
 
 	if ( bUseRGBA_Colour )
 	{
 		materialColour = RGBA_Colour.rgb;
 	}
-	
-	
+	else
+	{
+		//gl_FragColor = vec4(finalColour, 1.0f);
+	//	pixelOutputColour = vec4(finalColour, 1.0f);	
+	//	pixelOutputColour = vec4(fNormal.xyz, 1.0f);
+
+		// Sample from a texture 
+		vec3 textColour0 = texture( texture0, fUVx2.st ).rgb;		
+		vec3 textColour1 = texture( texture1, fUVx2.st ).rgb;	
+		vec3 textColour2 = texture( texture2, fUVx2.st ).rgb;	
+		vec3 textColour3 = texture( texture3, fUVx2.st ).rgb;	
+		
+		
+		materialColour =   (textColour0.rgb * texRatio_0_3.x) 
+						 + (textColour1.rgb * texRatio_0_3.y) 
+						 + (textColour2.rgb * texRatio_0_3.z) 
+						 + (textColour3.rgb * texRatio_0_3.w);
+	}//if ( bUseRGBA_Colour )
+
 	if ( bDoNotLight )
 	{
 		// Set the output colour and exit early
 		// (Don't apply the lighting to this)
-		pixelOutputColour = vec4(materialColour.rgb, 1.0f);
+		pixelOutputColour = vec4(materialColour.rgb, alphaTransparency);
 		return;
 	}
-	//gl_FragColor = vec4(finalColour, 1.0f);
-//	pixelOutputColour = vec4(finalColour, 1.0f);	
-//	pixelOutputColour = vec4(fNormal.xyz, 1.0f);
-
-	vec4 specColour = vec4(0.5f, 0.5f, 0.5f, 1.0f);
 
 	vec4 outColour = calculateLightContrib( materialColour.rgb, fNormal.xyz, 
-	                                        fVertWorldLocation.xyz, specColour );
-											
-	pixelOutputColour = vec4(outColour.rgb, 1.0f);
+	                                        fVertWorldLocation.xyz, specularColour );
+										
+	// If my blend function is (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) 
+	// then it's reading whatever the 4th value of the output is:
+	pixelOutputColour = vec4(outColour.rgb, alphaTransparency);
+	
+	float amountOfAmbientLight = 0.15f;
+	pixelOutputColour.rgb += (materialColour.rgb * amountOfAmbientLight);
+	
+	
+// HACK: Apply the skybox to the object
+//	vec3 STU_Vector = fNormal.xyz;
+
+//	// Make the objects 'reflective' (like a mirror)
+//	vec3 eyeVector = normalize(eyeLocation.xyz - fVertWorldLocation.xyz);
+//	// genType reflect(	genType IncidentVector, genType Normal);
+//	vec3 STU_Vector = reflect(eyeVector, fNormal.xyz);
+	
+//	// Make the objects 'refractive' (like a see through glass or water or diamond...)
+//	vec3 eyeVector = normalize(eyeLocation.xyz - fVertWorldLocation.xyz);
+//	// genType reflect(	genType IncidentVector, genType Normal);
+//	// (index of refraction for diamond is 2.417 according to wikipedia)
+//	// (index of refraction for water is 1.333 according to wikipedia)
+//	vec3 STU_Vector = refract(eyeVector, fNormal.xyz, 1.0f/2.417f);
+//	
+//	vec3 cubeMapColour = texture( skyboxTexture, STU_Vector.xyz ).rgb;
+//	pixelOutputColour.rgb *= 0.00001f;
+//	pixelOutputColour.rgb += cubeMapColour.rgb;
+	
+//	pixelOutputColour.rgb *= 0.0001;
+//	pixelOutputColour.rgb += materialColour.rgb;
+	
+	
+//	pixelOutputColour.rgb *= 0.0001f; 
+//	pixelOutputColour.rg += fUVx2.st;
 }
 
 
@@ -162,13 +317,13 @@ vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal,
 		
 //		lightSpecularContrib = pow( max(0.0f, dot( eyeVector, reflectVector) ), objectSpecularPower )
 //			                   * vertexSpecular.rgb;	//* theLights[lightIndex].Specular.rgb
-		
-		lightSpecularContrib = pow( max(0.0f, dot( eyeVector, reflectVector) ), objectSpecularPower )
-			                   * theLights[index].specular.rgb;
-
+// This only takes into account the colour of the light.
 //		lightSpecularContrib = pow( max(0.0f, dot( eyeVector, reflectVector) ), objectSpecularPower )
-//			                   * (vertexSpecular.rgb * theLights[index].specular.rgb);
+//			                   * theLights[index].specular.rgb;
 							   
+// This one takes into account the object "colour" AND the light colour
+		lightSpecularContrib = pow( max(0.0f, dot( eyeVector, reflectVector) ), objectSpecularPower )
+			                   * (vertexSpecular.rgb * theLights[index].specular.rgb);							   
 		// Attenuation
 		float attenuation = 1.0f / 
 				( theLights[index].atten.x + 										

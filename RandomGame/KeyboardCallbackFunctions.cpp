@@ -213,61 +213,39 @@ void key_callback(GLFWwindow* window,
             //        WS - forward and back
 
         // For this Project I wanna moove the ball instead
-        const float CAMERA_OBJECT_SPEED = 1.0f;
+        const float OBJECT_SPEED = 1.0f;
         
         //Ball* mainChar = (Ball*)g_GraphicScene.vec_pMeshObjects[1];
-        PhysicsObject* mainChar = simView->m_PhysicsSystem.m_PhysicsObjects[1];
+        PhysicsObject* mainChar = simView->m_PhysicsSystem.m_PhysicsObjects[0];
         Vector3 mainCharPos = mainChar->GetPosition();
         //g_cameraTarget = glm::vec3(mainCharPos.x, mainCharPos.y, mainCharPos.z);
 
         //std::cout << mainChar->gameObject->friendlyName << std::endl;
-        std::cout << "Ball Position is x: " << mainCharPos.x << " y: " << mainCharPos.y << " z: " << mainCharPos.z << std::endl;
-
-        if (key == GLFW_KEY_SPACE)
-        {
-            mainChar->ApplyForce(Vector3(0.0f, 25.0f, 0.0f));
-        }
+        //std::cout << "Ball Position is x: " << mainCharPos.x << " y: " << mainCharPos.y << " z: " << mainCharPos.z << std::endl;
 
         if (key == GLFW_KEY_A)     // Left
         {
-            mainChar->position.x += CAMERA_OBJECT_SPEED;
+            mainChar->position.x += OBJECT_SPEED;
         }
         if (key == GLFW_KEY_D)  // Right
         {
-            mainChar->position.x -= CAMERA_OBJECT_SPEED;
+            mainChar->position.x -= OBJECT_SPEED;
         }
         if (key == GLFW_KEY_W)     // Forward
         {
-            mainChar->position.z += CAMERA_OBJECT_SPEED;
+            mainChar->position.z += OBJECT_SPEED;
         }
         if (key == GLFW_KEY_S)     // Backwards
         {
-            mainChar->position.z -= CAMERA_OBJECT_SPEED;
+            mainChar->position.z -= OBJECT_SPEED;
         }
         if (key == GLFW_KEY_Q)     // Down
         {
-            mainChar->position.y -= CAMERA_OBJECT_SPEED;
+            mainChar->position.y -= OBJECT_SPEED;
         }
         if (key == GLFW_KEY_E)     // Up
         {
-            mainChar->position.y += CAMERA_OBJECT_SPEED;
-        }
-
-        if (key == GLFW_KEY_PAGE_DOWN && action == GLFW_PRESS)
-        {
-            // Select previous light
-            if (selectedObjectIndex > 0)
-            {
-                selectedObjectIndex--;
-            }
-        }
-        if (key == GLFW_KEY_PAGE_UP && action == GLFW_PRESS)
-        {
-            if (selectedObjectIndex < (g_GraphicScene.vec_pMeshObjects.size() - 1))
-            {
-                // Select previous light
-                selectedObjectIndex++;
-            }
+            mainChar->position.y += OBJECT_SPEED;
         }
     }
     break;

@@ -1,23 +1,19 @@
 
-//#include <glad/glad.h>
-//#define GLFW_INCLUDE_NONE
-//#include <GLFW/glfw3.h>
 #include "globalOpenGL.h"
 
 #include <glm/glm.hpp>
-#include <glm/vec3.hpp> // glm::vec3        (x,y,z)
-#include <glm/vec4.hpp> // glm::vec4        (x,y,z,w)
-#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/vec3.hpp> 
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp> 
 #include <glm/gtc/matrix_transform.hpp> 
-#include <glm/gtc/type_ptr.hpp> // glm::value_ptr
+#include <glm/gtc/type_ptr.hpp> 
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-#include <fstream>  // File streaming thing (like cin, etc.)
-#include <sstream>  // "string builder" type thing
+#include <fstream>
+#include <sstream>
 
-// Some STL (Standard Template Library) things
-#include <vector>           // aka a "smart array"
+#include <vector>
 #include "globalThings.h"
 #include "cShaderManager.h"
 #include "cVAOManager/cVAOManager.h"
@@ -33,9 +29,15 @@
 #include "cRandomUI.h"
 #include "SimulationView.h"
 #include "FModManager.h"
+#include "BlocksLoader.h"
+#include "cBasicTextureManager/cBasicTextureManager.h"
 
-glm::vec3 g_cameraEye = glm::vec3(-75.0, 75.0, -500.0f);
+BlocksLoader* m_blocksLoader;
+
+glm::vec3 g_cameraEye = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+
+cBasicTextureManager* g_pTextureManager = NULL;
 
 cVAOManager* pVAOManager;
 GraphicScene g_GraphicScene;
@@ -46,28 +48,25 @@ GLFWwindow* window;
 //initialize our sound manager
 FModManager* fmod_manager;
 
-glm::vec3 DirectionToGoal;
-glm::vec3 planeCurrPosition;
-glm::vec3 planeStartPosition;
-glm::vec3 planeFinalPosition;
-
 FMOD::Channel* _channel;
 constexpr int max_channels = 255;
 
-int flag = FMOD_LOOP_NORMAL | FMOD_3D | FMOD_DEFAULT;
-int flag2 = FMOD_DEFAULT | FMOD_3D;
-int flag3 = FMOD_LOOP_OFF | FMOD_3D;
-int flag4 = FMOD_CREATESTREAM | FMOD_NONBLOCKING;
-
 #define NUMBER_OF_TAGS 10
-
-// Create openstate and tags globals
-
-int _tag_index = 0;
-char _tag_string[NUMBER_OF_TAGS][128] = { 0 };
+#define MAP_WIDTH 50
+#define MAP_HEIGHT 50
+#define GLOBAL_MAP_OFFSET 15
 
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+void DrawObject(cMeshObject* pCurrentMeshObject,
+    glm::mat4x4 mat_PARENT_Model,               // The "parent's" model matrix
+    GLuint shaderID,                            // ID for the current shader
+    cBasicTextureManager* pTextureManager,
+    cVAOManager* pVAOManager,
+    GLint mModel_location,                      // Uniform location of mModel matrix
+    GLint mModelInverseTransform_location);      // Uniform location of mView location
+
 
 static void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
@@ -81,6 +80,8 @@ float RandomFloat(float a, float b) {
     return a + r;
 }
 
+
+// ------------------------ Load Model into VAO ------------------------
 bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName,
     cVAOManager* pVAOManager,
     GLuint shaderID)
@@ -92,18 +93,15 @@ bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName,
     }
 
     // At this point, the file is open and ready for reading
-    std::string PLYFileNameToLoad;     // = "assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply";
-    std::string friendlyName;   // = "MOTO";
+    std::string PLYFileNameToLoad;      // example = "assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply";
+    std::string friendlyName;           // example = "MOTO";
 
     bool bKeepReadingFile = true;
 
     const unsigned int BUFFER_SIZE = 1000;  // 1000 characters
-    char textBuffer[BUFFER_SIZE];       // Allocate AND clear (that's the {0} part)
+    char textBuffer[BUFFER_SIZE];           // Allocate AND clear (that's the {0} part)
     // Clear that array to all zeros
     memset(textBuffer, 0, BUFFER_SIZE);
-
-    // Or if it's integers, you can can do this short cut:
-    // char textBuffer[BUFFER_SIZE] = { 0 };       // Allocate AND clear (that's the {0} part)
 
     while (bKeepReadingFile) {
         // Reads the entire line into the buffer (including any white space)
@@ -113,11 +111,8 @@ bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName,
         PLYFileNameToLoad.append(textBuffer);
 
         // Is this the end of the file (have I read "EOF" yet?)?
-        if (PLYFileNameToLoad == "EOF")
-        {
-            // All done
+        if (PLYFileNameToLoad == "EOF") {
             bKeepReadingFile = false;
-            // Skip to the end of the while loop
             continue;
         }
 
@@ -127,25 +122,25 @@ bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName,
         friendlyName.clear();
         friendlyName.append(textBuffer);
 
-        sModelDrawInfo motoDrawInfo;
-
+        sModelDrawInfo drawInfo;
         c3DModelFileLoader fileLoader;
-        //if (LoadThePLYFile(PLYFileNameToLoad, motoDrawInfo))
+
         std::string errorText = "";
-        if (fileLoader.LoadPLYFile_Format_XYZ_N_RGBA_UV(PLYFileNameToLoad, motoDrawInfo, errorText)) {
+        if (fileLoader.LoadPLYFile_Format_XYZ_N_RGBA_UV(PLYFileNameToLoad, drawInfo, errorText)) {
             std::cout << "Loaded the file OK" << std::endl;
         }
         else {
             std::cout << errorText;
         }
 
-        if (pVAOManager->LoadModelIntoVAO(friendlyName, motoDrawInfo, shaderID)) {
+        if (pVAOManager->LoadModelIntoVAO(friendlyName, drawInfo, shaderID)) {
             std::cout << "Loaded the " << friendlyName << " model" << std::endl;
         }
     }
 
     return true;
 }
+// ------------------------ Load Model into VAO ------------------------
 
 bool SaveTheVAOModelTypesToFile(std::string fileTypesToLoadName,
     cVAOManager* pVAOManager);
@@ -163,32 +158,25 @@ void lightning(GLuint shaderID) {
     ::g_pTheLightManager = new cLightManager();
     cLightHelper* pLightHelper = new cLightHelper();
 
-    ::g_pTheLightManager->CreateBasicDirecLight(shaderID, glm::vec4(-75.0f, 400.0f, -75.0f, 0.0f));
-    ::g_pTheLightManager->CreateBasicSpotLight(shaderID, glm::vec4(103.0f, 7.0f, 67.0f, 0.0f));
+    ::g_pTheLightManager->CreateBasicDirecLight(shaderID, glm::vec4(250.0f, 900.0f, 250.0f, 0.0f));
+    //::g_pTheLightManager->CreateBasicSpotLight(shaderID, glm::vec4(103.0f, 7.0f, 67.0f, 0.0f));
 }
 
-void creatingModelsPhysicsMedia() {
-
-    sModelDrawInfo drawingInformation;    
-    pVAOManager->FindDrawInfoByModelName("Terrain_Florest", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Terrain_Florest", glm::vec3(0.0f, 0.0f, 0.0f), drawingInformation);
-
-    pVAOManager->FindDrawInfoByModelName("Plane", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Plane", planeStartPosition, drawingInformation);
-
-    pVAOManager->FindDrawInfoByModelName("Cabin", drawingInformation);
-    g_GraphicScene.CreateGameObjectByType("Cabin", glm::vec3(98.394, 0.0f, 63.33f), drawingInformation);
-
-    for (int i = 0; i < 10; i++) {
-        pVAOManager->FindDrawInfoByModelName("Tree1", drawingInformation);
-        g_GraphicScene.CreateGameObjectByType("Tree1", glm::vec3(RandomFloat(0, 240), RandomFloat(0, 2), RandomFloat(0, 240)), drawingInformation);
-
-        pVAOManager->FindDrawInfoByModelName("Tree2", drawingInformation);
-        g_GraphicScene.CreateGameObjectByType("Tree2", glm::vec3(RandomFloat(0, 240), RandomFloat(0, 2), RandomFloat(0, 240)), drawingInformation);
-
-        pVAOManager->FindDrawInfoByModelName("Rock4", drawingInformation);
-        g_GraphicScene.CreateGameObjectByType("Rock4", glm::vec3(RandomFloat(0, 240), RandomFloat(0, 2), RandomFloat(0, 240)), drawingInformation);
-    }
+void creatingModels() {
+    sModelDrawInfo drawingInformation;
+    for (int i = 0; i < m_blocksLoader->g_blockMap->size(); i++) {
+        for (int j = 0; j < m_blocksLoader->g_blockMap->at(i).size(); j++) {
+            std::string currentString = m_blocksLoader->g_blockMap->at(i).at(j);
+            if (currentString != "") {
+                if (currentString == "X") {
+                    pVAOManager->FindDrawInfoByModelName("Cube", drawingInformation);
+                    float x = (j * GLOBAL_MAP_OFFSET);
+                    float z = (i * GLOBAL_MAP_OFFSET);
+                    g_GraphicScene.CreateGameObjectByType("Cube", glm::vec3(x, 0.0f, z), drawingInformation);
+                }
+              }
+        }
+    }   
 }
 
 void debugLightSpheres() {
@@ -280,27 +268,14 @@ void calculateTrianglesCenter(cMeshObject* obj) {
 }
 
 void positioningObjects() {
+
+
     for (int i = 0; i < g_GraphicScene.vec_pMeshObjects.size(); i++) {
         cMeshObject* currObj = g_GraphicScene.vec_pMeshObjects[i];
         if (currObj->friendlyName != "Terrain_Florest" && 
             currObj->friendlyName != "Plane") {
             g_GraphicScene.PositioningMe(currObj);
         }
-    }
-}
-
-void planeUpdate() {
-    float distance = glm::distance(planeCurrPosition, planeFinalPosition);
-    if (distance > 5.0f) {
-        g_GraphicScene.vec_pMeshObjects[1]->position += DirectionToGoal;
-        planeCurrPosition = g_GraphicScene.vec_pMeshObjects[1]->position;
-
-        /*std::cout << "Plane pos (x: " << planeCurrPosition.x <<
-           ", y: " << planeCurrPosition.y <<
-           ", z: " << planeCurrPosition.z << std::endl;*/
-    }
-    else {
-
     }
 }
 
@@ -314,57 +289,45 @@ int main(int argc, char* argv[]) {
 
     int updateCount = 0;
 
-    planeStartPosition = glm::vec3(256.0f * 3, 100.0f, 256.0f * 3);
-    planeFinalPosition = glm::vec3(-256.0f * 3, 100.0f, -256.0f * 3);
-    planeCurrPosition = planeStartPosition;
-
-    glm::vec3 GoalVector = planeFinalPosition - planeStartPosition;
-    DirectionToGoal = glm::normalize(GoalVector);
-    //DirectionToGoal /= 5;
+    m_blocksLoader = new BlocksLoader(MAP_HEIGHT, MAP_WIDTH);
 
     // ------------------ FMOD INITIALIZATION ------------------------------------
-    //initialize fmod with max channels
-    FMOD_TAG tag;
-    fmod_manager = new FModManager();
-    if (!fmod_manager->Initialize(max_channels, FMOD_INIT_NORMAL)) {
-        std::cout << "Failed to initialize FMod" << std::endl;
-        return -1;
-    }
-
-    // 1 - MP3 Format
-    // 2 - WAV Format
-    fmod_manager->choosenAudio = 1;
-    // Load XML soundList and create sounds
-    if (fmod_manager->LoadSounds() != 0) {
-        std::cout << "Failed to load sounds in sounds/sounds.xml" << std::endl;
-        return -5;
-    }
-
-    //create channel groups
-    if (
-        !fmod_manager->create_channel_group("master") ||
-        !fmod_manager->create_channel_group("music") ||
-        !fmod_manager->create_channel_group("fx") || 
-        !fmod_manager->create_channel_group("radio")
-        )
     {
-        return -2;
-    }
+    //initialize fmod with max channels
+        fmod_manager = new FModManager();
+        if (!fmod_manager->Initialize(max_channels, FMOD_INIT_NORMAL)) {
+            std::cout << "Failed to initialize FMod" << std::endl;
+            return -1;
+        }
 
-    //set parents for channel groups
-    if (!fmod_manager->set_channel_group_parent("music", "master") || 
-        !fmod_manager->set_channel_group_parent("fx", "master") || 
-        !fmod_manager->set_channel_group_parent("radio", "master")
-        )
-        return -4;
+        // 1 - MP3 Format
+        // 2 - WAV Format
+        fmod_manager->choosenAudio = 1;
+        // Load XML soundList and create sounds
+        if (fmod_manager->LoadSounds() != 0) {
+            std::cout << "Failed to load sounds in sounds/sounds.xml" << std::endl;
+            return -5;
+        }
 
-    FModManager::ChannelGroup* channel_group;
-    if (fmod_manager->find_channel_group("radio", &channel_group)) {
-        fmod_manager->set_channel_group_volume("radio", 0.1f);
+        //create channel groups
+        if (
+            !fmod_manager->create_channel_group("master") ||
+            !fmod_manager->create_channel_group("music") ||
+            !fmod_manager->create_channel_group("fx") ||
+            !fmod_manager->create_channel_group("radio")
+            )
+        {
+            return -2;
+        }
+
+        //set parents for channel groups
+        if (!fmod_manager->set_channel_group_parent("music", "master") ||
+            !fmod_manager->set_channel_group_parent("fx", "master") ||
+            !fmod_manager->set_channel_group_parent("radio", "master")
+            )
+            return -4;
     }
     // ------------------ FMOD INICIALIZATION ------------------------------------
-
-    pVAOManager = new cVAOManager();
 
     glfwSetErrorCallback(error_callback);
 
@@ -392,13 +355,6 @@ int main(int argc, char* argv[]) {
     gameUi.fmod_manager_ = fmod_manager;
     gameUi.iniciatingUI();
 
-    // NOTE: OpenGL error checks have been omitted for brevity
-    //int x = 9;              // Location 7363
-    //int* px = &x;           // px = 7363
-    //int* pX1 = &x;          // px1 = 7363
-    //void* pZ = &x;         
-    //pZ = RandomFloat;
-
     // Create a shader thingy
     cShaderManager* pTheShaderManager = new cShaderManager();
 
@@ -424,45 +380,17 @@ int main(int argc, char* argv[]) {
 
     // Setting the lights
     lightning(shaderID);
-    
+
+    pVAOManager = new cVAOManager();
     if (!LoadModelTypesIntoVAO("assets/PLYFilesToLoadIntoVAO.txt", pVAOManager, shaderID)) {
         std::cout << "Error: Unable to load list of models to load into VAO file" << std::endl;
         // Do we exit here? 
-        // (How do we clean up stuff we've made, etc.)
+        // TO-DO
     }
 
     // Load the models
-    creatingModelsPhysicsMedia();
+    creatingModels();
 
-    cMeshObject* terrain = g_GraphicScene.vec_pMeshObjects[0];
-    calculateTrianglesCenter(terrain);
-
-    positioningObjects();
-
-    sModelDrawInfo drawingInformation;
-    pVAOManager->FindDrawInfoByModelName("Terrain_Florest", drawingInformation);
-    simView->LoadStaticModelToOurAABBEnvironment(drawingInformation, terrain->position);
-    
-    Ball* mainChar = simView->CreateBall(glm::vec3(10.f, 50.f, 10.f), 1.f);
-    mainChar->gameObject->bDoNotLight = false;
-    g_GraphicScene.vec_pMeshObjects.push_back(mainChar->gameObject);
-
-    // ------------- PLANE SOUND ATTACHMENT -------------------------------------------
-    cMeshObject* plane = g_GraphicScene.vec_pMeshObjects[1];
-    plane->rotation.y = 0.833f;
-    FMOD::Channel* channel;
-    fmod_manager->play_sound("plane", planeStartPosition, 110.0f, FLT_MAX, &channel);
-    plane->attached_sound = channel;
-    fmod_manager->update_sound_volume(channel, 0.1f);
-    // ------------- PLANE SOUND ATTACHMENT -------------------------------------------
-
-    // ------------- CABIN SOUND ATTACHMENT -------------------------------------------
-    cMeshObject* cabin = g_GraphicScene.vec_pMeshObjects[2];
-    fmod_manager->play_sound("people", cabin->position, 1.0f, 10000.0f, &channel);
-    cabin->attached_sound = channel;
-    //fmod_manager->update_sound_volume(channel, 0.1f);
-    // ------------- CABIN SOUND ATTACHMENT -------------------------------------------
-    
     debugLightSpheres();
 
     GLint mvp_location = glGetUniformLocation(shaderID, "MVP"); 
@@ -472,28 +400,20 @@ int main(int argc, char* argv[]) {
     // Need this for lighting
     GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");
 
+    g_cameraTarget = glm::vec3(250.f, 0.0, 250.f);
+    g_cameraEye = glm::vec3(250.f, 1000.f, 260.f);
+
     // ---------------- GAME LOOP START -----------------------------------------------
     while (!glfwWindowShouldClose(window)) {
         ::g_pTheLightManager->CopyLightInformationToShader(shaderID);
-
-        // Point the spotlight at the first Object Drawed
-        cMeshObject pFirstObject = *g_GraphicScene.vec_pMeshObjects[0];
-        glm::vec3 LightToSubRay = pFirstObject.position - glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
-
-        // Normalizing is also just divide by the length of the ray
-        // LightToSubRay /= glm::length(LightToSubRay);
-        LightToSubRay = glm::normalize(LightToSubRay);
 
         DrawConcentricDebugLightObjects(gameUi.listbox_lights_current);
 
         float ratio;
         int width, height;
-        //mat4x4 m, p, mvp;
-        glm::mat4x4 matModel;
+
         glm::mat4x4 matProjection;
         glm::mat4x4 matView;
-
-        //glm::mat4x4 mvp;            // Model-View-Projection
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
@@ -518,11 +438,16 @@ int main(int argc, char* argv[]) {
             ::g_cameraEye.x, ::g_cameraEye.y, ::g_cameraEye.z, 1.0f);
 
         matProjection = glm::perspective(
-            0.6f,       // Field of view (in degress, more or less 180)
+            0.6f,           // Field of view (in degress, more or less 180)
             ratio,
-            0.1f,       // Near plane (make this as LARGE as possible)
-            10000.0f);   // Far plane (make this as SMALL as possible)
-        // 6-8 digits of precision        
+            0.1f,           // Near plane (make this as LARGE as possible)
+            10000.0f);      // Far plane (make this as SMALL as possible)
+                            // 6-8 digits of precision
+
+        // Set once per scene (not per object)
+        glUniformMatrix4fv(mView_location, 1, GL_FALSE, glm::value_ptr(matView));
+        glUniformMatrix4fv(mProjection_location, 1, GL_FALSE, glm::value_ptr(matProjection));
+
 
         //    ____  _             _            __                           
         //   / ___|| |_ __ _ _ __| |_    ___  / _|  ___  ___ ___ _ __   ___ 
@@ -545,111 +470,14 @@ int main(int argc, char* argv[]) {
                 continue;
             }
 
-            // Don't draw any "back facing" triangles
-            glCullFace(GL_BACK);
+            // The parent's model matrix is set to the identity
+            glm::mat4x4 matModel = glm::mat4x4(1.0f);
 
-            // Turn on depth buffer test at draw time
-            glEnable(GL_DEPTH_TEST);
-
-            // Make an "identity matrix"
-            matModel = glm::mat4x4(1.0f);  // identity matrix
-
-            // Move the object 
-            glm::mat4 matTranslation = glm::translate(glm::mat4(1.0f),
-                pCurrentMeshObject->position);
-
-            // Rotate the object
-            glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f),
-                pCurrentMeshObject->rotation.z,                // Angle to rotate
-                glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
-
-            glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f),
-                pCurrentMeshObject->rotation.y,                // Angle to rotate
-                glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
-
-            glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f),
-                pCurrentMeshObject->rotation.x,                // Angle to rotate
-                glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
-
-            // Scale the object
-            float uniformScale = pCurrentMeshObject->scale;
-            glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-                glm::vec3(uniformScale, uniformScale, uniformScale));
-
-            // Applying all these transformations to the MODEL 
-            // (or "world" matrix)
-            matModel = matModel * matTranslation;
-
-            matModel = matModel * matRoationX;
-            matModel = matModel * matRoationY;
-            matModel = matModel * matRoationZ;
-
-            matModel = matModel * matScale;
-
-            glUniformMatrix4fv(mModel_location, 1, GL_FALSE, glm::value_ptr(matModel));
-            glUniformMatrix4fv(mView_location, 1, GL_FALSE, glm::value_ptr(matView));
-            glUniformMatrix4fv(mProjection_location, 1, GL_FALSE, glm::value_ptr(matProjection));
-
-            // Inverse transpose of a 4x4 matrix removes the right column and lower row
-            // Leaving only the rotation (the upper left 3x3 matrix values)
-            glm::mat4 mModelInverseTransform = glm::inverse(glm::transpose(matModel));
-            glUniformMatrix4fv(mModelInverseTransform_location, 1, GL_FALSE, glm::value_ptr(mModelInverseTransform));
-
-            // Wireframe
-            if (pCurrentMeshObject->isWireframe) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // GL_POINT, GL_LINE, GL_FILL
-            }
-            else {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            }
-
-            // Setting the colour in the shader
-            // uniform vec4 RGBA_Colour;
-
-            GLint RGBA_Colour_ULocID = glGetUniformLocation(shaderID, "RGBA_Colour");
-
-            glUniform4f(RGBA_Colour_ULocID,
-                pCurrentMeshObject->RGBA_colour.r,
-                pCurrentMeshObject->RGBA_colour.g,
-                pCurrentMeshObject->RGBA_colour.b,
-                pCurrentMeshObject->RGBA_colour.w);
-
-
-            GLint bUseRGBA_Colour_ULocID = glGetUniformLocation(shaderID, "bUseRGBA_Colour");
-
-            if (pCurrentMeshObject->bUse_RGBA_colour) {
-                glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_TRUE);
-            }
-            else {
-                glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_FALSE);
-            }
-
-            //uniform bool bDoNotLight;	
-            GLint bDoNotLight_Colour_ULocID = glGetUniformLocation(shaderID, "bDoNotLight");
-
-            if (pCurrentMeshObject->bDoNotLight) {
-                glUniform1f(bDoNotLight_Colour_ULocID, (GLfloat)GL_TRUE);
-            }
-            else {
-                glUniform1f(bDoNotLight_Colour_ULocID, (GLfloat)GL_FALSE);
-            }
-
-            // Choose the VAO that has the model we want to draw...
-            sModelDrawInfo drawingInformation;
-            if (pVAOManager->FindDrawInfoByModelName(pCurrentMeshObject->meshName, drawingInformation)) {
-                glBindVertexArray(drawingInformation.VAO_ID);
-
-                glDrawElements(GL_TRIANGLES,
-                    drawingInformation.numberOfIndices,
-                    GL_UNSIGNED_INT,
-                    (void*)0);
-
-                glBindVertexArray(0);
-            }
-            else {
-                // Didn't find that model
-                std::cout << "Error: didn't find model to draw." << std::endl;
-            }
+            // All the drawing code has been moved to the DrawObject function
+            DrawObject(pCurrentMeshObject,
+                matModel,
+                shaderID, ::g_pTextureManager,
+                pVAOManager, mModel_location, mModelInverseTransform_location);
         }
         //    _____           _          __                           
         //   | ____|_ __   __| |   ___  / _|  ___  ___ ___ _ __   ___ 
@@ -662,84 +490,7 @@ int main(int argc, char* argv[]) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        //-------------------- RADIO STREAM --------------------
-        system("CLS");
-        fmod_manager->currentRadio = fmod_manager->mRadios[gameUi.radioChoice];
-        FMOD::Sound* _sound = fmod_manager->getSound(fmod_manager->currentRadio);
-        FMOD::ChannelGroup* _channelGroup = fmod_manager->getChannelGroup("radio");
-        FMOD::Channel* _channel;
-        _channelGroup->getChannel(0, &_channel);
-
-        fmod_manager->_result = _sound->getOpenState(&fmod_manager->_openstate, &fmod_manager->radioPercentage, &fmod_manager->radioStarving, nullptr);
-
-        if (fmod_manager->radioOn)
-        {
-            while (_sound->getTag(nullptr, -1, &tag) == FMOD_OK)
-            {
-                if (tag.datatype == FMOD_TAGDATATYPE_STRING)
-                {
-                    //sprintf_s(_tag_string[_tag_index], "%s = %s (%d bytes)",
-                    //    tag.name, static_cast<char*>(tag.data), tag.datalen);
-
-                    std::cout << tag.name << " = " << 
-                        static_cast<char*>(tag.data) << " (" <<
-                        tag.datalen << " bytes)" << std::endl;
-
-                    //_tag_string[_tag_index % NUMBER_OF_TAGS][_tag_index] = *tag.name;
-                    _tag_index = (_tag_index + 1) % NUMBER_OF_TAGS;
-                }
-                else
-                {
-                    float frequency = *static_cast<float*>(tag.data);
-                    fmod_manager->_result = _channel->setFrequency(frequency);
-                    assert(!fmod_manager->_result);
-                }
-            }
-
-            fmod_manager->_result = _channelGroup->getPaused(&fmod_manager->radioPaused);
-            fmod_manager->_result = _channelGroup->isPlaying(&fmod_manager->radioPlaying);
-            fmod_manager->_result = _channel->getPosition(&fmod_manager->radioPosition, FMOD_TIMEUNIT_MS);
-            fmod_manager->_result = _channelGroup->setMute(fmod_manager->radioStarving);
-        }
-        else {
-            fmod_manager->play_sound(fmod_manager->currentRadio, "radio");
-            fmod_manager->radioOn = true;
-        }
-
-        if (fmod_manager->_openstate == FMOD_OPENSTATE_CONNECTING) {
-            fmod_manager->currentState = "Connecting...";
-        }
-        else if (fmod_manager->_openstate == FMOD_OPENSTATE_BUFFERING) {
-            fmod_manager->currentState = "Buffering...";
-        }
-        else if (fmod_manager->radioPaused) {
-            fmod_manager->currentState = "Paused...";
-        }
-        else {
-            fmod_manager->currentState = "Playing";
-        }
-
-        std::cout << "Time: " << (fmod_manager->radioPosition / 1000 / 60) << ":" 
-            << (fmod_manager->radioPosition / 100 % 60) << ":" 
-            << (fmod_manager->radioPosition / 10 % 100) << std::endl;
-
-        std::cout << "Current state: " << fmod_manager->currentState 
-            << " " << (fmod_manager->radioStarving ? " (STARVING)" : "") << std::endl;
         
-        std::cout << "Buffer percentage: " << fmod_manager->radioPercentage << std::endl;
-        
-        //Print tags
-        for (int i = _tag_index; i < (_tag_index + NUMBER_OF_TAGS); i++) {
-            std::cout << _tag_string[i % NUMBER_OF_TAGS] << std::endl;
-
-            //sprintf(text_buffer, "%s", _tag_string[i % NUMBER_OF_TAGS]);
-            //render_text(text_buffer, -1 + xoffset, 1 - yoffset * sy, sx * 0.5, sy * 0.5);
-            //yoffset += offset_step;
-        }
-
-        //-------------------- RADIO STREAM --------------------
-
         gameUi.render(g_GraphicScene, fmod_manager, g_pTheLightManager->vecTheLights);
 
         ImGui::Render();
@@ -765,51 +516,6 @@ int main(int argc, char* argv[]) {
         // Physics Update
         //g_ParticleSystem.Integrate(1.f);
         simView->m_PhysicsSystem.UpdateStep(0.1f);
-
-        // ------ Check colission ------
-        for (int i = 0; i < g_GraphicScene.vec_pMeshObjects.size(); i++) {
-            cMeshObject* currObj = g_GraphicScene.vec_pMeshObjects[i];
-            if (currObj->friendlyName != "Terrain_Florest" &&
-                currObj->friendlyName != "Plane" && 
-                currObj->friendlyName != "Cabin") {
-                if (glm::distance(mainChar->gameObject->position, currObj->position) <= 3.0f &&
-                    !currObj->soundPlayed) {
-                    // Colision!
-                    currObj->soundPlayed = true;
-                    if (currObj->friendlyName == "Tree1") {
-                        fmod_manager->play_sound("bush", currObj->position, 1.0f, 10000.0f, &channel);
-                    }
-
-                    if (currObj->friendlyName == "Tree2") {
-                        fmod_manager->play_sound("bush2", currObj->position, 1.0f, 10000.0f, &channel);
-                    }
-
-                    if (currObj->friendlyName == "Rock4") {
-                        fmod_manager->play_sound("rock", currObj->position, 1.0f, 10000.0f, &channel);
-                    }
-                }
-            }
-        }
-        // ------ Check colission ------
-
-        planeUpdate();
-        //update the sound position
-        fmod_manager->update_3d_sound_position(plane->attached_sound, plane->position, DirectionToGoal);
-        
-        mainChar->gameObject->position = mainChar->physicsObject->GetPosition().GetGLM();
-        g_cameraTarget = glm::vec3(mainChar->gameObject->position.x, 
-            mainChar->gameObject->position.y, 
-            mainChar->gameObject->position.z);
-        
-        //g_cameraTarget = glm::vec3(plane->position.x, 
-        //    plane->position.y,
-        //    plane->position.z);
-
-        /*g_cameraEye = glm::vec3(mainChar->gameObject->position.x + 0.f,
-            mainChar->gameObject->position.y + 40.f,
-            mainChar->gameObject->position.z + -50.f);*/
-
-        fmod_manager->tick(mainChar->gameObject->position);
 
         glfwSetWindowTitle(window, ssTitle.str().c_str());
     }

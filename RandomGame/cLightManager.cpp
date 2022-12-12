@@ -69,9 +69,9 @@ void cLightManager::CreateBasicDirecLight(unsigned int shaderID, glm::vec4 posit
 	LoadLightUniformLocations(shaderID);
 	vecTheLights[lightsCreated].name = "Light" + std::to_string(lightsCreated);
 	vecTheLights[lightsCreated].position = position;
-	vecTheLights[lightsCreated].diffuse = glm::vec4(0.06f, 0.06f, 0.06f, 1.0f);
+	vecTheLights[lightsCreated].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	vecTheLights[lightsCreated].specular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vecTheLights[lightsCreated].atten = glm::vec4(0.1f, 0.807497f, 0.0000001f, 1.0f);
+	vecTheLights[lightsCreated].atten = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// In the shader Feeney gave you, the direciton is relative
 	vecTheLights[lightsCreated].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
@@ -81,7 +81,7 @@ void cLightManager::CreateBasicDirecLight(unsigned int shaderID, glm::vec4 posit
 	//                     0 = pointlight
 	//                     1 = spot light
 	//                     2 = directional light
-	vecTheLights[lightsCreated].param1 = glm::vec4(2.0f, 45.0f, 90.0f, 1.0f);     // Degrees
+	vecTheLights[lightsCreated].param1 = glm::vec4(2.0f, 0.0f, 0.0f, 1.0f);     // Degrees
 	vecTheLights[lightsCreated].param2 = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
 	vecTheLights[lightsCreated].TurnOn();
 

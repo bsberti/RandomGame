@@ -14,4 +14,6 @@ assets/models/1129701_Terrain_xyz_n_rgba_uv.ply
 Terrain_Florest
 assets/models/Plane_xyz_n_rgba_uv.ply
 Plane
+assets/models/Invader_Single_Cube.ply
+Cube
 EOF
