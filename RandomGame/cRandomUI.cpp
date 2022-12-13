@@ -189,20 +189,20 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
     ImGui::Begin("Game Objects");
     ImGui::Text("Mesh Objets");
     const int totalObjects = scene.vec_pMeshObjects.size() - 1;
-    const char* listbox_items[20];
-    for (int i = 0; i < 20; i++) {
+    const char* listbox_items[40];
+    for (int i = 0; i < 40; i++) {
         if (i <= totalObjects)
             listbox_items[i] = scene.vec_pMeshObjects[i]->meshName.c_str();
         else
             listbox_items[i] = "Empty";
     }
 
-    ImGui::ListBox("1", &listbox_item_current, listbox_items, IM_ARRAYSIZE(listbox_items), 10);
+    ImGui::ListBox("1", &listbox_item_current, listbox_items, IM_ARRAYSIZE(listbox_items), 20);
 
     ImGui::Text("Light Objets");
     const int totalLights = vecTheLights.size() - 1;
-    const char* listbox_lights[20];
-    for (int i = 0; i < 20; i++) {
+    const char* listbox_lights[10];
+    for (int i = 0; i < 10; i++) {
         if (i <= totalLights)
             listbox_lights[i] = vecTheLights[i].name.c_str();
         else
@@ -219,7 +219,7 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
         ImGui::Text(scene.vec_pMeshObjects[listbox_item_current]->meshName.c_str());
 
         glm::vec3 soPosition = scene.vec_pMeshObjects[listbox_item_current]->position;
-        glm::vec3 soRotation = scene.vec_pMeshObjects[listbox_item_current]->rotation;
+        glm::quat soRotation = scene.vec_pMeshObjects[listbox_item_current]->qRotation;
         float scale = scene.vec_pMeshObjects[listbox_item_current]->scale;
 
 
@@ -232,14 +232,17 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
         ImGui::SliderFloat("rotation.x", &soRotation.x, -10.0f, 10.0f);
         ImGui::SliderFloat("rotation.y", &soRotation.y, -10.0f, 10.0f);
         ImGui::SliderFloat("rotation.z", &soRotation.z, -10.0f, 10.0f);
+        ImGui::SliderFloat("rotation.w", &soRotation.w, -10.0f, 10.0f);
 
         scene.vec_pMeshObjects[listbox_item_current]->position.x = soPosition.x;
         scene.vec_pMeshObjects[listbox_item_current]->position.y = soPosition.y;
         scene.vec_pMeshObjects[listbox_item_current]->position.z = soPosition.z;
         scene.vec_pMeshObjects[listbox_item_current]->scale = scale;
-        scene.vec_pMeshObjects[listbox_item_current]->rotation.x = soRotation.x;
-        scene.vec_pMeshObjects[listbox_item_current]->rotation.y = soRotation.y;
-        scene.vec_pMeshObjects[listbox_item_current]->rotation.z = soRotation.z;
+
+        scene.vec_pMeshObjects[listbox_item_current]->setRotationFromEuler(glm::vec3(soRotation.x, soRotation.y, soRotation.z));
+        //scene.vec_pMeshObjects[listbox_item_current]->rotation.x = soRotation.x;
+        //scene.vec_pMeshObjects[listbox_item_current]->rotation.y = soRotation.y;
+        //scene.vec_pMeshObjects[listbox_item_current]->rotation.z = soRotation.z;
     }
     else {
         ImGui::Text("No Object Selected");
