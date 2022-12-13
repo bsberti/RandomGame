@@ -18,5 +18,6 @@ public:
 
 	bool LoadNewFile(std::string filePath);
 
+	bool readJsonFile(std::string filePath);
 	bool readFile(std::string filePath);
 };

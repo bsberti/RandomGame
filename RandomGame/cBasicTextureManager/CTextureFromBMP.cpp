@@ -66,7 +66,7 @@ bool CTextureFromBMP::CreateNewTextureFromBMPFile2( std::string textureName, std
 	int IHateYou = glGetError();
 
 	// Pick a texture number...
-//	GLuint textureNum = 0;
+	// GLuint textureNum = 0;
 	this->m_textureNumber = 0;
 	glGenTextures( 1, &(this->m_textureNumber) );
 	// Worked?

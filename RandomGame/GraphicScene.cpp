@@ -44,13 +44,32 @@ void GraphicScene::CreateGameObjectByType(const std::string& type, glm::vec3 pos
 	go->meshName = type;
 	go->friendlyName = type;
 	go->position = position;
-	go->bUse_RGBA_colour = true;
-	go->RGBA_colour = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f); 
-	//go->specular_colour_and_power = glm::vec4(1.0f, 1.0f, 1.0f, 1000.0f);
+	go->bUse_RGBA_colour = false;
+	go->RGBA_colour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); 
+	go->specular_colour_and_power = glm::vec4(1.0f, 1.0f, 1.0f, 1000.0f);
 	go->isWireframe = false;
 	go->soundPlayed = false;
 	go->numberOfTriangles = drawInfo.numberOfTriangles;
 	go->meshTriangles = drawInfo.modelTriangles;
 
 	vec_pMeshObjects.push_back(go);
+}
+
+cMeshObject* GraphicScene::GetObjectByName(std::string name, bool bSearchChildren) {
+	cMeshObject* returnObject;
+	for (int i = 0; i < vec_pMeshObjects.size(); i++) {
+		returnObject = vec_pMeshObjects[i];
+		if (vec_pMeshObjects[i]->friendlyName == name) {
+			return returnObject;
+		}
+
+		// Search children too? 
+		cMeshObject* pChildMesh = returnObject->findObjectByFriendlyName(name, bSearchChildren);
+
+		if (pChildMesh) { /* NULL = 0 = false) */
+			return pChildMesh;
+		}
+	}
+
+	return nullptr;
 }

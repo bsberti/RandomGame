@@ -70,8 +70,6 @@ void sModelDrawInfo::CalculateExtents(void)
 	return;
 }
 
-
-
 bool cVAOManager::LoadModelIntoVAO(
 		std::string fileName, 
 		sModelDrawInfo &drawInfo,
@@ -81,7 +79,6 @@ bool cVAOManager::LoadModelIntoVAO(
 	// Load the model from file
 	// (We do this here, since if we can't load it, there's 
 	//	no point in doing anything else, right?)
-
 	drawInfo.meshName = fileName;
 
 	// Calculate the extents of this model
@@ -213,16 +210,11 @@ bool cVAOManager::LoadModelIntoVAO(
 						  sizeof(sVertex_RGBA_XYZ_N_UV_T_BiN_Bones),						// Stride	(number of bytes)
 						  ( void* ) offsetof(sVertex_RGBA_XYZ_N_UV_T_BiN_Bones, vBoneWeight[0]) );		// Offset the member variable
 
-
-
-
 	// Now that all the parts are set up, set the VAO to zero
 	glBindVertexArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-
 
 	glDisableVertexAttribArray(vColour_location);
 	glDisableVertexAttribArray(vPosition_location);
@@ -235,7 +227,6 @@ bool cVAOManager::LoadModelIntoVAO(
 
 	// Store the draw information into the map
 	this->m_map_ModelName_to_VAOID[ drawInfo.meshName ] = drawInfo;
-
 
 	return true;
 }

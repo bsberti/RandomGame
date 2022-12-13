@@ -25,6 +25,10 @@ bool BlocksLoader::LoadNewFile(std::string filePath) {
 	return true;
 }
 
+bool BlocksLoader::readJsonFile(std::string filePath) {
+	return false;
+}
+
 // Here's a simple way to load the comma delimited files:
 bool BlocksLoader::readFile(std::string filePath) {
 	
@@ -38,12 +42,14 @@ bool BlocksLoader::readFile(std::string filePath) {
 	std::string currentString;
 	for (int i = 0; i < g_blockMap->size(); i++)
 	{
-		std::getline(namesFile2, theLine2);
-		std::stringstream ssLine(theLine2);
-		std::string token;
-		for (int j = 0; j < g_blockMap->at(i).size(); j++) {
-			std::getline(ssLine, token, ' ');
-			g_blockMap->at(i).at(j) = token;
+		if (std::getline(namesFile2, theLine2)) {
+			std::stringstream ssLine(theLine2);
+			std::string token;
+			for (int j = 0; j < g_blockMap->at(i).size(); j++) {
+				if (std::getline(ssLine, token, ' ')) {
+					g_blockMap->at(i).at(j) = token;
+				}
+			}
 		}
 	}
 

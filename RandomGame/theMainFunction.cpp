@@ -54,7 +54,7 @@ constexpr int max_channels = 255;
 #define NUMBER_OF_TAGS 10
 #define MAP_WIDTH 50
 #define MAP_HEIGHT 50
-#define GLOBAL_MAP_OFFSET 15
+#define GLOBAL_MAP_OFFSET 50
 
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -169,12 +169,23 @@ void creatingModels() {
             std::string currentString = m_blocksLoader->g_blockMap->at(i).at(j);
             if (currentString != "") {
                 if (currentString == "X") {
-                    pVAOManager->FindDrawInfoByModelName("Cube", drawingInformation);
+                    std::string floorName = "Floor" + std::to_string(i) + std::to_string(j);
+                    pVAOManager->FindDrawInfoByModelName("Floor", drawingInformation);
                     float x = (j * GLOBAL_MAP_OFFSET);
                     float z = (i * GLOBAL_MAP_OFFSET);
-                    g_GraphicScene.CreateGameObjectByType("Cube", glm::vec3(x, 0.0f, z), drawingInformation);
+                    g_GraphicScene.CreateGameObjectByType("Floor", glm::vec3(x, 0.0f, z), drawingInformation);
+                    
+                    cMeshObject* currentObject;
+                    currentObject = g_GraphicScene.GetObjectByName("Floor", false);
+                    currentObject->friendlyName = floorName;
+
+                    currentObject->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
+                    //currentObject->textures[1] = "Dungeons_2_Texture_01_A.bmp";
+
+                    currentObject->textureRatios[0] = 1.0f;
+                    //currentObject->textureRatios[0] = 0.0f;
                 }
-              }
+            }
         }
     }   
 }
@@ -400,6 +411,59 @@ int main(int argc, char* argv[]) {
     // Need this for lighting
     GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");
 
+
+    cMeshObject* pSkyBox = new cMeshObject();
+    pSkyBox->meshName = "Skybox_Sphere";
+    pSkyBox->friendlyName = "skybox";
+
+    // ---------------- LOADING TEXTURES ----------------------------------------------
+    ::g_pTextureManager = new cBasicTextureManager();
+
+    ::g_pTextureManager->SetBasePath("assets/textures");
+    if (!::g_pTextureManager->Create2DTextureFromBMPFile("Dungeons_2_Texture_01_A.bmp")) {
+        std::cout << "Didn't load texture" << std::endl;
+    }
+    else {
+        std::cout << "texture loaded" << std::endl;
+    }
+
+    if (!::g_pTextureManager->Create2DTextureFromBMPFile("colored-brick-wall-2.bmp")) {
+        std::cout << "Didn't load texture" << std::endl;
+    }
+    else {
+        std::cout << "texture loaded" << std::endl;
+    }
+
+    if (!::g_pTextureManager->Create2DTextureFromBMPFile("Dungeons_2_Texture_01_Block.bmp")) {
+        std::cout << "Didn't load texture" << std::endl;
+    }
+    else {
+        std::cout << "texture loaded" << std::endl;
+    }
+    
+
+    // Load a skybox
+    // Here's an example of the various sides: http://www.3dcpptutorials.sk/obrazky/cube_map.jpg
+    std::string errorString = "";
+    if (::g_pTextureManager->CreateCubeTextureFromBMPFiles("TropicalSunnyDay",
+        "TropicalSunnyDayRight2048.bmp", /* positive X */
+        "TropicalSunnyDayLeft2048.bmp",  /* negative X */
+        "TropicalSunnyDayUp2048.bmp",    /* positive Y */
+        "TropicalSunnyDayDown2048.bmp",  /* negative Y */
+        "TropicalSunnyDayBack2048.bmp",  /* positive Z */
+        "TropicalSunnyDayFront2048.bmp", /* negative Z */
+        true, errorString))
+    {
+        std::cout << "Loaded the tropical sunny day cube map OK" << std::endl;
+    }
+    else
+    {
+        std::cout << "ERROR: Didn't load the tropical sunny day cube map. How sad." << std::endl;
+        std::cout << "(because: " << errorString << std::endl;
+    }
+    
+    // ---------------- LOADING TEXTURES ----------------------------------------------
+
     g_cameraTarget = glm::vec3(250.f, 0.0, 250.f);
     g_cameraEye = glm::vec3(250.f, 1000.f, 260.f);
 
@@ -479,6 +543,34 @@ int main(int argc, char* argv[]) {
                 shaderID, ::g_pTextureManager,
                 pVAOManager, mModel_location, mModelInverseTransform_location);
         }
+
+        // --------------- Draw the skybox -----------------------------
+        {
+            GLint bIsSkyboxObject_UL = glGetUniformLocation(shaderID, "bIsSkyboxObject");
+            glUniform1f(bIsSkyboxObject_UL, (GLfloat)GL_TRUE);
+
+            glm::mat4x4 matModel = glm::mat4x4(1.0f);
+
+            // move skybox to the cameras location
+            pSkyBox->position = ::g_cameraEye;
+
+            // The scale of this large skybox needs to be smaller than the far plane
+            //  of the projection matrix.
+            // Maybe make it half the size
+            // Here, our far plane is 10000.0f...
+            pSkyBox->SetUniformScale(7500.0f);
+
+            // All the drawing code has been moved to the DrawObject function
+            DrawObject(pSkyBox,
+                matModel,
+                shaderID, ::g_pTextureManager,
+                pVAOManager, mModel_location, mModelInverseTransform_location);
+
+            // Turn this off
+            glUniform1f(bIsSkyboxObject_UL, (GLfloat)GL_FALSE);
+        }
+        // --------------- Draw the skybox -----------------------------
+        
         //    _____           _          __                           
         //   | ____|_ __   __| |   ___  / _|  ___  ___ ___ _ __   ___ 
         //   |  _| | '_ \ / _` |  / _ \| |_  / __|/ __/ _ \ '_ \ / _ \

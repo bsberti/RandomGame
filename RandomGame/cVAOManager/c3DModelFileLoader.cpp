@@ -26,15 +26,15 @@ bool c3DModelFileLoader::LoadPLYFile_Format_XYZ_N_RGBA_UV(std::string filename,
     // Array we will load into
     sVertex_XYZ_N_RGBA_UV* pTheModelArray = NULL;   // NULL, 0, nullptr
     sTrianglePLY* pTheModelTriangleArray = NULL;
- //    unsigned int numberOfvertices = 0;
- //    unsigned int numberOfTriangles = 0;
+    //unsigned int numberOfvertices = 0;
+    //unsigned int numberOfTriangles = 0;
 
-     // Start loading the file
+    // Start loading the file
 
     std::ifstream theFile(filename);
     if (!theFile.is_open())
     {
-//        std::cout << "Didn't open it!" << std::endl;
+    //std::cout << "Didn't open it!" << std::endl;
         errorText = "Can't open the file.";
         return false;
     }

@@ -17,8 +17,6 @@
 #include <iostream>
 //#endif // DEBUG
 
-
-
 void DrawObject(cMeshObject* pCurrentMeshObject,
                 glm::mat4x4 mat_PARENT_Model,               // The "parent's" model matrix
                 GLuint shaderID,                            // ID for the current shader
@@ -117,30 +115,30 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
     }
 
     // Set up the textures on this model
-    //std::string texture0Name = pCurrentMeshObject->textures[0];  // Rice field
-    //std::string texture1Name = pCurrentMeshObject->textures[1];  // Taylor Swift
+    std::string texture0Name = pCurrentMeshObject->textures[0];
+    std::string texture1Name = pCurrentMeshObject->textures[1];
 
-    //GLuint texture00Number = pTextureManager->getTextureIDFromName(texture0Name);
+    GLuint texture00Number = pTextureManager->getTextureIDFromName(texture0Name);
 
     //// Choose the texture Unit I want
-    //GLuint texture00Unit = 0;			// Texture unit go from 0 to 79
-    //glActiveTexture(texture00Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
+    GLuint texture00Unit = 0;			// Texture unit go from 0 to 79
+    glActiveTexture(texture00Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
 
-    //// Pick the texture 
-    //// 1. make it "active" (binding)
-    //// 2. Attatches it the current ACTIVE TEXTURE UNIT
-    //glBindTexture(GL_TEXTURE_2D, texture00Number);
+    // Pick the texture 
+    // 1. make it "active" (binding)
+    // 2. Attatches it the current ACTIVE TEXTURE UNIT
+    glBindTexture(GL_TEXTURE_2D, texture00Number);
 
-    //GLint texture0_UL = glGetUniformLocation(shaderID, "texture0");
-    //glUniform1i(texture0_UL, texture00Unit);
+    GLint texture0_UL = glGetUniformLocation(shaderID, "texture0");
+    glUniform1i(texture0_UL, texture00Unit);
 
-    //// Same for texture #1
-    //GLuint texture01Number = pTextureManager->getTextureIDFromName(texture1Name);
-    //GLuint texture01Unit = 1;			// Texture unit go from 0 to 79
-    //glActiveTexture(texture01Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
-    //glBindTexture(GL_TEXTURE_2D, texture01Number);
-    //GLint texture1_UL = glGetUniformLocation(shaderID, "texture1");
-    //glUniform1i(texture1_UL, texture01Unit);
+    // Same for texture #1
+    GLuint texture01Number = pTextureManager->getTextureIDFromName(texture1Name);
+    GLuint texture01Unit = 1;			// Texture unit go from 0 to 79
+    glActiveTexture(texture01Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
+    glBindTexture(GL_TEXTURE_2D, texture01Number);
+    GLint texture1_UL = glGetUniformLocation(shaderID, "texture1");
+    glUniform1i(texture1_UL, texture01Unit);
 
     // Do that for the other 6 textures... FUN!
 
@@ -162,13 +160,12 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
                 pCurrentMeshObject->textureRatios[3]);
 
     // The cube map textures
-    // uniform samplerCube skyboxTexture;
-    //GLuint cubeMapTextureNumber = pTextureManager->getTextureIDFromName("TropicalSunnyDay");
-    //GLuint texture30Unit = 30;			// Texture unit go from 0 to 79
-    //glActiveTexture(texture30Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
-    //glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureNumber);
-    //GLint skyboxTexture_UL = glGetUniformLocation(shaderID, "skyboxTexture");
-    //glUniform1i(skyboxTexture_UL, texture30Unit);
+    GLuint cubeMapTextureNumber = pTextureManager->getTextureIDFromName("TropicalSunnyDay");
+    GLuint texture30Unit = 30;			// Texture unit go from 0 to 79
+    glActiveTexture(texture30Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureNumber);
+    GLint skyboxTexture_UL = glGetUniformLocation(shaderID, "skyboxTexture");
+    glUniform1i(skyboxTexture_UL, texture30Unit);
 
     // Choose the VAO that has the model we want to draw...
     sModelDrawInfo drawingInformation;

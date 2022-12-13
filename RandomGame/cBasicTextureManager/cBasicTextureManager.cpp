@@ -44,6 +44,7 @@ GLuint cBasicTextureManager::getTextureIDFromName( std::string textureFileName )
 {
 	std::map< std::string, CTextureFromBMP* >::iterator itTexture
 		= this->m_map_TexNameToTexture.find( textureFileName );
+
 	// Found it?
 	if ( itTexture == this->m_map_TexNameToTexture.end() )
 	{

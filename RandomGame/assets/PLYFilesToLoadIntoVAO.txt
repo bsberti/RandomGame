@@ -16,4 +16,8 @@ assets/models/Plane_xyz_n_rgba_uv.ply
 Plane
 assets/models/Invader_Single_Cube.ply
 Cube
+assets/models/SM_Env_Dwarf_Floor_01.ply
+Floor
+assets/models/UV_Sphere_for_Skybox_inverted_Normals_xyz_uv_n_rgba.ply
+Skybox_Sphere
 EOF

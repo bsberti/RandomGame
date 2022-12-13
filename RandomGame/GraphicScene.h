@@ -16,6 +16,8 @@ public:
 
 	void CreateGameObjectByType(const std::string& type, glm::vec3 position, sModelDrawInfo& drawInfo);
 
+	cMeshObject* GetObjectByName(std::string name, bool bSearchChildren);
+
 	cMeshObject selectedObject;
 	std::vector< cMeshObject* > vec_pMeshObjects;
 
