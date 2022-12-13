@@ -162,6 +162,19 @@ void lightning(GLuint shaderID) {
     //::g_pTheLightManager->CreateBasicSpotLight(shaderID, glm::vec4(103.0f, 7.0f, 67.0f, 0.0f));
 }
 
+void createWall(unsigned int line, unsigned int column, float x, float z, bool horizontal) {
+    sModelDrawInfo drawingInformation;
+    pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x, 0.0f, z), drawingInformation);
+    cMeshObject* wall;
+    wall = g_GraphicScene.GetObjectByName("Wall", false);
+    wall->friendlyName = "Wall" + std::to_string(line) + std::to_string(column) + "N";
+    wall->textures[0] = "Dungeons_2_Texture_01_Wall.bmp";
+    wall->textureRatios[0] = 1.0f;
+    if (!horizontal)
+        wall->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
+}
+
 void creatingModels() {
     sModelDrawInfo drawingInformation;
     for (int i = 0; i < m_blocksLoader->g_blockMap->size(); i++) {
@@ -184,55 +197,20 @@ void creatingModels() {
                     // Initial corner option
                     if (i == 0) {
                         if (j == 0) {
-
-                            // N -> x: (GLOBAL_MAP_OFFSET / 2) * (i - 1)
-                            //   -> z: (GLOBAL_MAP_OFFSET / 2) * (j - 1)
-
-                            // W -> x: (GLOBAL_MAP_OFFSET / 2) * (i - 1)
-                            //   -> z: (GLOBAL_MAP_OFFSET / 2) * (i - 1)
-                            // rotation: setRotationFromEuler(glm::vec3(0.0f, 90.0f, 0.0f))
-                            
-                            // E -> x: 
-                            //   -> z: 
-                            // rotation: 
-                            
-                            // S -> x: (GLOBAL_MAP_OFFSET / 2) * (i - 1)
-                            //   -> z: (GLOBAL_MAP_OFFSET / 2) * (i - 1)
-
                             float x1 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
                             float z1 = (GLOBAL_MAP_OFFSET) * (j - 1);
-                            pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                            g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x1, 0.0f, z1), drawingInformation);
-                            cMeshObject* wall1;
-                            wall1 = g_GraphicScene.GetObjectByName("Wall", false);
-                            wall1->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "N";
-                            wall1->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                            wall1->textureRatios[0] = 1.0f;
+                            createWall(i, j, x1, z1, true);
 
                             float x2 = (GLOBAL_MAP_OFFSET) * (i - 1);
                             float z2 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
-                            pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                            g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x2, 0.0f, z2), drawingInformation);
-                            cMeshObject* wall2;
-                            wall2 = g_GraphicScene.GetObjectByName("Wall", false);
-                            wall2->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "W";
-                            wall2->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                            wall2->textureRatios[0] = 1.0f;
-                            wall2->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
+                            createWall(i, j, x2, z2, false);
 
                             // Check if there is another Floor - East
                             std::string eastString = m_blocksLoader->g_blockMap->at(i).at(j + 1);
                             if (eastString != "X") {
                                 float x3 = (GLOBAL_MAP_OFFSET) * (i);
                                 float z3 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x3, 0.0f, z3), drawingInformation);
-                                cMeshObject* wall3;
-                                wall3 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall3->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "E";
-                                wall3->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall3->textureRatios[0] = 1.0f;
-                                wall3->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
+                                createWall(i, j, x3, z3, false);
                             }
 
                             // Check if there is another Floor - South
@@ -240,40 +218,21 @@ void creatingModels() {
                             if (southString != "X") {
                                 float x4 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
                                 float z4 = (GLOBAL_MAP_OFFSET / 2) * (i);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x4, 0.0f, z4), drawingInformation);
-                                cMeshObject* wall4;
-                                wall4 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall4->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "S";
-                                wall4->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall4->textureRatios[0] = 1.0f;
+                                createWall(i, j, x4, z4, true);
                             }
 
                         }
                         else {
                             float x1 = (GLOBAL_MAP_OFFSET / 2) + GLOBAL_MAP_OFFSET * (j - 1);
                             float z1 = (GLOBAL_MAP_OFFSET) * (i - 1);
-                            pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                            g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x1, 0.0f, z1), drawingInformation);
-                            cMeshObject* wall1;
-                            wall1 = g_GraphicScene.GetObjectByName("Wall", false);
-                            wall1->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "N";
-                            wall1->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                            wall1->textureRatios[0] = 1.0f;
+                            createWall(i, j, x1, z1, true);
 
                             // Check if there is another Floor - West
                             std::string westString = m_blocksLoader->g_blockMap->at(i).at(j - 1);
                             if (westString != "X") {
                                 float x2 = (GLOBAL_MAP_OFFSET) * (i);
-                                float z2 = (GLOBAL_MAP_OFFSET / 2) * (i);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x2, 0.0f, z2), drawingInformation);
-                                cMeshObject* wall2;
-                                wall2 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall2->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "W";
-                                wall2->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall2->textureRatios[0] = 1.0f;
-                                wall2->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
+                                float z2 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
+                                createWall(i, j, x2, z2, false);
                             }
 
                             // Check if there is another Floor - East
@@ -281,14 +240,7 @@ void creatingModels() {
                             if (eastString != "X") {
                                 float x3 = (GLOBAL_MAP_OFFSET) * (j);
                                 float z3 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x3, 0.0f, z3), drawingInformation);
-                                cMeshObject* wall3;
-                                wall3 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall3->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "E";
-                                wall3->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall3->textureRatios[0] = 1.0f;
-                                wall3->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
+                                createWall(i, j, x3, z3, false);
                             }
 
                             // Check if there is another Floor - South
@@ -296,13 +248,7 @@ void creatingModels() {
                             if (southString != "X") {
                                 float x4 = (GLOBAL_MAP_OFFSET / 2) + GLOBAL_MAP_OFFSET * (j - 1);
                                 float z4 = GLOBAL_MAP_OFFSET * i;
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x4, 0.0f, z4), drawingInformation);
-                                cMeshObject* wall4;
-                                wall4 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall4->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "S";
-                                wall4->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall4->textureRatios[0] = 1.0f;
+                                createWall(i, j, x4, z4, true);
                             }
                         }
                     }
@@ -311,41 +257,21 @@ void creatingModels() {
                             // Check if there is another Floor - North
                             std::string northString = m_blocksLoader->g_blockMap->at(i - 1).at(j);
                             if (northString != "X") {
-                                float x1 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
-                                float z1 = (GLOBAL_MAP_OFFSET) * (j - 1);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x1, 0.0f, z1), drawingInformation);
-                                cMeshObject* wall1;
-                                wall1 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall1->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "N";
-                                wall1->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall1->textureRatios[0] = 1.0f;
+                                float x1 = (GLOBAL_MAP_OFFSET / 2) * (j - 1);
+                                float z1 = (GLOBAL_MAP_OFFSET) * (i - 1);
+                                createWall(i, j, x1, z1, true);
                             }
 
                             float x2 = (GLOBAL_MAP_OFFSET) * (j - 1);
                             float z2 = (GLOBAL_MAP_OFFSET / 2) + GLOBAL_MAP_OFFSET * (i - 1);
-                            pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                            g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x2, 0.0f, z2), drawingInformation);
-                            cMeshObject* wall2;
-                            wall2 = g_GraphicScene.GetObjectByName("Wall", false);
-                            wall2->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "W";
-                            wall2->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                            wall2->textureRatios[0] = 1.0f;
-                            wall2->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
+                            createWall(i, j, x2, z2, false);
 
                             // Check if there is another Floor - East
                             std::string eastString = m_blocksLoader->g_blockMap->at(i).at(j + 1);
                             if (eastString != "X") {
                                 float x3 = (GLOBAL_MAP_OFFSET) * (j);
                                 float z3 = (GLOBAL_MAP_OFFSET / 2) + GLOBAL_MAP_OFFSET * (i - 1);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x3, 0.0f, z3), drawingInformation);
-                                cMeshObject* wall3;
-                                wall3 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall3->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "E";
-                                wall3->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall3->textureRatios[0] = 1.0f;
-                                wall3->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
+                                createWall(i, j, x3, z3, false);
                             }
 
                             // Check if there is another Floor - South
@@ -353,13 +279,7 @@ void creatingModels() {
                             if (southString != "X") {
                                 float x4 = (GLOBAL_MAP_OFFSET / 2) * (j - 1);
                                 float z4 = (GLOBAL_MAP_OFFSET) * (i);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x4, 0.0f, z4), drawingInformation);
-                                cMeshObject* wall4;
-                                wall4 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall4->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "S";
-                                wall4->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall4->textureRatios[0] = 1.0f;
+                                createWall(i, j, x4, z4, true);
                             }
                         }
                         else {
@@ -368,13 +288,7 @@ void creatingModels() {
                             if (northString != "X") {
                                 float x1 = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (j - 1);
                                 float z1 = (GLOBAL_MAP_OFFSET) * (i - 1);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x1, 0.0f, z1), drawingInformation);
-                                cMeshObject* wall1;
-                                wall1 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall1->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "N";
-                                wall1->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall1->textureRatios[0] = 1.0f;
+                                createWall(i, j, x1, z1, true);
                             }
 
                             // Check if there is another Floor - West
@@ -382,14 +296,7 @@ void creatingModels() {
                             if (westString != "X") {
                                 float x2 = (GLOBAL_MAP_OFFSET) * (j - 1);
                                 float z2 = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (i - 1);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x2, 0.0f, z2), drawingInformation);
-                                cMeshObject* wall2;
-                                wall2 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall2->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "W";
-                                wall2->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall2->textureRatios[0] = 1.0f;
-                                wall2->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
+                                createWall(i, j, x2, z2, false);
                             }
 
                             // Check if there is another Floor - East
@@ -397,14 +304,7 @@ void creatingModels() {
                             if (eastString != "X") {
                                 float x3 = (GLOBAL_MAP_OFFSET) * (j);
                                 float z3 = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (i - 1);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x3, 0.0f, z3), drawingInformation);
-                                cMeshObject* wall3;
-                                wall3 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall3->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "E";
-                                wall3->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall3->textureRatios[0] = 1.0f;
-                                wall3->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
+                                createWall(i, j, x3, z3, false);
                             }
 
                             // Check if there is another Floor - South
@@ -412,13 +312,7 @@ void creatingModels() {
                             if (southString != "X") {
                                 float x4 = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (j - 1);
                                 float z4 = (GLOBAL_MAP_OFFSET) * (i);
-                                pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
-                                g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x4, 0.0f, z4), drawingInformation);
-                                cMeshObject* wall4;
-                                wall4 = g_GraphicScene.GetObjectByName("Wall", false);
-                                wall4->friendlyName = "Wall" + std::to_string(i) + std::to_string(j) + "S";
-                                wall4->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
-                                wall4->textureRatios[0] = 1.0f;
+                                createWall(i, j, x4, z4, true);
                             }
                         }
                     }
@@ -673,6 +567,13 @@ int main(int argc, char* argv[]) {
     }
 
     if (!::g_pTextureManager->Create2DTextureFromBMPFile("Dungeons_2_Texture_01_Block.bmp")) {
+        std::cout << "Didn't load texture" << std::endl;
+    }
+    else {
+        std::cout << "texture loaded" << std::endl;
+    }
+
+    if (!::g_pTextureManager->Create2DTextureFromBMPFile("Dungeons_2_Texture_01_Wall.bmp")) {
         std::cout << "Didn't load texture" << std::endl;
     }
     else {

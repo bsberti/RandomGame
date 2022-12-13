@@ -6,7 +6,7 @@ BlocksLoader::BlocksLoader(unsigned int height, unsigned int width) {
 	
 	g_blockMap = new std::vector<std::vector<std::string>>(blocks_height, std::vector<std::string>(blocks_width));
 
-	if (!readFile("assets/SpaceInvader_Base_block.txt")) {
+	if (!readFile("assets/Dungeon1.txt")) {
 		std::cout << "Failed to read base block file." << std::endl;
 	}
 }
