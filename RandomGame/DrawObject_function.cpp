@@ -32,6 +32,25 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
     // Turn on depth buffer test at draw time
     glEnable(GL_DEPTH_TEST);
 
+    // *********************************************************
+    // HACK: Check if this is a flame object
+    GLint bIsFlameObject_UniformLocation = glGetUniformLocation(shaderID, "bIsFlameObject");
+    // HACK: I'm checking to see if the texture matches the flame object
+    if (pCurrentMeshObject->textures[0] == "fire-torch-texture.bmp")
+    {
+        glUniform1f(bIsFlameObject_UniformLocation, (GLfloat)GL_TRUE);
+        //        glDisable(GL_DEPTH_TEST);
+        //        glDepthFunc(GL_NEVER); // We'll talk about this when we talk about the stencil buffer
+        glDepthMask(GL_FALSE);      // DON'T write to the depth buffer
+    }
+    else
+    {
+        glUniform1f(bIsFlameObject_UniformLocation, (GLfloat)GL_FALSE);
+        //        glDepthFunc(GL_LESS); // We'll talk about this when we talk about the stencil buffer
+        glDepthMask(GL_TRUE);      // DON'T write to the depth buffer
+    }
+    // *********************************************************
+
     glm::mat4x4 matModel = mat_PARENT_Model;  // identity matrix;
 
     // Move the object 
@@ -160,7 +179,7 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
                 pCurrentMeshObject->textureRatios[3]);
 
     // The cube map textures
-    GLuint cubeMapTextureNumber = pTextureManager->getTextureIDFromName("TropicalSunnyDay");
+    GLuint cubeMapTextureNumber = pTextureManager->getTextureIDFromName("SpaceBox");
     GLuint texture30Unit = 30;			// Texture unit go from 0 to 79
     glActiveTexture(texture30Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureNumber);
@@ -183,10 +202,7 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
     else {
         // Didn't find that model
         std::cout << "Error: didn't find model to draw." << std::endl;
-        //std::cerr << "Error: didn't find model to draw." << std::endl;
-
     }
-
 
     // Draw all the children
     for (std::vector< cMeshObject* >::iterator itCurrentMesh = pCurrentMeshObject->vecChildMeshes.begin();

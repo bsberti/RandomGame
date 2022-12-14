@@ -21,6 +21,8 @@ public:
 	cMeshObject selectedObject;
 	std::vector< cMeshObject* > vec_pMeshObjects;
 
+	std::vector< cMeshObject*> vec_torchFlames;
+
 	std::vector<glm::vec3> trianglesCenter;
 private:
 	

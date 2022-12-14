@@ -46,7 +46,7 @@ void GraphicScene::CreateGameObjectByType(const std::string& type, glm::vec3 pos
 	go->position = position;
 	go->bUse_RGBA_colour = false;
 	go->RGBA_colour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); 
-	go->specular_colour_and_power = glm::vec4(1.0f, 1.0f, 1.0f, 1000.0f);
+	go->specular_colour_and_power = glm::vec4(0.95f, 0.85f, 0.29f, 0.3f);
 	go->isWireframe = false;
 	go->soundPlayed = false;
 	go->numberOfTriangles = drawInfo.numberOfTriangles;

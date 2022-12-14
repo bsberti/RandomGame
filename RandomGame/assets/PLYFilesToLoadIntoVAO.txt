@@ -6,6 +6,12 @@ assets/models/SM_Env_Dwarf_Floor_01.ply
 Floor
 assets/models/SM_Bld_Ruin_Wall_01.ply
 Wall
+assets/models/SM_Prop_Dwarf_Torch_02.ply
+Torch
 assets/models/UV_Sphere_for_Skybox_inverted_Normals_xyz_uv_n_rgba.ply
 Skybox_Sphere
+assets/models/UV_Sphere_Cylindrical_UIV_Projection_.ply
+Moon
+assets/models/Quad_x3_2_sided_axial_imposter_base_on_XY_axis.ply
+Imposter_Base
 EOF

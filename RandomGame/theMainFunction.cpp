@@ -42,6 +42,9 @@ cBasicTextureManager* g_pTextureManager = NULL;
 cVAOManager* pVAOManager;
 GraphicScene g_GraphicScene;
 ParticleSystem g_ParticleSystem;
+
+cShaderManager* pTheShaderManager;
+
 cRandomUI gameUi;
 SimulationView* simView = new SimulationView();
 GLFWwindow* window;
@@ -50,6 +53,9 @@ FModManager* fmod_manager;
 
 FMOD::Channel* _channel;
 constexpr int max_channels = 255;
+
+// I guess?
+float NinetyDegrees = 1.575f;
 
 #define NUMBER_OF_TAGS 10
 #define MAP_WIDTH 50
@@ -159,167 +165,271 @@ void lightning(GLuint shaderID) {
     cLightHelper* pLightHelper = new cLightHelper();
 
     ::g_pTheLightManager->CreateBasicDirecLight(shaderID, glm::vec4(250.0f, 900.0f, 250.0f, 0.0f));
-    //::g_pTheLightManager->CreateBasicSpotLight(shaderID, glm::vec4(103.0f, 7.0f, 67.0f, 0.0f));
 }
 
-void createWall(unsigned int line, unsigned int column, float x, float z, bool horizontal) {
+void createWall(unsigned int line, unsigned int column, float x, float z, bool horizontal, std::string orientation) {
     sModelDrawInfo drawingInformation;
     pVAOManager->FindDrawInfoByModelName("Wall", drawingInformation);
     g_GraphicScene.CreateGameObjectByType("Wall", glm::vec3(x, 0.0f, z), drawingInformation);
     cMeshObject* wall;
     wall = g_GraphicScene.GetObjectByName("Wall", false);
-    wall->friendlyName = "Wall" + std::to_string(line) + std::to_string(column) + "N";
+    wall->friendlyName = "Wall" + std::to_string(line) + "_" + std::to_string(column) + orientation;
     wall->textures[0] = "Dungeons_2_Texture_01_Wall.bmp";
     wall->textureRatios[0] = 1.0f;
     if (!horizontal)
         wall->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
 }
 
+void createTorch(unsigned int line, unsigned int column, glm::vec3 pos, glm::vec3 rotation, std::string orientation) {
+    sModelDrawInfo drawingInformation;
+    pVAOManager->FindDrawInfoByModelName("Torch", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Torch", pos, drawingInformation);
+    cMeshObject* torch;
+    torch = g_GraphicScene.GetObjectByName("Torch", false);
+    torch->friendlyName = "Torch" + std::to_string(line) + "_" + std::to_string(column) + orientation;
+    torch->textures[0] = "Dungeons_Torch_Texture_01.bmp";
+    torch->textureRatios[0] = 1.0f;
+    torch->setRotationFromEuler(rotation);
+
+    cMeshObject* flame = new cMeshObject();
+    flame->meshName = "Imposter_Base";
+    flame->friendlyName = "Flame" + std::to_string(line) + "_" + std::to_string(column) + orientation;
+    flame->textures[0] = "fire-torch-texture.bmp";
+    flame->textureRatios[0] = 1.0f;
+
+    flame->setRotationFromEuler(glm::vec3(0.0f));
+    flame->SetUniformScale(3.0f);
+
+    torch->vecChildMeshes.push_back(flame);
+    g_GraphicScene.vec_torchFlames.push_back(flame);
+}
+
 void creatingModels() {
     sModelDrawInfo drawingInformation;
+
     for (int i = 0; i < m_blocksLoader->g_blockMap->size(); i++) {
         for (int j = 0; j < m_blocksLoader->g_blockMap->at(i).size(); j++) {
             std::string currentString = m_blocksLoader->g_blockMap->at(i).at(j);
             if (currentString != "") {
-                if (currentString == "X") {
-                    std::string floorName = "Floor" + std::to_string(i) + std::to_string(j);
+                if (currentString != ".") {
+                    std::string northString = "";
+                    std::string westString = "";
+                    std::string eastString = "";
+                    std::string southString = "";
+
+                    if (i > 0) northString = m_blocksLoader->g_blockMap->at(i - 1).at(j);
+                    if (j > 0) westString = m_blocksLoader->g_blockMap->at(i).at(j - 1);
+                    if (j < m_blocksLoader->g_blockMap->at(i).size()) eastString = m_blocksLoader->g_blockMap->at(i).at(j + 1);
+                    if (i < m_blocksLoader->g_blockMap->size()) southString = m_blocksLoader->g_blockMap->at(i + 1).at(j);
+                    
                     float x = (j * GLOBAL_MAP_OFFSET);
                     float z = (i * GLOBAL_MAP_OFFSET);
                     pVAOManager->FindDrawInfoByModelName("Floor", drawingInformation);
                     g_GraphicScene.CreateGameObjectByType("Floor", glm::vec3(x, 0.0f, z), drawingInformation);
-                    
                     cMeshObject* currentObject;
                     currentObject = g_GraphicScene.GetObjectByName("Floor", false);
+                    std::string floorName = "Floor" + std::to_string(i) + "_" + std::to_string(j);
                     currentObject->friendlyName = floorName;
                     currentObject->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
                     currentObject->textureRatios[0] = 1.0f;
 
-                    // Initial corner option
+                    // Creating some Torches!
+                    if (currentString == "T") {
+                        glm::vec3 torchN = glm::vec3(0.0f);
+                        glm::vec3 torchW = glm::vec3(0.0f);
+                        glm::vec3 torchE = glm::vec3(0.0f);
+                        glm::vec3 torchS = glm::vec3(0.0f);
+
+                        // Check if there is another Floor - North
+                        if (northString == ".") {
+                            torchN.x = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (j - 1);
+                            torchN.y = 25.0f;
+                            torchN.z = (GLOBAL_MAP_OFFSET) * (i - 1);
+                        }
+
+                        // Check if there is another Floor - West
+                        if (westString == ".") {
+                            torchW.x = (GLOBAL_MAP_OFFSET) * (j - 1);
+                            torchW.y = 25.0f;
+                            torchW.z = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (i - 1);
+                        }
+
+                        // Check if there is another Floor - East
+                        if (eastString == ".") {
+                            torchE.x = (GLOBAL_MAP_OFFSET) * (j);
+                            torchE.y = 25.0f;
+                            torchE.z = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (i - 1);
+                        }
+
+                        // Check if there is another Floor - South
+                        if (southString == ".") {
+                            torchS.x = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (j - 1);
+                            torchS.y = 25.0f;
+                            torchS.z = (GLOBAL_MAP_OFFSET) * (i);
+                        }
+
+                        bool validTorch = false;
+                        GLuint shaderID = 0;
+                        shaderID = pTheShaderManager->getIDFromFriendlyName("Shader_1");
+                        do {
+                            unsigned int randTorch = rand() % 4;
+                            switch (randTorch) {
+                            case 0:
+                                // North
+                                if (torchN != glm::vec3(0.0f)) {
+                                    createTorch(i, j, torchN, glm::vec3(0.0f, (NinetyDegrees * 2), 0.0f), "N");
+                                    // Creating the spot light too?
+                                    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(torchN.x, torchN.y + 10, torchN.z + 10, 0.0f));
+                                    validTorch = true;
+                                }
+                                break;
+                            case 1:
+                                // West
+                                if (torchW != glm::vec3(0.0f)) {
+                                    createTorch(i, j, torchW, glm::vec3(0.0f, (NinetyDegrees * -1), 0.0f), "W");
+                                    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(torchW.x + 10, torchW.y + 10, torchW.z, 0.0f));
+                                    validTorch = true;
+                                }
+                                break;
+                            case 2:
+                                // East
+                                if (torchE != glm::vec3(0.0f)) {
+                                    createTorch(i, j, torchE, glm::vec3(0.0f, (NinetyDegrees), 0.0f), "E");
+                                    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(torchE.x - 10, torchE.y + 10, torchE.z, 0.0f));
+                                    validTorch = true;
+                                }
+                                break;
+                            case 3:
+                                // South
+                                if (torchS != glm::vec3(0.0f)) {
+                                    createTorch(i, j, torchS, glm::vec3(0.0f), "S");
+                                    ::g_pTheLightManager->CreateBasicPointLight(shaderID, glm::vec4(torchS.x, torchS.y + 10, torchS.z - 10, 0.0f));
+                                    validTorch = true;
+                                }
+                                break;
+                            }
+
+                        } while (!validTorch);
+
+                        
+                    }
+
+                    // Creating some Walls! Depending on the adjacents tiles
                     if (i == 0) {
                         if (j == 0) {
                             float x1 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
                             float z1 = (GLOBAL_MAP_OFFSET) * (j - 1);
-                            createWall(i, j, x1, z1, true);
+                            createWall(i, j, x1, z1, true, "N");
 
                             float x2 = (GLOBAL_MAP_OFFSET) * (i - 1);
                             float z2 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
-                            createWall(i, j, x2, z2, false);
+                            createWall(i, j, x2, z2, false, "W");
 
                             // Check if there is another Floor - East
-                            std::string eastString = m_blocksLoader->g_blockMap->at(i).at(j + 1);
-                            if (eastString != "X") {
+                            if (eastString == ".") {
                                 float x3 = (GLOBAL_MAP_OFFSET) * (i);
                                 float z3 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
-                                createWall(i, j, x3, z3, false);
+                                createWall(i, j, x3, z3, false, "E");
                             }
 
                             // Check if there is another Floor - South
-                            std::string southString = m_blocksLoader->g_blockMap->at(i + 1).at(j);
-                            if (southString != "X") {
+                            if (southString == ".") {
                                 float x4 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
                                 float z4 = (GLOBAL_MAP_OFFSET / 2) * (i);
-                                createWall(i, j, x4, z4, true);
+                                createWall(i, j, x4, z4, true, "S");
                             }
 
                         }
                         else {
                             float x1 = (GLOBAL_MAP_OFFSET / 2) + GLOBAL_MAP_OFFSET * (j - 1);
                             float z1 = (GLOBAL_MAP_OFFSET) * (i - 1);
-                            createWall(i, j, x1, z1, true);
+                            createWall(i, j, x1, z1, true, "N");
 
                             // Check if there is another Floor - West
-                            std::string westString = m_blocksLoader->g_blockMap->at(i).at(j - 1);
-                            if (westString != "X") {
+                            if (westString == ".") {
                                 float x2 = (GLOBAL_MAP_OFFSET) * (i);
                                 float z2 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
-                                createWall(i, j, x2, z2, false);
+                                createWall(i, j, x2, z2, false, "W");
                             }
 
                             // Check if there is another Floor - East
-                            std::string eastString = m_blocksLoader->g_blockMap->at(i).at(j + 1);
-                            if (eastString != "X") {
+                            if (eastString == ".") {
                                 float x3 = (GLOBAL_MAP_OFFSET) * (j);
                                 float z3 = (GLOBAL_MAP_OFFSET / 2) * (i - 1);
-                                createWall(i, j, x3, z3, false);
+                                createWall(i, j, x3, z3, false, "E");
                             }
 
                             // Check if there is another Floor - South
-                            std::string southString = m_blocksLoader->g_blockMap->at(i + 1).at(j);
-                            if (southString != "X") {
+                            if (southString == ".") {
                                 float x4 = (GLOBAL_MAP_OFFSET / 2) + GLOBAL_MAP_OFFSET * (j - 1);
                                 float z4 = GLOBAL_MAP_OFFSET * i;
-                                createWall(i, j, x4, z4, true);
+                                createWall(i, j, x4, z4, true, "S");
                             }
                         }
                     }
                     else {
                         if (j == 0) {
                             // Check if there is another Floor - North
-                            std::string northString = m_blocksLoader->g_blockMap->at(i - 1).at(j);
-                            if (northString != "X") {
+                            if (northString == ".") {
                                 float x1 = (GLOBAL_MAP_OFFSET / 2) * (j - 1);
                                 float z1 = (GLOBAL_MAP_OFFSET) * (i - 1);
-                                createWall(i, j, x1, z1, true);
+                                createWall(i, j, x1, z1, true, "N");
                             }
 
                             float x2 = (GLOBAL_MAP_OFFSET) * (j - 1);
                             float z2 = (GLOBAL_MAP_OFFSET / 2) + GLOBAL_MAP_OFFSET * (i - 1);
-                            createWall(i, j, x2, z2, false);
+                            createWall(i, j, x2, z2, false, "W");
 
                             // Check if there is another Floor - East
-                            std::string eastString = m_blocksLoader->g_blockMap->at(i).at(j + 1);
-                            if (eastString != "X") {
+                            if (eastString == ".") {
                                 float x3 = (GLOBAL_MAP_OFFSET) * (j);
                                 float z3 = (GLOBAL_MAP_OFFSET / 2) + GLOBAL_MAP_OFFSET * (i - 1);
-                                createWall(i, j, x3, z3, false);
+                                createWall(i, j, x3, z3, false, "E");
                             }
 
                             // Check if there is another Floor - South
-                            std::string southString = m_blocksLoader->g_blockMap->at(i + 1).at(j);
-                            if (southString != "X") {
+                            if (southString == ".") {
                                 float x4 = (GLOBAL_MAP_OFFSET / 2) * (j - 1);
                                 float z4 = (GLOBAL_MAP_OFFSET) * (i);
-                                createWall(i, j, x4, z4, true);
+                                createWall(i, j, x4, z4, true, "S");
                             }
                         }
                         else {
                             // Check if there is another Floor - North
-                            std::string northString = m_blocksLoader->g_blockMap->at(i - 1).at(j);
-                            if (northString != "X") {
+                            if (northString == ".") {
                                 float x1 = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (j - 1);
                                 float z1 = (GLOBAL_MAP_OFFSET) * (i - 1);
-                                createWall(i, j, x1, z1, true);
+                                createWall(i, j, x1, z1, true, "N");
                             }
 
                             // Check if there is another Floor - West
-                            std::string westString = m_blocksLoader->g_blockMap->at(i).at(j - 1);
-                            if (westString != "X") {
+                            if (westString == ".") {
                                 float x2 = (GLOBAL_MAP_OFFSET) * (j - 1);
                                 float z2 = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (i - 1);
-                                createWall(i, j, x2, z2, false);
+                                createWall(i, j, x2, z2, false, "W");
                             }
 
                             // Check if there is another Floor - East
-                            std::string eastString = m_blocksLoader->g_blockMap->at(i).at(j + 1);
-                            if (eastString != "X") {
+                            if (eastString == ".") {
                                 float x3 = (GLOBAL_MAP_OFFSET) * (j);
                                 float z3 = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (i - 1);
-                                createWall(i, j, x3, z3, false);
+                                createWall(i, j, x3, z3, false, "E");
                             }
 
                             // Check if there is another Floor - South
-                            std::string southString = m_blocksLoader->g_blockMap->at(i + 1).at(j);
-                            if (southString != "X") {
+                            if (southString == ".") {
                                 float x4 = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (j - 1);
                                 float z4 = (GLOBAL_MAP_OFFSET) * (i);
-                                createWall(i, j, x4, z4, true);
+                                createWall(i, j, x4, z4, true, "S");
                             }
                         }
                     }
                 }
             }
         }
-    }   
+    } 
+
+
 }
 
 void debugLightSpheres() {
@@ -327,7 +437,7 @@ void debugLightSpheres() {
     pDebugSphere_1->meshName = "ISO_Sphere_1";
     pDebugSphere_1->friendlyName = "Debug Sphere 1";
     pDebugSphere_1->bUse_RGBA_colour = true;
-    pDebugSphere_1->RGBA_colour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    pDebugSphere_1->RGBA_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
     pDebugSphere_1->isWireframe = true;
     pDebugSphere_1->scale = 1.0f;
     pDebugSphere_1->bDoNotLight = true;
@@ -498,8 +608,8 @@ int main(int argc, char* argv[]) {
     gameUi.fmod_manager_ = fmod_manager;
     gameUi.iniciatingUI();
 
-    // Create a shader thingy
-    cShaderManager* pTheShaderManager = new cShaderManager();
+    // Create a shader thingy 
+    pTheShaderManager = new cShaderManager();
 
     cShaderManager::cShader vertexShader01;
     cShaderManager::cShader fragmentShader01;
@@ -543,15 +653,14 @@ int main(int argc, char* argv[]) {
     // Need this for lighting
     GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");
 
-
     cMeshObject* pSkyBox = new cMeshObject();
     pSkyBox->meshName = "Skybox_Sphere";
     pSkyBox->friendlyName = "skybox";
 
     // ---------------- LOADING TEXTURES ----------------------------------------------
     ::g_pTextureManager = new cBasicTextureManager();
-
     ::g_pTextureManager->SetBasePath("assets/textures");
+
     if (!::g_pTextureManager->Create2DTextureFromBMPFile("Dungeons_2_Texture_01_A.bmp")) {
         std::cout << "Didn't load texture" << std::endl;
     }
@@ -579,18 +688,38 @@ int main(int argc, char* argv[]) {
     else {
         std::cout << "texture loaded" << std::endl;
     }
-    
+
+    if (!::g_pTextureManager->Create2DTextureFromBMPFile("Dungeons_Torch_Texture_01.bmp")) {
+        std::cout << "Didn't load texture" << std::endl;
+    }
+    else {
+        std::cout << "texture loaded" << std::endl;
+    }
+
+    if (!::g_pTextureManager->Create2DTextureFromBMPFile("lroc_color_poles_4k.bmp")) {
+        std::cout << "Didn't load texture" << std::endl;
+    }
+    else {
+        std::cout << "texture loaded" << std::endl;
+    }
+
+    if (!::g_pTextureManager->Create2DTextureFromBMPFile("fire-torch-texture.bmp")) {
+        std::cout << "Didn't load texture" << std::endl;
+    }
+    else {
+        std::cout << "texture loaded" << std::endl;
+    }
 
     // Load a skybox
     // Here's an example of the various sides: http://www.3dcpptutorials.sk/obrazky/cube_map.jpg
     std::string errorString = "";
-    if (::g_pTextureManager->CreateCubeTextureFromBMPFiles("TropicalSunnyDay",
-        "TropicalSunnyDayRight2048.bmp", /* positive X */
-        "TropicalSunnyDayLeft2048.bmp",  /* negative X */
-        "TropicalSunnyDayUp2048.bmp",    /* positive Y */
-        "TropicalSunnyDayDown2048.bmp",  /* negative Y */
-        "TropicalSunnyDayBack2048.bmp",  /* positive Z */
-        "TropicalSunnyDayFront2048.bmp", /* negative Z */
+    if (::g_pTextureManager->CreateCubeTextureFromBMPFiles("SpaceBox",
+        "SpaceBox_right1_posX.bmp", /* positive X */
+        "SpaceBox_left2_negX_1.bmp",  /* negative X */
+        "SpaceBox_top3_posY.bmp",    /* positive Y */
+        "SpaceBox_bottom4_negY.bmp",  /* negative Y */
+        "SpaceBox_front5_posZ_1.bmp",  /* positive Z */
+        "SpaceBox_back6_negZ.bmp", /* negative Z */
         true, errorString))
     {
         std::cout << "Loaded the tropical sunny day cube map OK" << std::endl;
@@ -651,6 +780,13 @@ int main(int argc, char* argv[]) {
         glUniformMatrix4fv(mView_location, 1, GL_FALSE, glm::value_ptr(matView));
         glUniformMatrix4fv(mProjection_location, 1, GL_FALSE, glm::value_ptr(matProjection));
 
+        // Making the fire "move"
+        for (int i = 0; i < g_GraphicScene.vec_torchFlames.size(); i++) {
+            cMeshObject* torchFire = g_GraphicScene.vec_torchFlames[i];
+            if (torchFire) {
+                torchFire->scaleXYZ.y += RandomFloat(-0.1f, 0.1f);
+            }
+        }
 
         //    ____  _             _            __                           
         //   / ___|| |_ __ _ _ __| |_    ___  / _|  ___  ___ ___ _ __   ___ 

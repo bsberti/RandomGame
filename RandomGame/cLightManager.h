@@ -11,7 +11,7 @@ public:
 
 
 
-	static const unsigned int NUMBER_OF_LIGHTS_IM_GONNA_USE = 5;
+	static const unsigned int NUMBER_OF_LIGHTS_IM_GONNA_USE = 30;
 	std::vector<cLight> vecTheLights;
 	unsigned int lightsCreated;
 

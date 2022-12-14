@@ -22,8 +22,8 @@ void cLightManager::CreateBasicPointLight(unsigned int shaderID, glm::vec4 posit
 	vecTheLights[lightsCreated].name = "Light" + std::to_string(lightsCreated);
 	vecTheLights[lightsCreated].position = position;
 	vecTheLights[lightsCreated].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vecTheLights[lightsCreated].specular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vecTheLights[lightsCreated].atten = glm::vec4(0.1f, 0.807497f, 0.0000001f, 1.0f);
+	vecTheLights[lightsCreated].specular = glm::vec4(0.350f, -0.350f, -1.0f, 1.0f);
+	vecTheLights[lightsCreated].atten = glm::vec4(0.1f, 0.10f, 0.0000001f, 1.0f);
 
 	// In the shader Feeney gave you, the direciton is relative
 	vecTheLights[lightsCreated].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
@@ -47,7 +47,7 @@ void cLightManager::CreateBasicSpotLight(unsigned int shaderID, glm::vec4 positi
 	vecTheLights[lightsCreated].position = position;
 	vecTheLights[lightsCreated].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	vecTheLights[lightsCreated].specular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vecTheLights[lightsCreated].atten = glm::vec4(0.1f, 0.807497f, 0.0000001f, 1.0f);
+	vecTheLights[lightsCreated].atten = glm::vec4(0.1f, 0.01f, 0.0000001f, 1.0f);
 
 	// In the shader Feeney gave you, the direciton is relative
 	vecTheLights[lightsCreated].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
@@ -74,7 +74,7 @@ void cLightManager::CreateBasicDirecLight(unsigned int shaderID, glm::vec4 posit
 	vecTheLights[lightsCreated].atten = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// In the shader Feeney gave you, the direciton is relative
-	vecTheLights[lightsCreated].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
+	vecTheLights[lightsCreated].direction = glm::vec4(0.0f, -0.50f, 0.0f, 1.0f);
 
 	// Make this a spot light
 	//    vec4 param1;	   x = lightType, y = inner angle, z = outer angle, w = TBD

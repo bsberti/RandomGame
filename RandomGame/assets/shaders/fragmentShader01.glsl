@@ -85,7 +85,7 @@ const int POINT_LIGHT_TYPE = 0;
 const int SPOT_LIGHT_TYPE = 1;
 const int DIRECTIONAL_LIGHT_TYPE = 2;
 
-const int NUMBEROFLIGHTS = 10;
+const int NUMBEROFLIGHTS = 30;
 uniform sLight theLights[NUMBEROFLIGHTS];  	// 
 
 vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 

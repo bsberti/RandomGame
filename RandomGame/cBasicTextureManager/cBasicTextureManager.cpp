@@ -8,7 +8,6 @@ void cBasicTextureManager::SetBasePath(std::string basepath)
 	return;
 }
 
-
 bool cBasicTextureManager::Create2DTextureFromBMPFile( std::string textureFileName, bool bGenerateMIPMap )
 {
 	std::string fileToLoadFullPath = this->m_basePath + "/" + textureFileName;
@@ -30,7 +29,6 @@ bool cBasicTextureManager::Create2DTextureFromBMPFile( std::string textureFileNa
 
 	return true;
 }
-
 
 void cBasicTextureManager::m_appendErrorString( std::string nextErrorText )
 {
@@ -54,7 +52,6 @@ GLuint cBasicTextureManager::getTextureIDFromName( std::string textureFileName )
 	return itTexture->second->getTextureNumber();
 }
 
-
 void cBasicTextureManager::m_appendErrorStringLine( std::string nextErrorTextLine )
 {
 	std::stringstream ss;
@@ -63,7 +60,6 @@ void cBasicTextureManager::m_appendErrorStringLine( std::string nextErrorTextLin
 	this->m_lastError = ss.str();
 	return;
 }
-
 
 // Picks a random texture from the textures loaded
 std::string cBasicTextureManager::PickRandomTexture(void)
@@ -86,7 +82,6 @@ std::string cBasicTextureManager::PickRandomTexture(void)
 
 	return itTex->second->getTextureName();
 }
-
 
 bool cBasicTextureManager::CreateCubeTextureFromBMPFiles( 
                                     std::string cubeMapName, 
