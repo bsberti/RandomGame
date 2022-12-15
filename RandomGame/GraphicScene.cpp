@@ -2,7 +2,7 @@
 #include <iostream>
 
 GraphicScene::GraphicScene() {
-
+	
 }
 
 GraphicScene::~GraphicScene() {

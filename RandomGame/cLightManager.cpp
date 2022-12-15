@@ -24,7 +24,7 @@ void cLightManager::CreateBasicPointLight(unsigned int shaderID, glm::vec4 posit
 	vecTheLights[lightsCreated].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	vecTheLights[lightsCreated].specular = glm::vec4(0.350f, -0.350f, -1.0f, 1.0f);
 	vecTheLights[lightsCreated].atten = glm::vec4(0.1f, 0.10f, 0.0000001f, 1.0f);
-
+	//Orange: 1, 0.6, 0.1 
 	// In the shader Feeney gave you, the direciton is relative
 	vecTheLights[lightsCreated].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
 

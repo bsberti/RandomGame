@@ -130,7 +130,7 @@ bool c3DModelFileLoader::LoadPLYFile_Format_XYZ_N_RGBA_UV(std::string filename,
 
     // This is now different because the vertex layout in the shader is different
     modelDrawInfo.pVertices = new sVertex_RGBA_XYZ_N_UV_T_BiN_Bones[modelDrawInfo.numberOfVertices];
-//    modelDrawInfo.pVertices = new sVertex[modelDrawInfo.numberOfVertices];
+    //modelDrawInfo.pVertices = new sVertex[modelDrawInfo.numberOfVertices];
 
     // Now copy the information from the PLY infomation to the model draw info structure
     for (unsigned int index = 0; index != modelDrawInfo.numberOfVertices; index++)
@@ -149,6 +149,8 @@ bool c3DModelFileLoader::LoadPLYFile_Format_XYZ_N_RGBA_UV(std::string filename,
         modelDrawInfo.pVertices[index].ny = pTheModelArray[index].ny;
         modelDrawInfo.pVertices[index].nz = pTheModelArray[index].nz;
 
+        modelDrawInfo.pVertices[index].u0 = pTheModelArray[index].texture_u;
+        modelDrawInfo.pVertices[index].v0 = pTheModelArray[index].texture_v;
     }
 
     modelDrawInfo.numberOfIndices = modelDrawInfo.numberOfTriangles * 3;

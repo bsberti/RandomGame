@@ -61,6 +61,10 @@ public:
 	bool bDoNotLight;
 	bool bIsVisible;
 
+	unsigned int currentI;
+	unsigned int currentJ;
+	unsigned int moving;
+
 	// Physics Collision properties
 	unsigned int numberOfTriangles;
 	std::vector<glm::vec3> meshTriangles;
@@ -76,6 +80,12 @@ public:
 	std::vector< cMeshObject* > vecChildMeshes;
 
 	cMeshObject* findObjectByFriendlyName(std::string name, bool bSearchChildren = true);
+	
+	unsigned int getID(void) { return this->m_myID; }
+
+	unsigned int m_myID;
+	static unsigned int nextID;
+	static const unsigned int STARTING_ID = 1;
 };
 
 #endif // _cMeshObject_HG_

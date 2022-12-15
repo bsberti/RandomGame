@@ -31,6 +31,7 @@
 #include "FModManager.h"
 #include "BlocksLoader.h"
 #include "cBasicTextureManager/cBasicTextureManager.h"
+#include "cLuaBrain.h"
 
 BlocksLoader* m_blocksLoader;
 
@@ -42,7 +43,7 @@ cBasicTextureManager* g_pTextureManager = NULL;
 cVAOManager* pVAOManager;
 GraphicScene g_GraphicScene;
 ParticleSystem g_ParticleSystem;
-
+cLuaBrain* pBrain;
 cShaderManager* pTheShaderManager;
 
 cRandomUI gameUi;
@@ -61,6 +62,7 @@ float NinetyDegrees = 1.575f;
 #define MAP_WIDTH 50
 #define MAP_HEIGHT 50
 #define GLOBAL_MAP_OFFSET 50
+#define SMALLEST_DISTANCE 3
 
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -174,7 +176,7 @@ void createWall(unsigned int line, unsigned int column, float x, float z, bool h
     cMeshObject* wall;
     wall = g_GraphicScene.GetObjectByName("Wall", false);
     wall->friendlyName = "Wall" + std::to_string(line) + "_" + std::to_string(column) + orientation;
-    wall->textures[0] = "Dungeons_2_Texture_01_Wall.bmp";
+    wall->textures[0] = "Dungeons_2_Texture_01_A.bmp";
     wall->textureRatios[0] = 1.0f;
     if (!horizontal)
         wall->setRotationFromEuler(glm::vec3(0.0f, 1.575f, 0.0f));
@@ -187,7 +189,7 @@ void createTorch(unsigned int line, unsigned int column, glm::vec3 pos, glm::vec
     cMeshObject* torch;
     torch = g_GraphicScene.GetObjectByName("Torch", false);
     torch->friendlyName = "Torch" + std::to_string(line) + "_" + std::to_string(column) + orientation;
-    torch->textures[0] = "Dungeons_Torch_Texture_01.bmp";
+    torch->textures[0] = "Dungeons_2_Texture_01_A.bmp";
     torch->textureRatios[0] = 1.0f;
     torch->setRotationFromEuler(rotation);
 
@@ -197,11 +199,27 @@ void createTorch(unsigned int line, unsigned int column, glm::vec3 pos, glm::vec
     flame->textures[0] = "fire-torch-texture.bmp";
     flame->textureRatios[0] = 1.0f;
 
-    flame->setRotationFromEuler(glm::vec3(0.0f));
+    //flame->setRotationFromEuler(glm::vec3(0.0f));
     flame->SetUniformScale(3.0f);
+    //flame->position = pos;
+    //flame->position.y += 10;
+    //flame->position.x += 10;
 
     torch->vecChildMeshes.push_back(flame);
     g_GraphicScene.vec_torchFlames.push_back(flame);
+}
+
+void createDeadbody(unsigned int line, unsigned int column, glm::vec3 pos, glm::vec3 rotation, std::string orientation) {
+    sModelDrawInfo drawingInformation;
+    pVAOManager->FindDrawInfoByModelName("Deadbody", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Deadbody", pos, drawingInformation);
+    cMeshObject* deadbody;
+    deadbody = g_GraphicScene.GetObjectByName("Deadbody", false);
+    deadbody->friendlyName = "Deadbody" + std::to_string(line) + "_" + std::to_string(column) + orientation;
+    deadbody->textures[0] = "Dungeons_2_Texture_01_A.bmp";
+    deadbody->textureRatios[0] = 1.0f;
+    deadbody->setRotationFromEuler(rotation);
+    deadbody->SetUniformScale(0.2f);
 }
 
 void creatingModels() {
@@ -230,7 +248,7 @@ void creatingModels() {
                     currentObject = g_GraphicScene.GetObjectByName("Floor", false);
                     std::string floorName = "Floor" + std::to_string(i) + "_" + std::to_string(j);
                     currentObject->friendlyName = floorName;
-                    currentObject->textures[0] = "Dungeons_2_Texture_01_Block.bmp";
+                    currentObject->textures[0] = "Dungeons_2_Texture_01_A.bmp";
                     currentObject->textureRatios[0] = 1.0f;
 
                     // Creating some Torches!
@@ -312,6 +330,157 @@ void creatingModels() {
                         } while (!validTorch);
 
                         
+                    }
+
+                    // Creating some DeadBodies =0
+                    if (currentString == "D") {
+                        glm::vec3 deadbodyN = glm::vec3(0.0f);
+                        glm::vec3 deadbodyW = glm::vec3(0.0f);
+                        glm::vec3 deadbodyE = glm::vec3(0.0f);
+                        glm::vec3 deadbodyS = glm::vec3(0.0f);
+
+                        // Check if there is another Floor - North
+                        if (northString == ".") {
+                            deadbodyN.x = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (j - 1);
+                            deadbodyN.y = 0.0f;
+                            deadbodyN.z = (GLOBAL_MAP_OFFSET) * (i - 1) + 10;
+                        }
+
+                        // Check if there is another Floor - West
+                        if (westString == ".") {
+                            deadbodyW.x = (GLOBAL_MAP_OFFSET) * (j - 1) + 10;
+                            deadbodyW.y = 0.0f;
+                            deadbodyW.z = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (i - 1);
+                        }
+
+                        // Check if there is another Floor - East
+                        if (eastString == ".") {
+                            deadbodyE.x = (GLOBAL_MAP_OFFSET) * (j) - 10;
+                            deadbodyE.y = 0.0f;
+                            deadbodyE.z = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (i - 1);
+                        }
+
+                        // Check if there is another Floor - South
+                        if (southString == ".") {
+                            deadbodyS.x = (GLOBAL_MAP_OFFSET / 2) + (GLOBAL_MAP_OFFSET) * (j - 1);
+                            deadbodyS.y = 0.0f;
+                            deadbodyS.z = (GLOBAL_MAP_OFFSET) * (i) - 10;
+                        }
+
+                        bool validDeadbody = false;
+                        GLuint shaderID = 0;
+                        shaderID = pTheShaderManager->getIDFromFriendlyName("Shader_1");
+                        do {
+                            unsigned int randTorch = rand() % 4;
+                            switch (randTorch) {
+                            case 0:
+                                // North
+                                if (deadbodyN != glm::vec3(0.0f)) {
+                                    createDeadbody(i, j, deadbodyN, glm::vec3(0.0f, (NinetyDegrees), 0.0f), "N");
+                                    // Creating the spot light too?
+                                    validDeadbody = true;
+                                }
+                                break;
+                            case 1:
+                                // West
+                                if (deadbodyW != glm::vec3(0.0f)) {
+                                    createDeadbody(i, j, deadbodyW, glm::vec3(0.0f, (NinetyDegrees * 2), 0.0f), "W");
+                                    validDeadbody = true;
+                                }
+                                break;
+                            case 2:
+                                // East
+                                if (deadbodyE != glm::vec3(0.0f)) {
+                                    createDeadbody(i, j, deadbodyE, glm::vec3(0.0f), "E");
+                                    validDeadbody = true;
+                                }
+                                break;
+                            case 3:
+                                // South
+                                if (deadbodyS != glm::vec3(0.0f)) {
+                                    createDeadbody(i, j, deadbodyS, glm::vec3(0.0f, (NinetyDegrees * -1), 0.0f), "S");
+                                    validDeadbody = true;
+                                }
+                                break;
+                            }
+
+                        } while (!validDeadbody);
+                    }
+
+                    // Creating Crystals Clusters (center of tile)
+                    if (currentString == "C") {
+                        pVAOManager->FindDrawInfoByModelName("Crystal_Cluster1", drawingInformation);
+                        g_GraphicScene.CreateGameObjectByType("Crystal_Cluster1", glm::vec3(x - (GLOBAL_MAP_OFFSET / 2), 10.0f, z - (GLOBAL_MAP_OFFSET / 2)), drawingInformation);
+                        cMeshObject* crystalC;
+                        crystalC = g_GraphicScene.GetObjectByName("Crystal_Cluster1", false);
+                        std::string crystalCName = "Crystal_Cluster1" + std::to_string(i) + "_" + std::to_string(j);
+                        crystalC->friendlyName = crystalCName;
+                        crystalC->bUse_RGBA_colour = true;
+                        crystalC->RGBA_colour = glm::vec4(0.4f, 1.0f, 0.8f, 0.75f);
+                        crystalC->specular_colour_and_power = glm::vec4(0.4f, 1.0f, 0.8f, 0.75f);
+                        crystalC->SetUniformScale(RandomFloat(0.05f, 0.10f));
+                        crystalC->setRotationFromEuler(glm::vec3(0.0f, rand() % 180, 0.0f));
+                    }
+
+                    // Creating Crystals Clusters (center of tile)
+                    if (currentString == "c") {
+                        pVAOManager->FindDrawInfoByModelName("Crystal_Cluster2", drawingInformation);
+                        g_GraphicScene.CreateGameObjectByType("Crystal_Cluster2", glm::vec3(x - (GLOBAL_MAP_OFFSET / 2), 10.0f, z - (GLOBAL_MAP_OFFSET / 2)), drawingInformation);
+                        cMeshObject* crystalC;
+                        crystalC = g_GraphicScene.GetObjectByName("Crystal_Cluster2", false);
+                        std::string crystalCName = "Crystal_Cluster2" + std::to_string(i) + "_" + std::to_string(j);
+                        crystalC->friendlyName = crystalCName;
+                        crystalC->bUse_RGBA_colour = true;
+                        crystalC->RGBA_colour = glm::vec4(0.5f, 0.1f, 1.0f, 0.8f);
+                        crystalC->specular_colour_and_power = glm::vec4(0.5f, 0.1f, 1.0f, 0.3f);
+                        crystalC->SetUniformScale(RandomFloat(0.10f, 0.15f));
+                        crystalC->setRotationFromEuler(glm::vec3(0.0f, rand() % 180, 0.0f));
+                    }
+
+                    // Creating Crystals Clusters (center of tile)
+                    if (currentString == "Y") {
+                        pVAOManager->FindDrawInfoByModelName("Crystal_Cluster3", drawingInformation);
+                        g_GraphicScene.CreateGameObjectByType("Crystal_Cluster3", glm::vec3(x - (GLOBAL_MAP_OFFSET / 2), 10.0f, z - (GLOBAL_MAP_OFFSET / 2)), drawingInformation);
+                        cMeshObject* crystalC;
+                        crystalC = g_GraphicScene.GetObjectByName("Crystal_Cluster3", false);
+                        std::string crystalCName = "Crystal_Cluster3" + std::to_string(i) + "_" + std::to_string(j);
+                        crystalC->friendlyName = crystalCName;
+                        crystalC->bUse_RGBA_colour = true;
+                        crystalC->RGBA_colour = glm::vec4(0.0f, 0.2f, 1.0f, 0.65f);
+                        crystalC->specular_colour_and_power = glm::vec4(0.0f, 0.2f, 1.0f, 0.65f);
+                        crystalC->SetUniformScale(RandomFloat(0.10f, 0.15f));
+                        crystalC->setRotationFromEuler(glm::vec3(0.0f, rand() % 180, 0.0f));
+                    }
+
+                    // Creating the mighty BEHOLDER!
+                    if (currentString == "B") {
+                        pVAOManager->FindDrawInfoByModelName("Beholder", drawingInformation);
+                        g_GraphicScene.CreateGameObjectByType("Beholder", glm::vec3(x - (GLOBAL_MAP_OFFSET / 2), 25.0f, z - (GLOBAL_MAP_OFFSET / 2)), drawingInformation);
+                        cMeshObject* beholder;
+                        beholder = g_GraphicScene.GetObjectByName("Beholder", false);
+                        std::string beholderName = "Beholder" + std::to_string(i) + "_" + std::to_string(j);
+                        beholder->friendlyName = beholderName;
+                        beholder->textures[0] = "Beholder_Base_color.bmp";
+                        beholder->textureRatios[0] = 1.0f;
+                        beholder->SetUniformScale(10.0f);
+                    }
+
+                    // Creating the mighty BEHOLDER!
+                    if (currentString == "b") {
+                        pVAOManager->FindDrawInfoByModelName("Beholder", drawingInformation);
+                        g_GraphicScene.CreateGameObjectByType("Beholder", glm::vec3(x - (GLOBAL_MAP_OFFSET / 2), 25.0f, z - (GLOBAL_MAP_OFFSET / 2)), drawingInformation);
+                        cMeshObject* beholder;
+                        beholder = g_GraphicScene.GetObjectByName("Beholder", false);
+                        std::string beholderName = "B" + std::to_string(i) + "_" + std::to_string(j);
+                        beholder->friendlyName = beholderName;
+                        beholder->textures[0] = "Beholder_Base_color.bmp";
+                        beholder->textureRatios[0] = 1.0f;
+                        beholder->SetUniformScale(10.0f);
+
+                        beholder->currentI = i;
+                        beholder->currentJ = j;
+
+                        g_GraphicScene.map_beholds->try_emplace(beholderName, beholder);
                     }
 
                     // Creating some Walls! Depending on the adjacents tiles
@@ -532,6 +701,62 @@ void positioningObjects() {
     }
 }
 
+glm::vec3 calculateNextPosition(cMeshObject* currentBehold) {
+
+    std::string northString = "";
+    std::string westString = "";
+    std::string eastString = "";
+    std::string southString = "";
+
+    unsigned int i = currentBehold->currentI;
+    unsigned int j = currentBehold->currentJ;
+
+    if (i > 0) northString = m_blocksLoader->g_blockMap->at(i - 1).at(j);
+    if (j > 0) westString = m_blocksLoader->g_blockMap->at(i).at(j - 1);
+    if (j < m_blocksLoader->g_blockMap->at(i).size()) eastString = m_blocksLoader->g_blockMap->at(i).at(j + 1);
+    if (i < m_blocksLoader->g_blockMap->size()) southString = m_blocksLoader->g_blockMap->at(i + 1).at(j);
+    
+    glm::vec3 returnVec;
+    returnVec = currentBehold->position;
+
+    bool validPath = false;
+    do {
+        unsigned int randTorch = rand() % 4;
+        switch (randTorch) {
+        case 0:
+            // North
+            if (northString == "X") {
+                returnVec.z -= 50.0f;
+                validPath = true;
+            }
+            break;
+        case 1:
+            // West
+            if (westString == "X") {
+                returnVec.x -= 50.0f;
+                validPath = true;
+            }
+            break;
+        case 2:
+            // East
+            if (eastString == "X") {
+                returnVec.x += 50.0f;
+                validPath = true;
+            }
+            break;
+        case 3:
+            // South
+            if (southString == "X") {
+                returnVec.z += 50.0f;
+                validPath = true;
+            }
+            break;
+        }
+
+    } while (!validPath);
+    return returnVec;
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "starting up..." << std::endl;
 
@@ -540,7 +765,11 @@ int main(int argc, char* argv[]) {
     GLint vpos_location = 0;
     GLint vcol_location = 0;
 
+    srand(time(NULL));
+
     int updateCount = 0;
+    pBrain = new cLuaBrain();
+    g_GraphicScene.map_beholds = new std::map<std::string, cMeshObject*>();
 
     m_blocksLoader = new BlocksLoader(MAP_HEIGHT, MAP_WIDTH);
 
@@ -668,34 +897,6 @@ int main(int argc, char* argv[]) {
         std::cout << "texture loaded" << std::endl;
     }
 
-    if (!::g_pTextureManager->Create2DTextureFromBMPFile("colored-brick-wall-2.bmp")) {
-        std::cout << "Didn't load texture" << std::endl;
-    }
-    else {
-        std::cout << "texture loaded" << std::endl;
-    }
-
-    if (!::g_pTextureManager->Create2DTextureFromBMPFile("Dungeons_2_Texture_01_Block.bmp")) {
-        std::cout << "Didn't load texture" << std::endl;
-    }
-    else {
-        std::cout << "texture loaded" << std::endl;
-    }
-
-    if (!::g_pTextureManager->Create2DTextureFromBMPFile("Dungeons_2_Texture_01_Wall.bmp")) {
-        std::cout << "Didn't load texture" << std::endl;
-    }
-    else {
-        std::cout << "texture loaded" << std::endl;
-    }
-
-    if (!::g_pTextureManager->Create2DTextureFromBMPFile("Dungeons_Torch_Texture_01.bmp")) {
-        std::cout << "Didn't load texture" << std::endl;
-    }
-    else {
-        std::cout << "texture loaded" << std::endl;
-    }
-
     if (!::g_pTextureManager->Create2DTextureFromBMPFile("lroc_color_poles_4k.bmp")) {
         std::cout << "Didn't load texture" << std::endl;
     }
@@ -704,6 +905,13 @@ int main(int argc, char* argv[]) {
     }
 
     if (!::g_pTextureManager->Create2DTextureFromBMPFile("fire-torch-texture.bmp")) {
+        std::cout << "Didn't load texture" << std::endl;
+    }
+    else {
+        std::cout << "texture loaded" << std::endl;
+    }
+
+    if (!::g_pTextureManager->Create2DTextureFromBMPFile("Beholder_Base_color.bmp")) {
         std::cout << "Didn't load texture" << std::endl;
     }
     else {
@@ -720,20 +928,98 @@ int main(int argc, char* argv[]) {
         "SpaceBox_bottom4_negY.bmp",  /* negative Y */
         "SpaceBox_front5_posZ_1.bmp",  /* positive Z */
         "SpaceBox_back6_negZ.bmp", /* negative Z */
-        true, errorString))
-    {
+        true, errorString)) {
         std::cout << "Loaded the tropical sunny day cube map OK" << std::endl;
     }
-    else
-    {
+    else {
         std::cout << "ERROR: Didn't load the tropical sunny day cube map. How sad." << std::endl;
         std::cout << "(because: " << errorString << std::endl;
     }
     
     // ---------------- LOADING TEXTURES ----------------------------------------------
 
-    g_cameraTarget = glm::vec3(250.f, 0.0, 250.f);
-    g_cameraEye = glm::vec3(250.f, 1000.f, 260.f);
+    // ---------------- LUA  ----------------------------------------------
+    std::string rotateScriptFUNCTION =
+        "function rotateObject( objectID, nrx, nry, nrz )						\n"	\
+        "	isValid, x, y, z, vx, vy, vz, rx, ry, rz = getObjectState(objectID) \n"	\
+        "	if isValid then														\n"	\
+        "		rx = rx + nrx													\n"	\
+        "		ry = ry + nry													\n"	\
+        "		rz = rz + nrz													\n"	\
+        "		setObjectState( objectID , x, y, z, vx, vy, vz, rx, ry, rz )	\n"	\
+        "	end																	\n"	\
+        "end";
+    pBrain->RunScriptImmediately(rotateScriptFUNCTION);
+
+    std::string getDirectionScriptFUNCTION =
+        "function getDirection( objectID, DestinationID )					    \n"	\
+        "	isValidObj, xObj, yObj, zObj = getObjectState( objectID )		    \n"	\
+        "	isValidDest, xDest, yDest = getObjectState( DestinationID )		    \n"	\
+        "	if isValidObj and isValidDest then								    \n"	\
+        "		xDirection = xDest - xObj									    \n"	\
+        "		yDirection = yDest - yObj									    \n"	\
+        "		zDirection = zDest - zObj									    \n"	\
+        "		return xDirection, yDirection, zDirection					    \n"	\
+        "	end																    \n"	\
+        "end";
+    pBrain->RunScriptImmediately(getDirectionScriptFUNCTION);
+
+    std::string moveScriptTowardsDestinationFUNCTION =
+        "function moveObjectTowardsDestination( objectID, xDest, yDest, zDest )										    \n"	\
+        "	isValidObj, xObj, yObj, zObj, vxObj, vyObj, vzObj, xSpin, ySpin, zSpin, moving = getObjectState( objectID )		\n"	\
+        "	if isValidObj and xDest ~= nil and yDest ~= nil and zDest ~= nil and moving == 1 then																		                \n"	\
+        "		xDirection = xDest - xObj																		    \n"	\
+        "		yDirection = yDest - xObj																		    \n"	\
+        "		zDirection = zDest - zObj																			\n"	\
+        "		magnitude = (xDirection * xDirection + yDirection * yDirection + zDirection * zDirection)^0.5		\n"	\
+        "		if magnitude > " + std::to_string(SMALLEST_DISTANCE) + " then										\n"	\
+        "			xStep = xDirection / magnitude / 3																\n"	\
+        "			zStep = zDirection / magnitude / 3																\n"	\
+        "			rotateObject ( objectID, 0.0, 0.1, 0.0 )														\n"	\
+        "			x = x + xStep																					\n"	\
+        "			y = yObj																					    \n"	\
+        "			z = z + zStep																					\n"	\
+        "			setObjectState( objectID, x, y, z, vx, vy, vz, xSpin, ySpin, zSpin, 1 )							\n"	\
+        "			return true																						\n"	\
+        "		else																								\n"	\
+        "			return false																					\n"	\
+        "		end																									\n"	\
+        "	end																										\n"	\
+        "end";
+    pBrain->RunScriptImmediately(moveScriptTowardsDestinationFUNCTION);
+
+    pBrain->SetObjectVector(g_GraphicScene.map_beholds);
+    for (std::map< std::string, cMeshObject*>::iterator itBeholds =
+        g_GraphicScene.map_beholds->begin(); itBeholds != g_GraphicScene.map_beholds->end();
+        itBeholds++) {
+        cMeshObject* currentBehold = itBeholds->second;
+        unsigned int currentBeholdID = currentBehold->getID();
+
+        std::string currentBeholdNextTileXScript = "nextTileX" + std::to_string(currentBeholdID) + " = nil";
+        std::string currentBeholdNextTileYScript = "nextTileY" + std::to_string(currentBeholdID) + " = nil";
+        std::string currentBeholdNextTileZScript = "nextTileZ" + std::to_string(currentBeholdID) + " = nil";
+        pBrain->RunScriptImmediately(currentBeholdNextTileXScript);
+        pBrain->RunScriptImmediately(currentBeholdNextTileYScript);
+        pBrain->RunScriptImmediately(currentBeholdNextTileZScript);
+
+        std::string myScriptText = "setObjectState(" + std::to_string(currentBeholdID) + ", " +
+            std::to_string(currentBehold->position.x) + ", " +
+            std::to_string(currentBehold->position.y) + ", " +
+            std::to_string(currentBehold->position.z) + ", " + 
+            " 0, 0, 0 " +
+            ")";
+        pBrain->RunScriptImmediately(myScriptText);
+
+        pBrain->LoadScript("behold" + std::to_string(currentBeholdID) + "BasicMove", "moveObjectTowardsDestination(" +
+            std::to_string(currentBeholdID) + ", " + 
+            "nextTileX" + std::to_string(currentBeholdID) + ", " +
+            "nextTileY" + std::to_string(currentBeholdID) + ", " +
+            "nextTileZ" + std::to_string(currentBeholdID) + ")");
+    }
+    // ---------------- LUA  ----------------------------------------------
+
+    g_cameraTarget = glm::vec3(500.f, 0.0, 500.f);
+    g_cameraEye = glm::vec3(500.f, 2000.f, 510.f);
 
     // ---------------- GAME LOOP START -----------------------------------------------
     while (!glfwWindowShouldClose(window)) {
@@ -881,8 +1167,46 @@ int main(int argc, char* argv[]) {
         std::string theText = ssTitle.str();
 
         // Physics Update
-        //g_ParticleSystem.Integrate(1.f);
-        simView->m_PhysicsSystem.UpdateStep(0.1f);
+        //simView->m_PhysicsSystem.UpdateStep(0.1f);
+        for (std::map< std::string, cMeshObject*>::iterator itBeholds =
+            g_GraphicScene.map_beholds->begin(); itBeholds != g_GraphicScene.map_beholds->end();
+            itBeholds++) {
+            cMeshObject* currentBehold = itBeholds->second;
+            unsigned int currentBeholdID = currentBehold->getID();
+
+            if (currentBehold->moving == 0) {
+                glm::vec3 nextPosition = calculateNextPosition(currentBehold);
+
+                std::string currentBeholdNextTileXScript = 
+                    "nextTileX" + std::to_string(currentBeholdID) + " = " + 
+                    std::to_string(nextPosition.x);
+                std::string currentBeholdNextTileYScript =
+                    "nextTileY" + std::to_string(currentBeholdID) + " = " +
+                    std::to_string(nextPosition.y);
+                std::string currentBeholdNextTileZScript = 
+                    "nextTileZ" + std::to_string(currentBeholdID) + "  = " +
+                    std::to_string(nextPosition.z);
+
+                pBrain->RunScriptImmediately(currentBeholdNextTileXScript);
+                pBrain->RunScriptImmediately(currentBeholdNextTileYScript);
+                pBrain->RunScriptImmediately(currentBeholdNextTileZScript);
+
+                std::string myScriptText = "setObjectState(" + std::to_string(currentBeholdID) + ", " +
+                    std::to_string(currentBehold->position.x) + ", " + 
+                    std::to_string(currentBehold->position.y) + ", " + 
+                    std::to_string(currentBehold->position.z) + ", " + 
+                    " 0, 0, 0, " + 
+                    std::to_string(currentBehold->qRotation.x) + ", " + 
+                    std::to_string(currentBehold->qRotation.y) + ", " + 
+                    std::to_string(currentBehold->qRotation.z) + ", " + 
+                    "1)";
+                pBrain->RunScriptImmediately(myScriptText);
+                currentBehold->moving = 1;
+            }
+        }
+
+        // Update will run any Lua script sitting in the "brain"
+        pBrain->Update(1);
 
         glfwSetWindowTitle(window, ssTitle.str().c_str());
     }

@@ -14,4 +14,14 @@ assets/models/UV_Sphere_Cylindrical_UIV_Projection_.ply
 Moon
 assets/models/Quad_x3_2_sided_axial_imposter_base_on_XY_axis.ply
 Imposter_Base
+assets/models/SM_Env_Crystals_Cluster_Large_01.ply
+Crystal_Cluster1
+assets/models/SM_Env_Crystals_Cluster_Large_02.ply
+Crystal_Cluster2
+assets/models/SM_Env_Crystals_Cluster_Large_03.ply
+Crystal_Cluster3
+assets/models/SM_Prop_DeadBody_Dwarf_01.ply
+Deadbody
+assets/models/BeholderSketchfab_xyz_n_rgba_uv.ply
+Beholder
 EOF

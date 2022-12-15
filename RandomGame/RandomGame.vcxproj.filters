@@ -45,6 +45,9 @@
     <Filter Include="Textures">
       <UniqueIdentifier>{9e5b51c9-09e0-4e7b-ac1f-1be27a66526f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lua">
+      <UniqueIdentifier>{9190cf89-cec1-4cb8-99e6-0b9d2524ad21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cVAOManager\cVAOManager.cpp">
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="DrawObject_function.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cLuaBrain.cpp">
+      <Filter>Lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -288,6 +294,9 @@
     </ClInclude>
     <ClInclude Include="cBasicTextureManager\CTextureFromBMP.h">
       <Filter>Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="cLuaBrain.h">
+      <Filter>Lua</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

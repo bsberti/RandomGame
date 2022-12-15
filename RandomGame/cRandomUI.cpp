@@ -11,6 +11,7 @@ cRandomUI::cRandomUI() {
     listbox_lights_current = 0;
     listbox_item_current = -1;
     listbox_child_current = -1;
+    listbox_behold_current = -1;
     masterVolume = 0;
     musicVolume = 0;
     fxVolume = 0;
@@ -190,8 +191,8 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
     ImGui::Begin("Game Objects");
     ImGui::Text("Mesh Objets");
     const int totalObjects = scene.vec_pMeshObjects.size() - 1;
-    const char* listbox_items[40];
-    for (int i = 0; i < 40; i++) {
+    const char* listbox_items[100];
+    for (int i = 0; i < 100; i++) {
         if (i <= totalObjects)
             listbox_items[i] = scene.vec_pMeshObjects[i]->friendlyName.c_str();
         else
@@ -207,7 +208,7 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
             totalChildrenObjects += scene.vec_pMeshObjects[i]->vecChildMeshes.size();
         }
     }
-
+    
     //const char* listbox_child[40];
     std::vector<std::string> childList;
     for (int i = 0; i < 40; i++) {
@@ -239,6 +240,20 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
 
     ImGui::ListBox("2", &listbox_child_current, listbox_child, IM_ARRAYSIZE(listbox_child), 10);
 
+    ImGui::Text("BEHOLDS");
+    const char* listbox_beholds[3];
+    for (std::map< std::string, cMeshObject*>::iterator itBeholds =
+        scene.map_beholds->begin(); itBeholds != scene.map_beholds->end();
+        itBeholds++) {
+        cMeshObject* currentBehold = itBeholds->second;
+        vecBeholds.push_back(currentBehold);
+    }
+
+    listbox_beholds[0] = vecBeholds[0]->friendlyName.c_str();
+    listbox_beholds[1] = vecBeholds[1]->friendlyName.c_str();
+    listbox_beholds[2] = vecBeholds[2]->friendlyName.c_str();
+    ImGui::ListBox("3", &listbox_behold_current, listbox_beholds, IM_ARRAYSIZE(listbox_beholds), 3);
+
     ImGui::Text("Light Objets");
     const int totalLights = vecTheLights.size() - 1;
     const char* listbox_lights[10];
@@ -248,7 +263,7 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
         else
             listbox_lights[i] = "Empty";
     }
-    ImGui::ListBox("3", &listbox_lights_current, listbox_lights, IM_ARRAYSIZE(listbox_lights), 10);
+    ImGui::ListBox("4", &listbox_lights_current, listbox_lights, IM_ARRAYSIZE(listbox_lights), 10);
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
@@ -286,6 +301,7 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
     else {
         ImGui::Text("No Object Selected");
     }
+    ImGui::End();
 
     ImGui::Begin("Selected Child Object");
     if (listbox_child_current != -1) {
@@ -316,9 +332,45 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
     else {
         ImGui::Text("No Child Object Selected");
     }
-
     ImGui::End();
 
+    ImGui::Begin("Selected BEHOLD");
+    if (listbox_behold_current != -1) {
+        ImGui::Text(vecBeholds[listbox_behold_current]->friendlyName.c_str());
+
+        ImGui::Text("I: "); ImGui::SameLine();
+        ImGui::Text(std::to_string(vecBeholds[listbox_behold_current]->currentI).c_str()); ImGui::SameLine();
+        ImGui::Text("J: "); ImGui::SameLine();
+        ImGui::Text(std::to_string(vecBeholds[listbox_behold_current]->currentJ).c_str());
+
+        ImGui::Text("Moving: "); ImGui::SameLine();
+        ImGui::Text(std::to_string(vecBeholds[listbox_behold_current]->moving).c_str());
+
+        glm::vec3 soPosition = vecBeholds[listbox_behold_current]->position;
+        glm::quat soRotation = vecBeholds[listbox_behold_current]->qRotation;
+        //float scale = vecBeholds[listbox_behold_current]->scale;
+
+        ImGui::SliderFloat("position.x", &soPosition.x, -500.0f, 500.0f);
+        ImGui::SliderFloat("position.y", &soPosition.y, -500.0f, 500.0f);
+        ImGui::SliderFloat("position.z", &soPosition.z, -500.0f, 500.0f);
+
+        //ImGui::SliderFloat("scale", &scale, -50.0f, 50.0f);
+
+        ImGui::SliderFloat("rotation.x", &soRotation.x, -10.0f, 10.0f);
+        ImGui::SliderFloat("rotation.y", &soRotation.y, -10.0f, 10.0f);
+        ImGui::SliderFloat("rotation.z", &soRotation.z, -10.0f, 10.0f);
+        ImGui::SliderFloat("rotation.w", &soRotation.w, -10.0f, 10.0f);
+
+        vecBeholds[listbox_behold_current]->position.x = soPosition.x;
+        vecBeholds[listbox_behold_current]->position.y = soPosition.y;
+        vecBeholds[listbox_behold_current]->position.z = soPosition.z;
+        //vecBeholds[listbox_behold_current]->scaleXYZ = glm::vec3(scale, scale, scale);
+
+        vecBeholds[listbox_behold_current]->setRotationFromEuler(glm::vec3(soRotation.x, soRotation.y, soRotation.z));
+    }
+    else {
+        ImGui::Text("No Child Object Selected");
+    }
     ImGui::End();
 
     ImGui::Begin("Selected Light");

@@ -176,8 +176,8 @@ void main()
 	else
 	{
 		//gl_FragColor = vec4(finalColour, 1.0f);
-	//	pixelOutputColour = vec4(finalColour, 1.0f);	
-	//	pixelOutputColour = vec4(fNormal.xyz, 1.0f);
+		//pixelOutputColour = vec4(finalColour, 1.0f);	
+		//pixelOutputColour = vec4(fNormal.xyz, 1.0f);
 
 		// Sample from a texture 
 		vec3 textColour0 = texture( texture0, fUVx2.st ).rgb;		
@@ -190,6 +190,9 @@ void main()
 						 + (textColour1.rgb * texRatio_0_3.y) 
 						 + (textColour2.rgb * texRatio_0_3.z) 
 						 + (textColour3.rgb * texRatio_0_3.w);
+		//materialColour.rgb *= 0.00001;
+		//materialColour.rg += fUVx2.st;
+
 	}//if ( bUseRGBA_Colour )
 
 	if ( bDoNotLight )

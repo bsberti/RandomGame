@@ -1,89 +1,121 @@
-﻿  GraphicScene.cpp
-  KeyboardCallbackFunctions.cpp
-  cRandomUI.cpp
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\cRandomUI.cpp(192,63): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\cRandomUI.cpp(192,63): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\cRandomUI.cpp(207,83): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\cRandomUI.cpp(243,52): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\cRandomUI.cpp(243,52): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
-  theMainFunction.cpp
+﻿  theMainFunction.cpp
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
 C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\include\glad\glad.h(32): message : see previous definition of 'APIENTRY'
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(225,29): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(226,29): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(245,64): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(243,29): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(244,29): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(263,64): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(247,60): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(265,60): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(252,60): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(270,60): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(254,64): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(272,64): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(259,60): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(277,60): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(261,64): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(279,64): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(266,64): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(284,64): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(268,60): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(286,60): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(320,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(321,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(324,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(325,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(330,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(331,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(337,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(338,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(344,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(345,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(350,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(351,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(357,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(358,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(364,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(365,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(374,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(375,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(379,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(380,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(385,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(386,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(392,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(393,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(400,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(401,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(407,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(408,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(414,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(415,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(421,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(422,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(492,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(494,19): warning C4101: 'triangleCenter2': unreferenced local variable
-  Generating Code...
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(344,67): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(346,73): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(351,73): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(353,67): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(358,69): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(360,67): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(365,67): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(367,69): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(489,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(490,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(493,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(494,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(499,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(500,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(506,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(507,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(513,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(514,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(519,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(520,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(526,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(527,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(533,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(534,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(543,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(544,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(548,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(549,38): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(554,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(555,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(561,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(562,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(569,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(570,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(576,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(577,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(583,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(584,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(590,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(591,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(661,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(663,19): warning C4101: 'triangleCenter2': unreferenced local variable
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\RandomGame\theMainFunction.cpp(768,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   RandomGame.vcxproj -> C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Engine Final\x64\Debug\RandomGame.exe

@@ -31,9 +31,11 @@ public:
 	int listbox_lights_current;
 	int listbox_item_current;
 	int listbox_child_current;
+	int listbox_behold_current;
 
 	// Child meshes - move with the parent mesh
 	std::vector< cMeshObject* > vecChildMeshes;
+	std::vector< cMeshObject* > vecBeholds;
 
 	int radioChoice;
 };

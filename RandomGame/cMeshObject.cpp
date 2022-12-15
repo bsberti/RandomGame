@@ -1,5 +1,7 @@
 #include "cMeshObject.h"
 
+unsigned int cMeshObject::nextID = cMeshObject::STARTING_ID;
+
 cMeshObject::cMeshObject() {
 	this->position = glm::vec3(0.0f);
 
@@ -8,7 +10,6 @@ cMeshObject::cMeshObject() {
 	this->qRotation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// RGB and "alpha" (A) 0.0f = transparent
-//	this->scale = 1.0f;
 	this->SetUniformScale(1.0f);
 	this->isWireframe = false;
 
@@ -19,9 +20,7 @@ cMeshObject::cMeshObject() {
 	// Make this white unless it's plastic or metal
 	// Specualar (w) of 1 is "not" shiny
 	this->specular_colour_and_power = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
 	this->bDoNotLight = false;
-
 	this->bIsVisible = true;
 
 	this->textureRatios[0] = 0.0f;
@@ -32,10 +31,16 @@ cMeshObject::cMeshObject() {
 	this->textureRatios[5] = 0.0f;
 	this->textureRatios[6] = 0.0f;
 	this->textureRatios[7] = 0.0f;
+
+	this->m_myID = cMeshObject::nextID;
+	cMeshObject::nextID += 1;
+
+	this->currentI = 0;
+	this->currentJ = 0;
+	this->moving = 0;
 }
 
-cMeshObject* cMeshObject::findObjectByFriendlyName(std::string nameToFind, bool bSearchChildren /*=true*/)
-{
+cMeshObject* cMeshObject::findObjectByFriendlyName(std::string nameToFind, bool bSearchChildren /*=true*/) {
 	for (std::vector< cMeshObject* >::iterator itCurrentMesh = this->vecChildMeshes.begin();
 		itCurrentMesh != this->vecChildMeshes.end();
 		itCurrentMesh++)
