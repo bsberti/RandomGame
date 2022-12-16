@@ -25,6 +25,9 @@ public:
 	std::map<std::string, cMeshObject*>* map_beholds;
 
 	std::vector<glm::vec3> trianglesCenter;
+
+	bool cameraFollowing;
+	bool cameraTransitioning;
 private:
 	
 };

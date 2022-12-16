@@ -38,6 +38,7 @@ cMeshObject::cMeshObject() {
 	this->currentI = 0;
 	this->currentJ = 0;
 	this->moving = 0;
+	this->dead = false;
 }
 
 cMeshObject* cMeshObject::findObjectByFriendlyName(std::string nameToFind, bool bSearchChildren /*=true*/) {

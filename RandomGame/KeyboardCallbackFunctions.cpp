@@ -14,12 +14,13 @@ extern glm::vec3 g_cameraEye;// = glm::vec3(0.0, 0.0, -25.0f);
 extern glm::vec3 g_cameraTarget;// = glm::vec3(0.0f, 0.0f, 0.0f);
 extern GraphicScene g_GraphicScene;
 extern SimulationView* simView;
+extern std::map< std::string, cMeshObject*>::iterator itBeholdsToFollow;
 
 enum eEditMode
 {
     MOVING_CAMERA,
     MOVING_LIGHT,
-    MOVING_SELECTED_OBJECT  // For later, maybe??
+    MOVING_SELECTED_OBJECT
 };
 
 eEditMode theEditMode = MOVING_CAMERA;
@@ -27,6 +28,8 @@ unsigned int selectedLightIndex = 0;
 unsigned int selectedObjectIndex = 0;
 
 bool bEnableDebugLightingObjects = true;
+
+unsigned int currentObjectID = 0;
 
 
 //0000 0001   1	GLFW_MOD_SHIFT
@@ -85,6 +88,9 @@ void key_callback(GLFWwindow* window,
         // Move the camera
         // AWSD   AD - left and right
         //        WS - forward and back
+        g_GraphicScene.cameraFollowing = false;
+        g_GraphicScene.cameraTransitioning = false;
+
         const float CAMERA_MOVE_SPEED = 5.0f;
         if (key == GLFW_KEY_A)     // Left
         {
@@ -208,45 +214,17 @@ void key_callback(GLFWwindow* window,
 
     case MOVING_SELECTED_OBJECT:
     {
-        // Move the camera
-            // AWSD   AD - left and right
-            //        WS - forward and back
+        g_GraphicScene.cameraTransitioning = true;
 
-        // For this Project I wanna moove the ball instead
-        const float OBJECT_SPEED = 1.0f;
-        
-        //Ball* mainChar = (Ball*)g_GraphicScene.vec_pMeshObjects[1];
-        PhysicsObject* mainChar = simView->m_PhysicsSystem.m_PhysicsObjects[0];
-        Vector3 mainCharPos = mainChar->GetPosition();
-        //g_cameraTarget = glm::vec3(mainCharPos.x, mainCharPos.y, mainCharPos.z);
+        if (key == GLFW_KEY_F6 && action == GLFW_PRESS) {
+            g_GraphicScene.cameraFollowing = false;
+            g_GraphicScene.cameraTransitioning = true;
+            itBeholdsToFollow++;
+            if (itBeholdsToFollow == g_GraphicScene.map_beholds->end()) {
+                itBeholdsToFollow = g_GraphicScene.map_beholds->begin();
+            }
+        }
 
-        //std::cout << mainChar->gameObject->friendlyName << std::endl;
-        //std::cout << "Ball Position is x: " << mainCharPos.x << " y: " << mainCharPos.y << " z: " << mainCharPos.z << std::endl;
-
-        if (key == GLFW_KEY_A)     // Left
-        {
-            mainChar->position.x += OBJECT_SPEED;
-        }
-        if (key == GLFW_KEY_D)  // Right
-        {
-            mainChar->position.x -= OBJECT_SPEED;
-        }
-        if (key == GLFW_KEY_W)     // Forward
-        {
-            mainChar->position.z += OBJECT_SPEED;
-        }
-        if (key == GLFW_KEY_S)     // Backwards
-        {
-            mainChar->position.z -= OBJECT_SPEED;
-        }
-        if (key == GLFW_KEY_Q)     // Down
-        {
-            mainChar->position.y -= OBJECT_SPEED;
-        }
-        if (key == GLFW_KEY_E)     // Up
-        {
-            mainChar->position.y += OBJECT_SPEED;
-        }
     }
     break;
     }//switch (theEditMode)

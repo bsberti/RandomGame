@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <math.h>
 
 #include <vector>
 #include "globalThings.h"
@@ -57,12 +58,14 @@ constexpr int max_channels = 255;
 
 // I guess?
 float NinetyDegrees = 1.575f;
+std::map< std::string, cMeshObject*>::iterator itBeholdsToFollow;
 
 #define NUMBER_OF_TAGS 10
 #define MAP_WIDTH 50
 #define MAP_HEIGHT 50
 #define GLOBAL_MAP_OFFSET 50
-#define SMALLEST_DISTANCE 3
+#define SMALLEST_DISTANCE 0.1
+#define CAMERA_OFFSET 50.0
 
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -477,6 +480,14 @@ void creatingModels() {
                         beholder->textureRatios[0] = 1.0f;
                         beholder->SetUniformScale(10.0f);
 
+                        cMeshObject* cone = new cMeshObject();
+                        cone->meshName = "Beholder_Vision";
+                        cone->friendlyName = "Beholder_Vision" + std::to_string(i) + "_" + std::to_string(j);
+                        cone->bUse_RGBA_colour = true;
+                        cone->RGBA_colour = glm::vec4(1.0f, 1.0f, 1.0f, 0.5f);
+                        cone->bDoNotLight = true;
+                        beholder->vecChildMeshes.push_back(cone);
+
                         beholder->currentI = i;
                         beholder->currentJ = j;
 
@@ -690,8 +701,6 @@ void calculateTrianglesCenter(cMeshObject* obj) {
 }
 
 void positioningObjects() {
-
-
     for (int i = 0; i < g_GraphicScene.vec_pMeshObjects.size(); i++) {
         cMeshObject* currObj = g_GraphicScene.vec_pMeshObjects[i];
         if (currObj->friendlyName != "Terrain_Florest" && 
@@ -701,7 +710,7 @@ void positioningObjects() {
     }
 }
 
-glm::vec3 calculateNextPosition(cMeshObject* currentBehold) {
+bool calculateNextPosition(cMeshObject* currentBehold, glm::vec3& nextPosition) {
 
     std::string northString = "";
     std::string westString = "";
@@ -715,46 +724,90 @@ glm::vec3 calculateNextPosition(cMeshObject* currentBehold) {
     if (j > 0) westString = m_blocksLoader->g_blockMap->at(i).at(j - 1);
     if (j < m_blocksLoader->g_blockMap->at(i).size()) eastString = m_blocksLoader->g_blockMap->at(i).at(j + 1);
     if (i < m_blocksLoader->g_blockMap->size()) southString = m_blocksLoader->g_blockMap->at(i + 1).at(j);
-    
+
     glm::vec3 returnVec;
     returnVec = currentBehold->position;
 
+    for (std::map< std::string, cMeshObject*>::iterator itBeholds =
+        g_GraphicScene.map_beholds->begin(); itBeholds != g_GraphicScene.map_beholds->end();
+        itBeholds++) {
+        cMeshObject* cmBehold = itBeholds->second;
+        unsigned int cmBeholdID = cmBehold->getID();
+
+        if (cmBeholdID == currentBehold->getID()) continue;
+
+        // N = i - 1 and j
+        // NE = i - 1 and j + 1
+        // E = i and j + 1
+        // SE = i + 1 and j + 1
+        // S = i + 1 and j
+        // SW = j + 1 and j - 1
+        // W = i and j - 1
+        // NW = i - 1 and j - 1
+        std::string cmBeholdIJString = std::to_string(cmBehold->currentI) + std::to_string(cmBehold->currentJ);
+
+        std::string N = std::to_string(i - 1) + std::to_string(j);
+        std::string NE = std::to_string(i - 1) + std::to_string(j + 1);
+        std::string E = std::to_string(i) + std::to_string(j + 1);
+        std::string SE = std::to_string(i + 1) + std::to_string(j + 1);
+        std::string S = std::to_string(i + 1) + std::to_string(j);
+        std::string SW = std::to_string(i + 1) + std::to_string(j - 1);
+        std::string W = std::to_string(i) + std::to_string(j - 1);
+        std::string NW = std::to_string(i - 1) + std::to_string(j - 1);
+
+        if (cmBeholdIJString == N || cmBeholdIJString == NE || cmBeholdIJString == E || cmBeholdIJString == SE ||
+            cmBeholdIJString == S || cmBeholdIJString == SW || cmBeholdIJString == W || cmBeholdIJString == NW) {
+            // ATTACK!
+            return false;
+        }
+    }
+
     bool validPath = false;
     do {
-        unsigned int randTorch = rand() % 4;
-        switch (randTorch) {
+        unsigned int randPath = rand() % 4;
+        switch (randPath) {
         case 0:
             // North
-            if (northString == "X") {
+            if (northString == "X" || northString == "D" || northString == "T" ||
+                northString == "b" || northString == "B") {
                 returnVec.z -= 50.0f;
+                currentBehold->currentI -= 1;
                 validPath = true;
             }
             break;
         case 1:
             // West
-            if (westString == "X") {
+            if (westString == "X" || westString == "D" || westString == "T" ||
+                westString == "b" || westString == "B") {
                 returnVec.x -= 50.0f;
+                currentBehold->currentJ -= 1;
                 validPath = true;
             }
             break;
         case 2:
             // East
-            if (eastString == "X") {
+            if (eastString == "X" || eastString == "D" || eastString == "T" ||
+                eastString == "b" || eastString == "B") {
                 returnVec.x += 50.0f;
+                currentBehold->currentJ += 1;
                 validPath = true;
             }
             break;
         case 3:
             // South
-            if (southString == "X") {
+            if (southString == "X" || southString == "D" || southString == "T" ||
+                southString == "b" || southString == "B") {
                 returnVec.z += 50.0f;
+                currentBehold->currentI += 1;
                 validPath = true;
             }
             break;
         }
 
     } while (!validPath);
-    return returnVec;
+
+    nextPosition = returnVec;
+    return true;
 }
 
 int main(int argc, char* argv[]) {
@@ -872,6 +925,7 @@ int main(int argc, char* argv[]) {
 
     // Load the models
     creatingModels();
+    itBeholdsToFollow = g_GraphicScene.map_beholds->begin();
 
     debugLightSpheres();
 
@@ -939,49 +993,30 @@ int main(int argc, char* argv[]) {
     // ---------------- LOADING TEXTURES ----------------------------------------------
 
     // ---------------- LUA  ----------------------------------------------
-    std::string rotateScriptFUNCTION =
-        "function rotateObject( objectID, nrx, nry, nrz )						\n"	\
-        "	isValid, x, y, z, vx, vy, vz, rx, ry, rz = getObjectState(objectID) \n"	\
-        "	if isValid then														\n"	\
-        "		rx = rx + nrx													\n"	\
-        "		ry = ry + nry													\n"	\
-        "		rz = rz + nrz													\n"	\
-        "		setObjectState( objectID , x, y, z, vx, vy, vz, rx, ry, rz )	\n"	\
-        "	end																	\n"	\
-        "end";
-    pBrain->RunScriptImmediately(rotateScriptFUNCTION);
-
-    std::string getDirectionScriptFUNCTION =
-        "function getDirection( objectID, DestinationID )					    \n"	\
-        "	isValidObj, xObj, yObj, zObj = getObjectState( objectID )		    \n"	\
-        "	isValidDest, xDest, yDest = getObjectState( DestinationID )		    \n"	\
-        "	if isValidObj and isValidDest then								    \n"	\
-        "		xDirection = xDest - xObj									    \n"	\
-        "		yDirection = yDest - yObj									    \n"	\
-        "		zDirection = zDest - zObj									    \n"	\
-        "		return xDirection, yDirection, zDirection					    \n"	\
-        "	end																    \n"	\
-        "end";
-    pBrain->RunScriptImmediately(getDirectionScriptFUNCTION);
 
     std::string moveScriptTowardsDestinationFUNCTION =
         "function moveObjectTowardsDestination( objectID, xDest, yDest, zDest )										    \n"	\
-        "	isValidObj, xObj, yObj, zObj, vxObj, vyObj, vzObj, xSpin, ySpin, zSpin, moving = getObjectState( objectID )		\n"	\
-        "	if isValidObj and xDest ~= nil and yDest ~= nil and zDest ~= nil and moving == 1 then																		                \n"	\
+        "	isValidObj, xObj, yObj, zObj, vxObj, vyObj, vzObj, moving = getObjectState( objectID )		\n"	\
+        "	if isValidObj and xDest ~= nil and yDest ~= nil and zDest ~= nil and moving == 1 then					\n"	\
         "		xDirection = xDest - xObj																		    \n"	\
-        "		yDirection = yDest - xObj																		    \n"	\
+        "		yDirection = yDest - yObj																		    \n"	\
         "		zDirection = zDest - zObj																			\n"	\
         "		magnitude = (xDirection * xDirection + yDirection * yDirection + zDirection * zDirection)^0.5		\n"	\
         "		if magnitude > " + std::to_string(SMALLEST_DISTANCE) + " then										\n"	\
-        "			xStep = xDirection / magnitude / 3																\n"	\
-        "			zStep = zDirection / magnitude / 3																\n"	\
-        "			rotateObject ( objectID, 0.0, 0.1, 0.0 )														\n"	\
-        "			x = x + xStep																					\n"	\
-        "			y = yObj																					    \n"	\
-        "			z = z + zStep																					\n"	\
-        "			setObjectState( objectID, x, y, z, vx, vy, vz, xSpin, ySpin, zSpin, 1 )							\n"	\
+        "			xStep = xDirection / magnitude / 2																\n"	\
+        "			yStep = yDirection / magnitude / 2																\n"	\
+        "			zStep = zDirection / magnitude / 2         													    \n"	\
+        "																                                    \n"	\
+        "			xObj = xObj + xStep																					\n"	\
+        "			yObj = yObj + yStep																				    \n"	\
+        "			zObj = zObj + zStep																					\n"	\
+        "																								\n"	\
+        "			setObjectState( objectID, xObj, yObj, zObj, vyObj, vzObj, vzObj, 1 )							\n"	\
         "			return true																						\n"	\
         "		else																								\n"	\
+        "		    print(\"Current Object: \", objectID ) 															\n"	\
+        "		    print(\"Setting this position: \", xObj, yObj, zObj ) 															\n"	\
+        "			setObjectState( objectID, xObj, yObj, zObj, vx, vy, vz, 0 )							\n"	\
         "			return false																					\n"	\
         "		end																									\n"	\
         "	end																										\n"	\
@@ -989,6 +1024,7 @@ int main(int argc, char* argv[]) {
     pBrain->RunScriptImmediately(moveScriptTowardsDestinationFUNCTION);
 
     pBrain->SetObjectVector(g_GraphicScene.map_beholds);
+
     for (std::map< std::string, cMeshObject*>::iterator itBeholds =
         g_GraphicScene.map_beholds->begin(); itBeholds != g_GraphicScene.map_beholds->end();
         itBeholds++) {
@@ -1017,9 +1053,6 @@ int main(int argc, char* argv[]) {
             "nextTileZ" + std::to_string(currentBeholdID) + ")");
     }
     // ---------------- LUA  ----------------------------------------------
-
-    g_cameraTarget = glm::vec3(500.f, 0.0, 500.f);
-    g_cameraEye = glm::vec3(500.f, 2000.f, 510.f);
 
     // ---------------- GAME LOOP START -----------------------------------------------
     while (!glfwWindowShouldClose(window)) {
@@ -1174,8 +1207,18 @@ int main(int argc, char* argv[]) {
             cMeshObject* currentBehold = itBeholds->second;
             unsigned int currentBeholdID = currentBehold->getID();
 
-            if (currentBehold->moving == 0) {
-                glm::vec3 nextPosition = calculateNextPosition(currentBehold);
+            if (currentBehold->moving == 0 && !currentBehold->dead) {
+                glm::vec3 nextPosition = glm::vec3(0.0f);
+                if (!calculateNextPosition(currentBehold, nextPosition)) {
+                    // Spin and reduce;
+                    currentBehold->adjustRoationAngleFromEuler(glm::vec3(0.0f, 0.2f, 0.0f));
+                    currentBehold->reduceFromScale(0.99f);
+                    if (currentBehold->scaleXYZ.x <= 0.01) {
+                        currentBehold->dead = true;
+                        std::cout << currentBehold->friendlyName << " is Dead :(" << std::endl;
+                    }
+                    continue;
+                }
 
                 std::string currentBeholdNextTileXScript = 
                     "nextTileX" + std::to_string(currentBeholdID) + " = " + 
@@ -1190,6 +1233,38 @@ int main(int argc, char* argv[]) {
                 pBrain->RunScriptImmediately(currentBeholdNextTileXScript);
                 pBrain->RunScriptImmediately(currentBeholdNextTileYScript);
                 pBrain->RunScriptImmediately(currentBeholdNextTileZScript);
+
+                // Setting rotation
+                if (nextPosition.x < currentBehold->position.x) // Going WEST
+                    currentBehold->setRotationFromEuler(glm::vec3(0.0f, NinetyDegrees, 0.0f));
+
+                if (nextPosition.x > currentBehold->position.x) // Going EAST
+                    currentBehold->setRotationFromEuler(glm::vec3(0.0f, -NinetyDegrees, 0.0f));
+
+                if (nextPosition.z < currentBehold->position.z) // Going NORTH
+                    currentBehold->setRotationFromEuler(glm::vec3(0.0f, 0.0, 0.0f));
+
+                if (nextPosition.z > currentBehold->position.z) // Going SOUTH
+                    currentBehold->setRotationFromEuler(glm::vec3(0.0f, NinetyDegrees * 2, 0.0f));
+
+                std::cout << " ------------------------------------------------------ " << std::endl;
+                std::cout << currentBehold->friendlyName << " CurrentPosition: (" <<
+                    currentBehold->position.x << ", " <<
+                    currentBehold->position.y << ", " <<
+                    currentBehold->position.z << ")" << std::endl;
+
+                std::cout << currentBehold->friendlyName << " I -> " <<
+                    currentBehold->currentI << ", J -> " <<
+                    currentBehold->currentJ << std::endl;
+
+                std::cout << currentBehold->friendlyName << " NextPosition: (" <<
+                    nextPosition.x << ", " <<
+                    nextPosition.y << ", " <<
+                    nextPosition.z << ")" << std::endl;
+
+                std::cout << "nextTileX" << currentBeholdID << " changed" << std::endl;
+                std::cout << "nextTileY" << currentBeholdID << " changed" << std::endl;
+                std::cout << "nextTileZ" << currentBeholdID << " changed" << std::endl;
 
                 std::string myScriptText = "setObjectState(" + std::to_string(currentBeholdID) + ", " +
                     std::to_string(currentBehold->position.x) + ", " + 
@@ -1207,6 +1282,45 @@ int main(int argc, char* argv[]) {
 
         // Update will run any Lua script sitting in the "brain"
         pBrain->Update(1);
+
+        if (g_GraphicScene.cameraFollowing && !g_GraphicScene.cameraTransitioning) {
+            cMeshObject* currentBehold = itBeholdsToFollow->second;
+            g_cameraEye.x = currentBehold->position.x + CAMERA_OFFSET;
+            g_cameraEye.y = currentBehold->position.y + CAMERA_OFFSET;
+            g_cameraEye.y = currentBehold->position.z + CAMERA_OFFSET;
+
+            g_cameraTarget = currentBehold->position;
+        } else if (g_GraphicScene.cameraTransitioning) {
+            cMeshObject* currentBehold = itBeholdsToFollow->second;
+            float distanceCameraBehold = glm::distance(g_cameraEye, currentBehold->position);
+            
+            float xDir = currentBehold->position.x - g_cameraEye.x;
+            float yDir = currentBehold->position.y - g_cameraEye.y;
+            float zDir = currentBehold->position.z - g_cameraEye.z;
+
+            g_cameraTarget = currentBehold->position;
+
+            float mag = pow((xDir * xDir + yDir * yDir + zDir * zDir), 0.5);
+
+            if (distanceCameraBehold > CAMERA_OFFSET * 5) {
+                
+                float xStep = xDir / mag;
+                float yStep = yDir / mag;
+                float zStep = zDir / mag;
+
+                g_cameraEye.x += xStep * 15;
+                g_cameraEye.y += yStep * 15;
+                g_cameraEye.z += zStep * 15;
+            }
+            else {
+                g_GraphicScene.cameraFollowing = true;
+                g_GraphicScene.cameraTransitioning = false;
+            }
+        }
+        else {
+            g_cameraTarget = glm::vec3(500.f, 0.0, 500.f);
+            g_cameraEye = glm::vec3(500.f, 2000.f, 510.f);
+        }
 
         glfwSetWindowTitle(window, ssTitle.str().c_str());
     }

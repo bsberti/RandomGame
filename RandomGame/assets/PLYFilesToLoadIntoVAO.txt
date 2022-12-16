@@ -24,4 +24,6 @@ assets/models/SM_Prop_DeadBody_Dwarf_01.ply
 Deadbody
 assets/models/BeholderSketchfab_xyz_n_rgba_uv.ply
 Beholder
+assets/models/vision_cone.ply
+Beholder_Vision
 EOF

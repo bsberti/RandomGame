@@ -2,7 +2,8 @@
 #include <iostream>
 
 GraphicScene::GraphicScene() {
-	
+	cameraFollowing = false;
+	cameraTransitioning = false;
 }
 
 GraphicScene::~GraphicScene() {

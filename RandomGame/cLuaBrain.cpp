@@ -178,17 +178,17 @@ void cLuaBrain::RunScriptImmediately(std::string script) {
 	float vx = (float)lua_tonumber(L, 5);	/* get argument */
 	float vy = (float)lua_tonumber(L, 6);	/* get argument */
 	float vz = (float)lua_tonumber(L, 7);	/* get argument */
-	glm::vec3 addToRotation = glm::vec3(
+	/*glm::vec3 addToRotation = glm::vec3(
 		(float)lua_tonumber(L, 8), 
 		(float)lua_tonumber(L, 9), 
 		(float)lua_tonumber(L, 10));
-	pGO->setRotationFromEuler(addToRotation);
+	pGO->setRotationFromEuler(addToRotation);*/
 	// We want set or add here?
-	pGO->moving = lua_tonumber(L, 11);
+	pGO->moving = lua_tonumber(L, 8);
 
 	lua_pushboolean( L, true );	// index is OK
 	
-	return 1; // There were 11 things on the stack
+	return 1; // There were 8 things on the stack
 }
 
 // Passes object ID
@@ -220,12 +220,12 @@ void cLuaBrain::RunScriptImmediately(std::string script) {
 	lua_pushnumber( L, 0 );
 	lua_pushnumber( L, 0 );
 	lua_pushnumber( L, 0 );
-	lua_pushnumber( L, pGO->rotation.x);
-	lua_pushnumber( L, pGO->rotation.y);
-	lua_pushnumber( L, pGO->rotation.z);
+	//lua_pushnumber( L, pGO->rotation.x);
+	//lua_pushnumber( L, pGO->rotation.y);
+	//lua_pushnumber( L, pGO->rotation.z);
 	lua_pushnumber( L, pGO->moving);
 	
-	return 11;		// There were 7 things on the stack
+	return 8;		// There were 7 things on the stack
 }
 
 /*static*/ 

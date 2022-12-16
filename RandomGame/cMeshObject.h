@@ -4,6 +4,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
+#include <iostream>
 
 // Quaternion stuff from glm
 #include <glm/gtx/quaternion.hpp>
@@ -42,8 +43,14 @@ public:
 
 	float scale;
 	glm::vec3 scaleXYZ;
-	void SetUniformScale(float newScale) 	{
+	void SetUniformScale(float newScale) {
 		this->scaleXYZ = glm::vec3(newScale, newScale, newScale);
+	}
+
+	void reduceFromScale(float scalar) {
+		this->scaleXYZ.x *= scalar;
+		this->scaleXYZ.y *= scalar;
+		this->scaleXYZ.z *= scalar;
 	}
 
 	bool isWireframe; 
@@ -61,10 +68,6 @@ public:
 	bool bDoNotLight;
 	bool bIsVisible;
 
-	unsigned int currentI;
-	unsigned int currentJ;
-	unsigned int moving;
-
 	// Physics Collision properties
 	unsigned int numberOfTriangles;
 	std::vector<glm::vec3> meshTriangles;
@@ -75,6 +78,12 @@ public:
 
 	std::string textures[8];
 	float textureRatios[8];
+
+	// Behold properties
+	bool dead;
+	unsigned int currentI;
+	unsigned int currentJ;
+	unsigned int moving;
 
 	// Child meshes - move with the parent mesh
 	std::vector< cMeshObject* > vecChildMeshes;
