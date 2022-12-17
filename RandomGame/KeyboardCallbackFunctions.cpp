@@ -31,22 +31,6 @@ bool bEnableDebugLightingObjects = true;
 
 unsigned int currentObjectID = 0;
 
-
-//0000 0001   1	GLFW_MOD_SHIFT
-//0000 0010 	  2
-//0000 0100   4
-//
-//0000 0110
-//0000 0001 	"Mask"
-//-------- -
-//0000 0000
-//
-//// I ONLY want the shift key and nothing else
-//if (mods == GLFW_MOD_SHIFT)
-//
-//// Shift key but I don't care if anything else is down, too
-//if ((mods & GLFW_MOD_SHIFT) == GLFW_MOD_SHIFT)
-
 void key_callback(GLFWwindow* window,
     int key, int scancode,
     int action, int mods)
@@ -63,11 +47,6 @@ void key_callback(GLFWwindow* window,
     }
     else if (key == GLFW_KEY_T && action == GLFW_PRESS) {
         theEditMode = MOVING_SELECTED_OBJECT;
-    }
-
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-    {
-        
     }
 
     if (key == GLFW_KEY_9 && action == GLFW_PRESS)

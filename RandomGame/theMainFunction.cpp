@@ -226,7 +226,15 @@ void createDeadbody(unsigned int line, unsigned int column, glm::vec3 pos, glm::
 }
 
 void creatingModels() {
-    sModelDrawInfo drawingInformation;
+    sModelDrawInfo drawingInformation; 
+    pVAOManager->FindDrawInfoByModelName("Moon", drawingInformation);
+    g_GraphicScene.CreateGameObjectByType("Moon", glm::vec3(0.0f, 100.0f, 0.0f), drawingInformation);
+    cMeshObject* moon;
+    moon = g_GraphicScene.GetObjectByName("Moon", false);
+    moon->bDoNotLight = true;
+    moon->SetUniformScale(100.f);
+    moon->textures[0] = "lroc_color_poles_4k.bmp";
+    moon->textureRatios[0] = 1.0f;
 
     for (int i = 0; i < m_blocksLoader->g_blockMap->size(); i++) {
         for (int j = 0; j < m_blocksLoader->g_blockMap->at(i).size(); j++) {
@@ -465,7 +473,52 @@ void creatingModels() {
                         beholder->friendlyName = beholderName;
                         beholder->textures[0] = "Beholder_Base_color.bmp";
                         beholder->textureRatios[0] = 1.0f;
+                        beholder->setRotationFromEuler(glm::vec3(0.0f, -NinetyDegrees, 0.0f));
                         beholder->SetUniformScale(10.0f);
+
+                        GLuint shaderID = 0;
+                        shaderID = pTheShaderManager->getIDFromFriendlyName("Shader_1");
+
+                        ::g_pTheLightManager->CreateBasicSpotLight(shaderID, 
+                            glm::vec4(beholder->position.x, 
+                                beholder->position.y + 15, 
+                                beholder->position.z - 10, 
+                                0.0f));
+
+                        ::g_pTheLightManager->vecTheLights[11].direction.x = 1.04f;
+                        ::g_pTheLightManager->vecTheLights[11].direction.y = 0.0f;
+                        ::g_pTheLightManager->vecTheLights[11].direction.z = -0.09f;
+                        ::g_pTheLightManager->vecTheLights[11].param1.y = 1.0f;
+                        ::g_pTheLightManager->vecTheLights[11].param1.z = 1.0f;
+                        ::g_pTheLightManager->vecTheLights[11].specular = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+                        ::g_pTheLightManager->CreateBasicSpotLight(shaderID,
+                            glm::vec4(beholder->position.x,
+                                beholder->position.y + 15,
+                                beholder->position.z + 10,
+                                0.0f));
+
+                        ::g_pTheLightManager->vecTheLights[12].direction.x = 0.91f;
+                        ::g_pTheLightManager->vecTheLights[12].direction.y = 0.0f;
+                        ::g_pTheLightManager->vecTheLights[12].direction.z = 0.48f;
+                        ::g_pTheLightManager->vecTheLights[12].param1.y = 1.0f;
+                        ::g_pTheLightManager->vecTheLights[12].param1.z = 1.0f;
+                        ::g_pTheLightManager->vecTheLights[12].specular = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+
+
+                        ::g_pTheLightManager->CreateBasicSpotLight(shaderID,
+                            glm::vec4(beholder->position.x,
+                                beholder->position.y + 15,
+                                beholder->position.z + 5,
+                                0.0f));
+
+                        ::g_pTheLightManager->vecTheLights[13].direction.x = 1.01f;
+                        ::g_pTheLightManager->vecTheLights[13].direction.y = 0.0f;
+                        ::g_pTheLightManager->vecTheLights[13].direction.z = 0.30f;
+                        ::g_pTheLightManager->vecTheLights[13].param1.y = 1.0f;
+                        ::g_pTheLightManager->vecTheLights[13].param1.z = 1.0f;
+                        ::g_pTheLightManager->vecTheLights[13].specular = glm::vec4(-1.0f, -0.05f, -0.40f, 1.0f);
+
                     }
 
                     // Creating the mighty BEHOLDER!

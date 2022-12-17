@@ -427,9 +427,9 @@ void cRandomUI::render(GraphicScene& scene, FModManager* fmod, std::vector<cLigh
         ImGui::DragFloat("direction.w", &lDirection.w, 0.01f, 0.0f, 0.0f, "%.2f");
 
         ImGui::SliderFloat("param1.x", &lParam1.x, 0.0f, 2.0f);
-        ImGui::SliderFloat("param1.y", &lParam1.y, -1.0f, 1.0f);
-        ImGui::SliderFloat("param1.z", &lParam1.z, -1.0f, 1.0f);
-        ImGui::SliderFloat("param1.w", &lParam1.w, -1.0f, 1.0f);
+        ImGui::SliderFloat("param1.y", &lParam1.y, -100.0f, 100.0f);
+        ImGui::SliderFloat("param1.z", &lParam1.z, -100.0f, 100.0f);
+        ImGui::SliderFloat("param1.w", &lParam1.w, -100.0f, 100.0f);
 
         if (vecTheLights[listbox_lights_current].param2.x == 1) {
             lightsEnabled = true;
