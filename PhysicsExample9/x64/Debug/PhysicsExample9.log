@@ -1,0 +1,23 @@
+﻿  SimulationView.cpp
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(106,71): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(106,59): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(106,39): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(126,36): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(127,36): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(128,30): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(414,51): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(417,49): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(420,51): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(423,49): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(489,43): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(490,44): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\PhysicsExample9\SimulationView.cpp(550,29): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  PhysicsExample9.vcxproj -> C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Physics Final\x64\Debug\PhysicsExample9.exe

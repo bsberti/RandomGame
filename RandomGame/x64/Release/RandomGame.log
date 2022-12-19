@@ -1,9 +1,0 @@
-﻿  theMainFunction.cpp
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\RandomGame\theMainFunction.cpp(241,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\RandomGame\theMainFunction.cpp(243,19): warning C4101: 'triangleCenter2': unreferenced local variable
-  Generating code
-  0 of 2994 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  RandomGame.vcxproj -> C:\Users\Bruno Berti\Documents\Fanshawe\Git\Versions\Media & Physics\x64\Release\RandomGame.exe
